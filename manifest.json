@@ -1,0 +1,19 @@
+{
+  "name": "굿슬립",
+  "short_name": "굿슬립",
+  "description": "상태를 고르면 매일 밤 다른 이야기가 나오는 수면 앱.",
+  "start_url": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0A0912",
+  "theme_color": "#0A0912",
+  "lang": "ko",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%230A0912'/%3E%3Cpath d='M336 300a92 92 0 01-112-112 100 100 0 10112 112z' fill='%23E0B15C'/%3E%3C/svg%3E",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0A0912">
+<meta name="description" content="상태를 고르면 매일 밤 다른 이야기가 나오는 수면 앱.">
+<title>굿슬립</title>
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<svg class="sr" aria-hidden="true">
+  <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></symbol>
+  <symbol id="i-next" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+  <symbol id="i-stop" viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="2"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 019.5 4a8.5 8.5 0 1010.5 10.5z"/></symbol>
+</svg>
+
+<div id="app">
+  <canvas id="scene" aria-hidden="true"></canvas>
+  <div class="veil" aria-hidden="true"></div>
+
+  <main>
+
+    <!-- ── 홈 ─────────────────────────────────────────── -->
+    <section id="s-home" class="screen is-active" aria-labelledby="home-h">
+      <header class="top">
+        <span class="brand" data-app-name>굿슬립</span>
+        <span class="clock num" id="home-clock"></span>
+      </header>
+
+      <div class="stagger">
+        <h1 class="lede" id="home-h">오늘 밤은 어떤가요?</h1>
+        <p class="sub" id="home-sub">고른 상태에 맞는 이야기가 나옵니다. 매번 다른 이야기입니다.</p>
+        <div class="states" id="state-list"></div>
+      </div>
+
+      <div class="spacer"></div>
+
+      <div class="foot">
+        <button class="btn btn-quiet" data-go="day">
+          <svg class="icon"><use href="#i-sun"/></svg> 낮에 잠깐
+        </button>
+        <button class="btn btn-quiet" data-go="report">
+          <svg class="icon"><use href="#i-chart"/></svg> 기록
+        </button>
+      </div>
+    </section>
+
+    <!-- ── 준비 ───────────────────────────────────────── -->
+    <section id="s-prepare" class="screen" aria-labelledby="prep-h">
+      <header class="top">
+        <button class="iconbtn" data-back="home" aria-label="뒤로">
+          <svg class="icon"><use href="#i-back"/></svg>
+        </button>
+        <span class="brand" id="prep-state"></span>
+      </header>
+
+      <div class="stagger">
+        <h2 class="lede" id="prep-h">몇 시간 잘까요?</h2>
+        <p class="sub" id="prep-wake">—</p>
+
+        <div class="section">
+          <div class="chips" id="hours-chips" role="group" aria-label="수면 시간"></div>
+        </div>
+
+        <div class="section">
+          <p class="eyebrow">배경</p>
+          <div class="chips" id="scene-chips" role="group" aria-label="배경 씬"></div>
+        </div>
+
+        <div class="section">
+          <p class="eyebrow">소리</p>
+          <div class="card"><div class="inner mix" id="mixer"></div></div>
+        </div>
+      </div>
+
+      <div class="spacer"></div>
+      <button class="btn btn-primary" id="start-btn">시작</button>
+    </section>
+
+    <!-- ── 재생 ───────────────────────────────────────── -->
+    <section id="s-play" class="screen" aria-labelledby="play-caption">
+      <div class="breath" aria-hidden="true"><span id="breath-label">들이쉬기</span></div>
+      <p class="caption" id="play-caption" aria-live="polite"></p>
+      <p class="play-meta num" id="play-meta"></p>
+      <div class="play-controls">
+        <button class="btn btn-quiet" id="stop-btn">
+          <svg class="icon"><use href="#i-stop"/></svg> 그만두기
+        </button>
+      </div>
+    </section>
+
+    <!-- ── 알람 ───────────────────────────────────────── -->
+    <section id="s-alarm" class="screen" aria-labelledby="alarm-h">
+      <p class="eyebrow" style="text-align:center">일어날 시간입니다</p>
+      <div class="wake-time num" id="alarm-clock">00:00</div>
+      <p class="sub" style="text-align:center" id="alarm-sub"></p>
+      <div class="spacer"></div>
+      <button class="btn btn-primary" id="alarm-off">알람 끄기</button>
+      <p class="note" style="margin-top:var(--sp-4)">알람을 끄는 순간이 기상 시각으로 기록됩니다.</p>
+    </section>
+
+    <!-- ── 기록 ───────────────────────────────────────── -->
+    <section id="s-report" class="screen" aria-labelledby="report-h">
+      <header class="top">
+        <button class="iconbtn" data-back="home" aria-label="뒤로">
+          <svg class="icon"><use href="#i-back"/></svg>
+        </button>
+        <span class="brand">기록</span>
+      </header>
+
+      <div class="stagger">
+        <div class="section">
+          <p class="eyebrow">누적 수면부채</p>
+          <div class="stat">
+            <span class="big num" id="debt-value">0시간</span>
+            <span class="unit" id="debt-note">최근 14일</span>
+          </div>
+          <div class="debt-bar"><i id="debt-fill" style="width:0%"></i></div>
+        </div>
+
+        <div class="section">
+          <p class="eyebrow">어젯밤</p>
+          <div class="stat">
+            <span class="big num" id="last-night">기록 없음</span>
+            <span class="unit" id="last-diff"></span>
+          </div>
+        </div>
+
+        <div class="section">
+          <p class="eyebrow">최근 14일</p>
+          <div class="chart" id="chart" role="img" aria-label="최근 14일 수면 추이"></div>
+          <div class="legend">
+            <span><i style="background:var(--violet)"></i>밤</span>
+            <span><i style="background:var(--accent)"></i>낮잠</span>
+          </div>
+        </div>
+
+        <div class="section">
+          <p class="eyebrow">낮잠 직접 추가</p>
+          <div class="card"><div class="inner">
+            <div class="field">
+              <label for="nap-min">오늘 잔 낮잠</label>
+              <div class="stepper">
+                <button class="step" data-nap-step="-10" aria-label="10분 줄이기"><svg class="icon"><use href="#i-minus"/></svg></button>
+                <span class="v num" id="nap-min">30분</span>
+                <button class="step" data-nap-step="10" aria-label="10분 늘리기"><svg class="icon"><use href="#i-plus"/></svg></button>
+              </div>
+            </div>
+            <div class="divider"></div>
+            <button class="btn btn-quiet" id="nap-add">추가</button>
+            <div class="rows" id="nap-list"></div>
+          </div></div>
+        </div>
+
+        <div class="section">
+          <p class="eyebrow">설정</p>
+          <div class="card"><div class="inner">
+            <div class="field">
+              <label for="need-h">필요 수면</label>
+              <div class="stepper">
+                <button class="step" data-set-step="needHours:-0.5" aria-label="30분 줄이기"><svg class="icon"><use href="#i-minus"/></svg></button>
+                <span class="v num" id="need-h">8시간</span>
+                <button class="step" data-set-step="needHours:0.5" aria-label="30분 늘리기"><svg class="icon"><use href="#i-plus"/></svg></button>
+              </div>
+            </div>
+            <div class="divider"></div>
+            <div class="field">
+              <label for="onset-m">잠드는 데 걸리는 시간</label>
+              <div class="stepper">
+                <button class="step" data-set-step="sleepOnsetMin:-5" aria-label="5분 줄이기"><svg class="icon"><use href="#i-minus"/></svg></button>
+                <span class="v num" id="onset-m">15분</span>
+                <button class="step" data-set-step="sleepOnsetMin:5" aria-label="5분 늘리기"><svg class="icon"><use href="#i-plus"/></svg></button>
+              </div>
+            </div>
+            <p class="note" style="margin-top:var(--sp-3)">
+              웹에서는 잠든 시각을 알 수 없습니다. 이 값을 침대에 누운 시간에서 빼서 실제 수면을 계산합니다.
+              실제보다 오래 걸린다고 느끼면 늘려 주세요.
+            </p>
+          </div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 낮 ─────────────────────────────────────────── -->
+    <section id="s-day" class="screen" aria-labelledby="day-h">
+      <header class="top">
+        <button class="iconbtn" data-back="home" aria-label="뒤로">
+          <svg class="icon"><use href="#i-back"/></svg>
+        </button>
+        <span class="brand">낮에 잠깐</span>
+      </header>
+
+      <div class="stagger">
+        <h2 class="lede" id="day-h">무엇을 할까요?</h2>
+        <p class="sub">낮 세션은 밤 기록을 건드리지 않습니다. 낮잠만 따로 쌓입니다.</p>
+
+        <div class="states">
+          <button class="state" data-day="calm">
+            <span class="dot"></span> 마음 가라앉히기
+            <svg class="icon arrow"><use href="#i-next"/></svg>
+          </button>
+          <button class="state" data-day="nap">
+            <span class="dot" style="background:var(--accent);box-shadow:0 0 0 5px var(--accent-soft)"></span> 낮잠 자기
+            <svg class="icon arrow"><use href="#i-next"/></svg>
+          </button>
+        </div>
+
+        <div class="section" id="nap-length" hidden>
+          <p class="eyebrow">얼마나</p>
+          <div class="chips" id="nap-chips" role="group" aria-label="낮잠 길이"></div>
+          <button class="btn btn-primary" id="nap-start" style="margin-top:var(--sp-4)">낮잠 시작</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>

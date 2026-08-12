@@ -1,0 +1,9 @@
+{
+  "name": "goodsleep",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node test.js",
+    "start": "python -m http.server 8080"
+  }
+}

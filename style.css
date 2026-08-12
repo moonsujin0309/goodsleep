@@ -1,0 +1,428 @@
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
+
+/* ─────────────────────────────────────────────────────────
+   토큰
+   어둠은 파랗지 않고 따뜻하다. 청색광은 멜라토닌을 억제한다 —
+   취향이 아니라 기능이다. 텍스트도 순백을 쓰지 않는다.
+   #FFFFFF 는 밤에 눈을 찌른다.
+   ───────────────────────────────────────────────────────── */
+:root {
+  --bg:        #0A0912;
+  --surface:   #16131F;
+  --surface-2: #1F1B2C;
+  --line:      rgba(233, 227, 220, 0.09);
+  --line-soft: rgba(233, 227, 220, 0.05);
+
+  --text:   #E9E3DC;
+  --text-2: #A79FB4;
+  --text-3: #857F9C;   /* #7B7490 은 대비 4.47 로 AA 미달이었다 */
+
+  --accent:      #E0B15C;          /* 등불 — 상호작용 */
+  --accent-soft: rgba(224, 177, 92, 0.13);
+  --accent-line: rgba(224, 177, 92, 0.32);
+  --violet:      #8A78C4;          /* 밤하늘 — 배경·데이터 */
+  --violet-soft: rgba(138, 120, 196, 0.16);
+
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 24px; --sp-6: 32px; --sp-7: 48px; --sp-8: 64px;
+
+  --r-sm: 10px; --r-md: 14px; --r-lg: 20px; --r-xl: 28px;
+
+  --tap: 56px;                     /* 44 권장보다 크다. 반쯤 잠든 채 어둠 속에서 누른다 */
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+  --shell: 460px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  min-height: 100%;
+}
+
+body {
+  font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
+               'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  color: var(--text);
+  font-size: 16px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+  text-wrap: pretty;
+}
+
+h1, h2, h3 { text-wrap: balance; margin: 0; font-weight: 600; letter-spacing: -0.015em; }
+
+button, input, select { font: inherit; color: inherit; }
+button { background: none; border: 0; cursor: pointer; touch-action: manipulation; }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.num { font-variant-numeric: tabular-nums; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.icon { width: 20px; height: 20px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ── 셸 ────────────────────────────────────────────────── */
+
+#scene {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  transition: opacity 1200ms var(--ease);
+}
+
+.veil {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(130% 90% at 50% -10%, transparent 30%, rgba(10, 9, 18, 0.72) 100%);
+}
+
+main {
+  position: relative;
+  z-index: 2;
+  max-width: var(--shell);
+  margin: 0 auto;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding:
+    calc(env(safe-area-inset-top) + var(--sp-5))
+    calc(env(safe-area-inset-right) + var(--sp-5))
+    calc(env(safe-area-inset-bottom) + var(--sp-5))
+    calc(env(safe-area-inset-left) + var(--sp-5));
+}
+
+.screen { display: none; flex: 1; flex-direction: column; }
+.screen.is-active { display: flex; animation: screen-in 420ms var(--ease) both; }
+
+@keyframes screen-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* 진입 시 순차 등장. 컨테이너 하나를 통째로 움직이지 않는다. */
+.stagger > * { animation: piece-in 520ms var(--ease) both; }
+.stagger > *:nth-child(1) { animation-delay: 40ms; }
+.stagger > *:nth-child(2) { animation-delay: 130ms; }
+.stagger > *:nth-child(3) { animation-delay: 200ms; }
+.stagger > *:nth-child(4) { animation-delay: 260ms; }
+.stagger > *:nth-child(5) { animation-delay: 310ms; }
+.stagger > *:nth-child(6) { animation-delay: 350ms; }
+.stagger > *:nth-child(7) { animation-delay: 385ms; }
+.stagger > *:nth-child(8) { animation-delay: 415ms; }
+
+@keyframes piece-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ── 헤더 ──────────────────────────────────────────────── */
+
+.top {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-6);
+  min-height: 40px;
+}
+
+.brand { font-size: 14px; font-weight: 600; letter-spacing: 0.06em; color: var(--text-2); }
+.top .clock { margin-left: auto; font-size: 14px; color: var(--text-3); }
+
+.iconbtn {
+  width: var(--tap);
+  height: var(--tap);
+  margin: calc((var(--tap) - 40px) / -2);
+  display: grid;
+  place-items: center;
+  color: var(--text-2);
+  border-radius: 50%;
+  transition: color 160ms var(--ease), background-color 160ms var(--ease), scale 120ms var(--ease);
+}
+.iconbtn:hover { color: var(--text); background: var(--line-soft); }
+.iconbtn:active { scale: 0.96; }
+
+/* ── 타이포 ────────────────────────────────────────────── */
+
+.lede { font-size: 26px; line-height: 1.42; font-weight: 500; margin: 0 0 var(--sp-2); }
+.sub  { font-size: 15px; color: var(--text-2); margin: 0 0 var(--sp-6); }
+.eyebrow {
+  font-size: 12px; font-weight: 600; letter-spacing: 0.1em;
+  color: var(--text-3); text-transform: uppercase;
+  margin: 0 0 var(--sp-3);
+}
+
+/* ── 상태 카드 ─────────────────────────────────────────── */
+
+.states { display: flex; flex-direction: column; gap: var(--sp-3); }
+
+.state {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  width: 100%;
+  min-height: 68px;
+  padding: var(--sp-4) var(--sp-5);
+  text-align: left;
+  font-size: 17px;
+  color: var(--text);
+  background: var(--surface);
+  border-radius: var(--r-lg);
+  box-shadow:
+    inset 0 0 0 1px var(--line),
+    0 1px 2px rgba(0, 0, 0, 0.4),
+    0 8px 24px -12px rgba(0, 0, 0, 0.7);
+  transition: background-color 200ms var(--ease), scale 130ms var(--ease), box-shadow 200ms var(--ease);
+}
+.state:hover { background: var(--surface-2); }
+.state:active { scale: 0.98; }
+
+.state .dot {
+  width: 8px; height: 8px; border-radius: 50%; flex: none;
+  background: var(--violet);
+  box-shadow: 0 0 0 5px var(--violet-soft);
+}
+.state .arrow { margin-left: auto; color: var(--text-3); width: 16px; height: 16px; }
+
+/* ── 버튼 ──────────────────────────────────────────────── */
+
+.btn {
+  display: flex; align-items: center; justify-content: center; gap: var(--sp-2);
+  width: 100%;
+  min-height: var(--tap);
+  padding: 0 var(--sp-5);
+  font-size: 16px; font-weight: 600;
+  border-radius: var(--r-md);
+  transition: background-color 180ms var(--ease), scale 130ms var(--ease), color 180ms var(--ease);
+}
+.btn:active { scale: 0.97; }
+
+.btn-primary { background: var(--accent); color: #17110A; }
+.btn-primary:hover { background: #EDC069; }
+
+.btn-quiet {
+  color: var(--text-2);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.btn-quiet:hover { color: var(--text); background: var(--line-soft); }
+
+.btn-ghost { color: var(--text-3); font-weight: 500; min-height: 44px; }
+.btn-ghost:hover { color: var(--text-2); }
+
+/* ── 칩 ────────────────────────────────────────────────── */
+
+.chips { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+
+.chip {
+  min-height: 48px;
+  padding: 0 var(--sp-4);
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 15px; color: var(--text-2);
+  border-radius: var(--r-md);
+  box-shadow: inset 0 0 0 1px var(--line);
+  transition: color 180ms var(--ease), background-color 180ms var(--ease),
+              box-shadow 180ms var(--ease), scale 130ms var(--ease);
+}
+.chip:active { scale: 0.96; }
+.chip[aria-pressed='true'] {
+  color: var(--accent);
+  background: var(--accent-soft);
+  box-shadow: inset 0 0 0 1px var(--accent-line);
+}
+
+/* ── 카드 / 섹션 ───────────────────────────────────────── */
+
+.card {
+  background: var(--surface);
+  border-radius: var(--r-xl);
+  padding: var(--sp-2);          /* 동심 반경: 28 = 20 + 8 */
+  box-shadow: inset 0 0 0 1px var(--line), 0 10px 30px -18px rgba(0, 0, 0, 0.9);
+}
+.card > .inner { border-radius: var(--r-lg); padding: var(--sp-4) var(--sp-5); }
+
+.section { margin-bottom: var(--sp-6); }
+
+/* ── 믹서 ──────────────────────────────────────────────── */
+
+.mix { display: flex; flex-direction: column; gap: var(--sp-1); }
+
+.mix-row {
+  display: grid;
+  grid-template-columns: 84px 1fr 40px;
+  align-items: center;
+  gap: var(--sp-3);
+  min-height: 52px;
+}
+.mix-row .name { font-size: 14px; color: var(--text-2); }
+.mix-row .val  { font-size: 13px; color: var(--text-3); text-align: right; }
+.mix-row.is-on .name { color: var(--text); }
+.mix-row.is-off { opacity: 0.38; }
+.mix-row.is-off .name::after {
+  content: '음원 없음';
+  display: block;
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+input[type='range'] {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 44px;               /* 히트 영역 */
+  background: transparent; margin: 0;
+}
+input[type='range']::-webkit-slider-runnable-track {
+  height: 4px; border-radius: 2px;
+  background: var(--line);
+}
+input[type='range']::-moz-range-track {
+  height: 4px; border-radius: 2px; background: var(--line);
+}
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 18px; height: 18px; margin-top: -7px;
+  border-radius: 50%; background: var(--text-2);
+  border: 0;
+  transition: background-color 180ms var(--ease), scale 130ms var(--ease);
+}
+input[type='range']::-moz-range-thumb {
+  width: 18px; height: 18px; border: 0; border-radius: 50%; background: var(--text-2);
+}
+.mix-row.is-on input[type='range']::-webkit-slider-thumb { background: var(--accent); scale: 1.1; }
+.mix-row.is-on input[type='range']::-moz-range-thumb { background: var(--accent); }
+input[type='range']:disabled { cursor: not-allowed; }
+
+/* ── 재생 화면 ─────────────────────────────────────────── */
+
+#s-play { justify-content: center; text-align: center; }
+
+.breath {
+  width: 168px; height: 168px;
+  margin: 0 auto var(--sp-7);
+  border-radius: 50%;
+  display: grid; place-items: center;
+  background: radial-gradient(circle, var(--violet-soft) 0%, transparent 68%);
+  box-shadow: inset 0 0 0 1px rgba(138, 120, 196, 0.24);
+  animation: breathe 12s ease-in-out infinite;
+}
+.breath span { font-size: 13px; color: var(--text-2); letter-spacing: 0.08em; }
+
+@keyframes breathe {
+  0%,   100% { transform: scale(0.86); }
+  33%        { transform: scale(1.06); }
+  50%        { transform: scale(1.06); }
+}
+
+.caption {
+  font-size: 18px; line-height: 1.85; color: var(--text);
+  min-height: 6em;
+  margin: 0 0 var(--sp-6);
+  transition: opacity 900ms var(--ease);
+}
+.caption.is-fading { opacity: 0; }
+
+.play-meta { font-size: 13px; color: var(--text-3); margin-bottom: var(--sp-5); }
+.play-controls { display: flex; gap: var(--sp-3); justify-content: center; }
+
+/* 나레이션이 끝나면 화면을 거의 끈다. 밤새 밝은 화면은 그 자체로 방해다. */
+#app.is-dim #scene { opacity: 0.42; }
+#app.is-dim .caption,
+#app.is-dim .breath { opacity: 0.22; }
+#app.is-dim .play-controls,
+#app.is-dim .play-meta { opacity: 0.3; }
+#app.is-dim .caption,
+#app.is-dim .breath,
+#app.is-dim .play-controls,
+#app.is-dim .play-meta { transition: opacity 3s var(--ease); }
+
+/* ── 알람 ──────────────────────────────────────────────── */
+
+#s-alarm { justify-content: center; text-align: center; }
+.wake-time { font-size: 64px; font-weight: 300; letter-spacing: -0.03em; line-height: 1.1; margin-bottom: var(--sp-2); }
+
+/* ── 리포트 ────────────────────────────────────────────── */
+
+.stat { display: flex; align-items: baseline; gap: var(--sp-3); }
+.stat .big { font-size: 40px; font-weight: 500; letter-spacing: -0.02em; }
+.stat .unit { font-size: 15px; color: var(--text-2); }
+
+.debt-bar {
+  height: 6px; border-radius: 3px; margin-top: var(--sp-3);
+  background: var(--line); overflow: hidden;
+}
+.debt-bar > i {
+  display: block; height: 100%; border-radius: 3px;
+  background: linear-gradient(90deg, var(--violet), var(--accent));
+  transition: width 700ms var(--ease);
+}
+
+.chart {
+  display: grid;
+  grid-template-columns: repeat(14, 1fr);
+  align-items: end;
+  gap: 3px;
+  height: 108px;
+  margin-top: var(--sp-3);
+}
+.chart .col { display: flex; flex-direction: column; justify-content: flex-end; height: 100%; gap: 2px; }
+.chart .bar { border-radius: 2px; min-height: 2px; }
+.chart .bar.night { background: var(--violet); }
+.chart .bar.nap   { background: var(--accent); }
+.chart .col.empty { background: var(--line-soft); border-radius: 2px; height: 3px; align-self: end; }
+
+.legend { display: flex; gap: var(--sp-4); font-size: 12px; color: var(--text-3); margin-top: var(--sp-3); }
+.legend i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 6px; }
+
+.field { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-4); min-height: 52px; }
+.field label { font-size: 15px; color: var(--text-2); }
+.field .stepper { display: flex; align-items: center; gap: var(--sp-1); }
+.field .stepper .v { min-width: 68px; text-align: center; font-size: 15px; }
+.step {
+  width: 44px; height: 44px; display: grid; place-items: center;
+  border-radius: var(--r-sm); color: var(--text-2);
+  box-shadow: inset 0 0 0 1px var(--line);
+  transition: color 160ms var(--ease), background-color 160ms var(--ease), scale 120ms var(--ease);
+}
+.step:hover { color: var(--text); background: var(--line-soft); }
+.step:active { scale: 0.94; }
+
+.divider { height: 1px; background: var(--line-soft); margin: var(--sp-4) 0; }
+
+.rows { display: flex; flex-direction: column; }
+.row {
+  display: flex; align-items: center; gap: var(--sp-3);
+  min-height: 52px; font-size: 15px; color: var(--text-2);
+}
+.row .when { margin-left: auto; color: var(--text-3); font-size: 13px; }
+.empty-note { font-size: 14px; color: var(--text-3); padding: var(--sp-4) 0; }
+
+.spacer { flex: 1; min-height: var(--sp-6); }
+.foot { display: flex; gap: var(--sp-2); margin-top: var(--sp-5); }
+
+.note {
+  font-size: 13px; line-height: 1.65; color: var(--text-3);
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--r-md);
+  box-shadow: inset 0 0 0 1px var(--line-soft);
+  background: rgba(233, 227, 220, 0.02);
+}
+
+/* ── 접근성 ────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .breath { transform: scale(0.96); }
+}
