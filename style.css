@@ -243,7 +243,12 @@ main {
 
 /* ── 직접 입력 (수면 시간 / 낮잠 길이) ─────────────────── */
 
-.custom { margin-top: var(--sp-3); }
+.wake-row #wake-input {
+  min-width: 96px;
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
 
 .custom-row {
   display: flex; align-items: center; justify-content: space-between; gap: var(--sp-4);
@@ -278,14 +283,22 @@ main {
   grid-auto-columns: 148px;
   gap: var(--sp-3);
   overflow-x: auto;
-  scroll-snap-type: x mandatory;
+  /* proximity 여야 한다. mandatory 는 살짝 미는 스와이프를 원위치로 튕겨서
+     "스크롤이 안 된다"고 느껴진다. 카드가 148px 로 좁아서 특히 심했다. */
+  scroll-snap-type: x proximity;
+  scroll-padding-left: var(--sp-5);
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
   scrollbar-width: none;
   /* 셸 패딩 밖으로 흘려보내 카드가 화면 끝까지 이어지게 한다 */
   margin: 0 calc(var(--sp-5) * -1);
   padding: var(--sp-1) var(--sp-5) var(--sp-3);
+  /* 오른쪽 끝을 흐려 더 있다는 것을 알린다 */
+  -webkit-mask-image: linear-gradient(90deg, #000 0 88%, transparent 100%);
+  mask-image: linear-gradient(90deg, #000 0 88%, transparent 100%);
 }
 .rail::-webkit-scrollbar { display: none; }
+.rail.is-end { -webkit-mask-image: none; mask-image: none; }
 
 .preset {
   scroll-snap-align: start;

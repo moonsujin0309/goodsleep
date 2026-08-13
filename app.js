@@ -49,7 +49,7 @@ const watcher = createAlarmWatcher(fireAlarm);
 let narration = null;
 let manifest = null;
 let session = null;         // { stateId, hours, isNap, bedAt, alarmAt }
-let draft = { stateId: null, mode: null, hours: 8, napMinutes: 30, custom: false, customMin: 480 };
+let draft = { stateId: null, mode: null, wakeAt: 0, napMinutes: 30, custom: false, customMin: 30 };
 let napFormMinutes = 30;
 let dimTimer = null;
 let breathTimer = null;
@@ -87,16 +87,34 @@ function renderStates() {
 
 // ── 준비 ──────────────────────────────────────────────────
 
-// 밤과 낮잠이 같은 화면·같은 컨트롤을 쓴다. 다른 건 프리셋 값과 단위뿐이다.
+// 밤과 낮잠이 같은 화면을 쓰지만 고르는 방식이 다르다.
+//   밤   — 일어날 시각만 고른다 (30분 단위). 몇 시간 잘지는 계산해서 보여준다.
+//   낮잠 — 길이로 고른다. 낮잠은 "몇 시에"가 아니라 "몇 분"이 자연스럽다.
 const DURATION = {
-  night: { presets: [5, 6, 7, 8, 9], unit: '시간', head: '몇 시간 잘까요?', min: 30, max: 720 },
-  nap:   { presets: [20, 30, 45, 60], unit: '분',  head: '얼마나 잘까요?',   min: 5,  max: 240 },
+  night: { unit: '시간', head: '몇 시에 일어날까요?', min: 30, max: 900 },
+  nap:   { presets: [20, 30, 45, 60], unit: '분', head: '얼마나 잘까요?', min: 5, max: 240 },
 };
 
 const durMode = () => (manifest.states[draft.stateId]?.night === false ? 'nap' : 'night');
-/** 선택한 길이를 분으로. 밤 프리셋은 시간 단위라 60을 곱한다. */
-const draftMinutes = () => draft.custom ? draft.customMin
-  : durMode() === 'night' ? draft.hours * 60 : draft.napMinutes;
+
+// 밤은 절대 시각(wakeAt)으로 들고 있는다. 길이(분)로 저장하면 1초가 지날 때마다
+// 표시 시각이 뒤로 밀려 09:00 이 08:59 가 된다 — 사용자가 고른 건 시각이지 길이가 아니다.
+const draftMinutes = () => durMode() === 'night'
+  ? Math.max(1, Math.round((draft.wakeAt - Date.now()) / 60000))
+  : draft.custom ? draft.customMin : draft.napMinutes;
+
+/** 30분 단위로 맞춘 기상 시각. 지금이 01:05 이고 8시간이면 09:00 이 된다. */
+function roundedWakeAt(fromNowMin = 480) {
+  const at = new Date(Date.now() + fromNowMin * 60000);
+  at.setSeconds(0, 0);
+  at.setMinutes(Math.round(at.getMinutes() / 30) * 30);
+  return at.getTime();
+}
+
+function wakeInputValue() {
+  const at = new Date(draft.wakeAt);
+  return `${String(at.getHours()).padStart(2, '0')}:${String(at.getMinutes()).padStart(2, '0')}`;
+}
 
 function openPrepare(stateId) {
   draft.stateId = stateId;
@@ -109,8 +127,10 @@ function openPrepare(stateId) {
   if (mode !== draft.mode) {
     draft.mode = mode;
     draft.custom = false;
-    draft.customMin = mode === 'night' ? draft.hours * 60 : draft.napMinutes;
+    draft.customMin = draft.napMinutes;
   }
+  // 밤에 들어올 때마다 지금 시각 기준으로 다시 잡는다 — 어제 열어둔 값이 남아 있으면 안 된다.
+  if (mode === 'night') draft.wakeAt = roundedWakeAt(store.settings.needHours * 60);
 
   // 자다 깬 경우는 알람을 다시 잡지 않는다. 새벽 3시에 깬 사람의 알람을 날려먹으면 안 된다.
   const resuming = stateId === 'awoken' && store.pending;
@@ -128,25 +148,26 @@ function openPrepare(stateId) {
 }
 
 function renderDurationChips() {
-  const cfg = DURATION[durMode()];
+  const isNight = durMode() === 'night';
+  $('#custom-time-row').hidden = !isNight;
+  $('#nap-duration').hidden = isNight;
+
+  if (isNight) {
+    $('#wake-input').value = wakeInputValue();
+    return;
+  }
+
+  const cfg = DURATION.nap;
   const box = $('#hours-chips');
   box.innerHTML = '';
-
   for (const v of cfg.presets) {
     const b = document.createElement('button');
     b.className = 'chip';
     b.textContent = `${v}${cfg.unit}`;
-    const on = !draft.custom
-      && (durMode() === 'night' ? draft.hours === v : draft.napMinutes === v);
-    b.setAttribute('aria-pressed', String(on));
-    b.addEventListener('click', () => {
-      draft.custom = false;
-      if (durMode() === 'night') draft.hours = v; else draft.napMinutes = v;
-      syncDuration();
-    });
+    b.setAttribute('aria-pressed', String(!draft.custom && draft.napMinutes === v));
+    b.addEventListener('click', () => { draft.custom = false; draft.napMinutes = v; syncDuration(); });
     box.appendChild(b);
   }
-
   const custom = document.createElement('button');
   custom.className = 'chip';
   custom.textContent = '직접';
@@ -158,19 +179,8 @@ function renderDurationChips() {
   });
   box.appendChild(custom);
 
-  // 밤은 "몇 시에 일어날지"가 자연스럽고, 낮잠은 "몇 분"이 자연스럽다.
-  const isNight = durMode() === 'night';
-  $('#custom-duration').hidden = !draft.custom;
-  $('#custom-time-row').hidden = !isNight;
-  $('#custom-min-row').hidden = isNight;
-  if (draft.custom) {
-    if (isNight) {
-      const at = new Date(Date.now() + draft.customMin * 60000);
-      $('#wake-input').value = `${String(at.getHours()).padStart(2, '0')}:${String(at.getMinutes()).padStart(2, '0')}`;
-    } else {
-      $('#minutes-input').value = draft.customMin;
-    }
-  }
+  $('#custom-min-row').hidden = !draft.custom;
+  if (draft.custom) $('#minutes-input').value = draft.customMin;
 }
 
 function syncDuration() {
@@ -178,16 +188,26 @@ function syncDuration() {
   updateWakeLabel();
 }
 
-// 일어날 시각 → 길이. 이미 지난 시각이면 다음 날로 넘긴다 (자정을 넘겨 자는 게 정상이다).
+/** 고른 시각이 이미 지났으면 다음 날이다 — 자정을 넘겨 자는 게 정상이다. */
 $('#wake-input').addEventListener('change', (e) => {
   const [h, m] = e.target.value.split(':').map(Number);
   if (Number.isNaN(h)) return;
   const at = new Date();
   at.setHours(h, m, 0, 0);
   if (at.getTime() <= Date.now() + 60000) at.setDate(at.getDate() + 1);
-  draft.customMin = Math.round((at.getTime() - Date.now()) / 60000);
+  draft.wakeAt = at.getTime();
   updateWakeLabel();
 });
+
+$$('[data-wake-step]').forEach((b) => b.addEventListener('click', () => {
+  const { min, max } = DURATION.night;
+  const next = draft.wakeAt + Number(b.dataset.wakeStep) * 60000;
+  const from = Math.round((next - Date.now()) / 60000);
+  if (from < min || from > max) return;      // 30분 미만이나 15시간 초과로는 못 간다
+  draft.wakeAt = next;
+  $('#wake-input').value = wakeInputValue();
+  updateWakeLabel();
+}));
 
 const clampMin = (v) => {
   const cfg = DURATION[durMode()];

@@ -67,13 +67,20 @@
         <p class="sub" id="prep-wake">—</p>
 
         <div class="section" id="duration-block">
-          <div class="chips" id="hours-chips" role="group" aria-label="수면 시간"></div>
-          <div class="custom" id="custom-duration" hidden>
-            <label class="custom-row" id="custom-time-row">
-              <span>일어날 시각</span>
-              <input type="time" id="wake-input" step="300">
-            </label>
-            <label class="custom-row" id="custom-min-row" hidden>
+          <!-- 밤: 일어날 시각만 고른다. 몇 시간 잘지는 자동으로 계산된다. -->
+          <div class="custom-row wake-row" id="custom-time-row">
+            <span>일어날 시각</span>
+            <span class="stepper">
+              <button class="step" data-wake-step="-30" type="button" aria-label="30분 앞당기기"><svg class="icon"><use href="#i-minus"/></svg></button>
+              <input type="time" id="wake-input" step="1800" aria-label="일어날 시각">
+              <button class="step" data-wake-step="30" type="button" aria-label="30분 미루기"><svg class="icon"><use href="#i-plus"/></svg></button>
+            </span>
+          </div>
+
+          <!-- 낮잠: 길이로 고른다 -->
+          <div id="nap-duration" hidden>
+            <div class="chips" id="hours-chips" role="group" aria-label="낮잠 길이"></div>
+            <label class="custom-row" id="custom-min-row" style="margin-top:var(--sp-3)" hidden>
               <span>얼마나</span>
               <span class="stepper">
                 <button class="step" data-dur-step="-5" type="button" aria-label="5분 줄이기"><svg class="icon"><use href="#i-minus"/></svg></button>

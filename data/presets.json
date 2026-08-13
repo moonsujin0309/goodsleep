@@ -1,7 +1,17 @@
 {
   "_읽는이에게": "사운드 프리셋. mix 의 키는 sounds.json 의 레이어 id, 값은 0~1 볼륨이다. art 는 카드 그림을 만드는 값 — from/to 는 배경 그라데이션, glow 는 빛 색, motif 는 style.css 의 .art-<motif> 클래스를 고른다. 카드를 추가하려면 여기에 항목만 넣으면 된다.",
 
+  "_기본": "첫 항목이 처음 열었을 때 자동으로 적용된다.",
+
   "presets": [
+    {
+      "id": "night-sea",
+      "label": "밤바다",
+      "note": "멀리서 밀려왔다 물러가는",
+      "scene": "waves",
+      "mix": { "waves": 0.6, "wind": 0.24 },
+      "art": { "from": "#132133", "to": "#070C14", "glow": "#5B8CA8", "motif": "waves" }
+    },
     {
       "id": "rainy-window",
       "label": "창밖에 비",
@@ -17,14 +27,6 @@
       "scene": "rain",
       "mix": { "rain": 0.85, "brown": 0.34 },
       "art": { "from": "#141C2A", "to": "#070A0F", "glow": "#4E6E96", "motif": "rain" }
-    },
-    {
-      "id": "night-sea",
-      "label": "밤바다",
-      "note": "멀리서 밀려왔다 물러가는",
-      "scene": "waves",
-      "mix": { "waves": 0.6, "wind": 0.24 },
-      "art": { "from": "#132133", "to": "#070C14", "glow": "#5B8CA8", "motif": "waves" }
     },
     {
       "id": "hearth",
