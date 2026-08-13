@@ -1,5 +1,5 @@
 // 화면 전환 · 전역 상태 · 저장
-import { Mixer, NarrationPlayer, createAlarm, setMediaSession } from './audio.js';
+import { Mixer, NarrationPlayer, createAlarm, setMediaSession, koreanVoices, splitSentences } from './audio.js';
 import { loadManifest, buildSequence } from './narration.js';
 import { SceneRenderer, sceneList } from './scenes.js';
 import {
@@ -23,7 +23,12 @@ const load = (k, fallback) => {
 const save = (k, v) => localStorage.setItem(`${KEY}.${k}`, JSON.stringify(v));
 
 const store = {
-  settings: { ...DEFAULTS, gapSeconds: 6, narrationVolume: 0.9, ...load('settings', {}) },
+  settings: {
+    ...DEFAULTS,
+    gapSeconds: 6, sentenceGap: 2.4, narrationVolume: 0.9,
+    voiceURI: null, voiceRate: 0.72, voicePitch: 0.9,
+    ...load('settings', {}),
+  },
   nights: load('nights', []),
   naps: load('naps', []),
   history: load('history', {}),
@@ -52,7 +57,6 @@ let breathTimer = null;
 function go(name) {
   $$('.screen').forEach((s) => s.classList.toggle('is-active', s.id === `s-${name}`));
   if (name === 'report') renderReport();
-  if (name === 'day') { $('#nap-length').hidden = true; }
   window.scrollTo(0, 0);
 }
 
@@ -376,10 +380,7 @@ function playNarration(state) {
   save('history', nextHistory);
 
   narration?.stop();
-  narration = new NarrationPlayer({
-    gapSeconds: store.settings.gapSeconds,
-    volume: store.settings.narrationVolume,
-  });
+  narration = new NarrationPlayer(voiceOpts());
   mixer.duck(true);
 
   const caption = $('#play-caption');
@@ -504,6 +505,7 @@ function renderReport() {
 
   renderChart(dailySeries(store.nights, store.naps, Date.now(), s.windowDays, s.sleepOnsetMin));
   renderNapList();
+  renderVoiceSettings();
   $('#need-h').textContent = fmtHours(s.needHours);
   $('#onset-m').textContent = `${s.sleepOnsetMin}분`;
   $('#nap-min').textContent = `${napFormMinutes}분`;
@@ -561,6 +563,81 @@ $('#nap-add').addEventListener('click', () => {
   renderReport();
 });
 
+// ── 목소리 ────────────────────────────────────────────────
+// 기기마다 쓸 수 있는 음성이 완전히 다르다. 어느 게 나은지는 기기에서 들어봐야 안다.
+
+const voiceOpts = () => ({
+  gapSeconds: store.settings.gapSeconds,
+  sentenceGap: store.settings.sentenceGap,
+  volume: store.settings.narrationVolume,
+  voiceURI: store.settings.voiceURI,
+  rate: store.settings.voiceRate,
+  pitch: store.settings.voicePitch,
+});
+
+function renderVoiceSettings() {
+  const s = store.settings;
+  const sel = $('#voice-select');
+  const voices = koreanVoices();
+
+  sel.innerHTML = '';
+  // 한국어 음성이 없으면 영어 음성이 한글을 읽어 소리가 뭉개진다. 조용히 두면 안 된다.
+  $('#voice-warning').hidden = voices.length > 0;
+  if (!voices.length) {
+    sel.innerHTML = '<option>한국어 음성 없음</option>';
+    sel.disabled = true;
+  } else {
+    sel.disabled = false;
+    for (const v of voices) {
+      const o = document.createElement('option');
+      o.value = v.voiceURI;
+      o.textContent = v.name;
+      o.selected = v.voiceURI === s.voiceURI;
+      sel.appendChild(o);
+    }
+    if (!voices.some((v) => v.voiceURI === s.voiceURI)) sel.selectedIndex = 0;
+  }
+
+  $('#voice-rate').value = Math.round(s.voiceRate * 100);
+  $('#voice-pitch').value = Math.round(s.voicePitch * 100);
+  $('#voice-rate-v').textContent = `${Math.round(s.voiceRate * 100)}%`;
+  $('#voice-pitch-v').textContent = s.voicePitch.toFixed(2);
+  $('#sentence-gap').textContent = `${s.sentenceGap.toFixed(1)}초`;
+}
+
+$('#voice-select').addEventListener('change', (e) => {
+  store.settings.voiceURI = e.target.value;
+  save('settings', store.settings);
+});
+$('#voice-rate').addEventListener('input', (e) => {
+  store.settings.voiceRate = e.target.value / 100;
+  $('#voice-rate-v').textContent = `${e.target.value}%`;
+  save('settings', store.settings);
+});
+$('#voice-pitch').addEventListener('input', (e) => {
+  store.settings.voicePitch = e.target.value / 100;
+  $('#voice-pitch-v').textContent = store.settings.voicePitch.toFixed(2);
+  save('settings', store.settings);
+});
+$$('[data-gap-step]').forEach((b) => b.addEventListener('click', () => {
+  const [key, delta] = b.dataset.gapStep.split(':');
+  store.settings[key] = Math.max(0, Math.min(10, +(store.settings[key] + Number(delta)).toFixed(1)));
+  save('settings', store.settings);
+  $('#sentence-gap').textContent = `${store.settings.sentenceGap.toFixed(1)}초`;
+}));
+
+// 두 문장짜리 견본. 문장 사이 침묵이 실제로 어떻게 들리는지 확인하려면 한 문장으로는 안 된다.
+$('#voice-test').addEventListener('click', () => {
+  const btn = $('#voice-test');
+  if (narration) { narration.stop(); narration = null; btn.textContent = '들어보기'; return; }
+  narration = new NarrationPlayer(voiceOpts());
+  btn.textContent = '멈추기';
+  narration.play(
+    [{ id: 't', text: '눈을 감아 보세요. 오늘은 여기까지입니다. 아무것도 하지 않아도 됩니다.' }],
+    { onEnd: () => { narration = null; btn.textContent = '들어보기'; } },
+  );
+});
+
 $$('[data-set-step]').forEach((b) => b.addEventListener('click', () => {
   const [key, delta] = b.dataset.setStep.split(':');
   const bounds = { needHours: [4, 12], sleepOnsetMin: [0, 90] }[key];
@@ -595,6 +672,11 @@ async function init() {
   tickClock();
   setInterval(tickClock, 20000);
   scenes.set(store.scene);
+
+  // 음성 목록은 비동기로 채워진다 — 처음엔 빈 배열이 돌아온다
+  if ('speechSynthesis' in window) {
+    speechSynthesis.addEventListener('voiceschanged', renderVoiceSettings);
+  }
 
   // 앱이 죽었다 살아났는데 알람 시각이 남아 있으면 이어받는다.
   if (store.pending) {

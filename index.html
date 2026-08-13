@@ -204,6 +204,49 @@
             </p>
           </div></div>
         </div>
+
+        <div class="section">
+          <p class="eyebrow">목소리</p>
+          <div class="card"><div class="inner">
+            <div class="field">
+              <label for="voice-select">음성</label>
+              <select id="voice-select"></select>
+            </div>
+            <div class="divider"></div>
+            <div class="field">
+              <label for="voice-rate">속도</label>
+              <span class="stepper">
+                <input type="range" id="voice-rate" min="50" max="100" step="2" aria-label="말하기 속도">
+                <span class="v num" id="voice-rate-v"></span>
+              </span>
+            </div>
+            <div class="field">
+              <label for="voice-pitch">톤</label>
+              <span class="stepper">
+                <input type="range" id="voice-pitch" min="60" max="120" step="2" aria-label="목소리 톤">
+                <span class="v num" id="voice-pitch-v"></span>
+              </span>
+            </div>
+            <div class="field">
+              <label for="sentence-gap">문장 사이 침묵</label>
+              <div class="stepper">
+                <button class="step" data-gap-step="sentenceGap:-0.4" aria-label="줄이기"><svg class="icon"><use href="#i-minus"/></svg></button>
+                <span class="v num" id="sentence-gap">2.4초</span>
+                <button class="step" data-gap-step="sentenceGap:0.4" aria-label="늘리기"><svg class="icon"><use href="#i-plus"/></svg></button>
+              </div>
+            </div>
+            <div class="divider"></div>
+            <button class="btn btn-quiet" id="voice-test">들어보기</button>
+            <p class="note warn" id="voice-warning" style="margin-top:var(--sp-3)" hidden>
+              이 기기에 한국어 음성이 없습니다. 영어 음성이 한글을 읽어 소리가 뭉개집니다.
+              폰(안드로이드·아이폰)에는 기본으로 들어 있으니 폰에서 열어 보세요.
+            </p>
+            <p class="note" style="margin-top:var(--sp-3)">
+              음성 목록은 기기마다 다릅니다. 보통 폰이 PC보다 훨씬 자연스러우니
+              듣기 싫다면 폰에서 다시 골라 보세요.
+            </p>
+          </div></div>
+        </div>
       </div>
     </section>
 

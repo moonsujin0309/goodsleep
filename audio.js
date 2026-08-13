@@ -334,14 +334,41 @@ export class Mixer {
 // ── 나레이션 재생 ─────────────────────────────────────────
 
 /**
+ * 문장을 나눈다.
+ *
+ * 이게 수면 나레이션의 핵심이다. TTS 모델은 대화용으로 최적화돼 있어서
+ * 문장 사이 긴 침묵을 오류로 보고 자동으로 줄인다. 한 덩어리로 읽히면
+ * 수면 유도가 아니라 오디오북이 된다.
+ * 그래서 문장 단위로 끊어 읽히고 침묵은 우리가 직접 넣는다.
+ * 어떤 엔진을 쓰든 이 방식이면 침묵이 정확히 원하는 길이로 들어간다.
+ */
+export function splitSentences(text) {
+  if (!text) return [];
+  return text
+    .split(/(?<=[.!?。])\s+/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+/** 기기에 있는 한국어 음성 목록. 기기마다 크게 다르다. */
+export function koreanVoices() {
+  if (!('speechSynthesis' in window)) return [];
+  return speechSynthesis.getVoices().filter((v) => v.lang?.toLowerCase().startsWith('ko'));
+}
+
+/**
  * 조각을 순서대로 재생하고 사이에 침묵을 둔다.
- * file 이 있으면 오디오, 없으면 브라우저 내장 TTS 로 읽는다.
+ * files 가 있으면 문장별 오디오, file 이면 통 오디오, 없으면 브라우저 내장 TTS.
  * TTS 는 오디오 파일이 채워지기 전까지의 임시 경로다 — 백그라운드 재생은 안 된다.
  */
 export class NarrationPlayer {
-  constructor({ gapSeconds = 6, volume = 0.9 } = {}) {
+  constructor({ gapSeconds = 6, sentenceGap = 2.4, volume = 0.9, voiceURI = null, rate = 0.72, pitch = 0.9 } = {}) {
     this.gapSeconds = gapSeconds;
+    this.sentenceGap = sentenceGap;
     this.volume = volume;
+    this.voiceURI = voiceURI;
+    this.rate = rate;
+    this.pitch = pitch;
     this.el = new Audio();
     this.el.preload = 'auto';
     this.stopped = false;
@@ -364,23 +391,45 @@ export class NarrationPlayer {
     return new Promise((r) => { this._timer = setTimeout(r, ms); });
   }
 
-  _speak(piece) {
-    if (piece.file) {
-      return new Promise((resolve) => {
-        const el = this.el;
-        el.src = piece.file;
-        el.volume = this.volume;
-        const done = () => { cleanup(); resolve(); };
-        const cleanup = () => {
-          el.removeEventListener('ended', done);
-          el.removeEventListener('error', done);
-        };
-        el.addEventListener('ended', done);
-        el.addEventListener('error', done);
-        el.play().catch(done);
-      });
+  /**
+   * 조각 하나 = 문장 여러 개. 문장 사이에 짧은 침묵을 둔다.
+   *
+   * 침묵 길이는 방금 읽은 문장 길이에 비례한다. "걱정. 계획. 후회." 같은
+   * 한 단어짜리 열거 뒤에 온전한 2.4초를 넣으면 리듬이 끊긴다 —
+   * 짧은 것 뒤엔 한 박자, 긴 문장 뒤엔 한 호흡.
+   */
+  async _speak(piece) {
+    const useFiles = !!(piece.files?.length || piece.file);
+    const parts = piece.files?.length ? piece.files
+      : piece.file ? [piece.file]
+      : splitSentences(piece.text);
+
+    for (let i = 0; i < parts.length; i++) {
+      if (this.stopped) return;
+      await (useFiles ? this._file(parts[i]) : this._tts(parts[i]));
+      if (this.stopped) return;
+      if (i < parts.length - 1) {
+        const len = useFiles ? 30 : parts[i].length;
+        const scale = Math.min(1, Math.max(0.35, len / 24));
+        await this._wait(this.sentenceGap * scale * 1000);
+      }
     }
-    return this._tts(piece.text);
+  }
+
+  _file(src) {
+    return new Promise((resolve) => {
+      const el = this.el;
+      el.src = src;
+      el.volume = this.volume;
+      const done = () => {
+        el.removeEventListener('ended', done);
+        el.removeEventListener('error', done);
+        resolve();
+      };
+      el.addEventListener('ended', done);
+      el.addEventListener('error', done);
+      el.play().catch(done);
+    });
   }
 
   _tts(text) {
@@ -388,11 +437,12 @@ export class NarrationPlayer {
       if (!text || !('speechSynthesis' in window)) return resolve();
       const u = new SpeechSynthesisUtterance(text);
       u.lang = 'ko-KR';
-      u.rate = 0.78;   // 수면 나레이션은 느리게
-      u.pitch = 0.92;
+      u.rate = this.rate;     // 수면 나레이션은 느리게
+      u.pitch = this.pitch;
       u.volume = this.volume;
-      const ko = speechSynthesis.getVoices().find((v) => v.lang?.startsWith('ko'));
-      if (ko) u.voice = ko;
+      const voices = koreanVoices();
+      const picked = voices.find((v) => v.voiceURI === this.voiceURI) || voices[0];
+      if (picked) u.voice = picked;
       u.onend = () => resolve();
       u.onerror = () => resolve();
       speechSynthesis.cancel();
