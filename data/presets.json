@@ -1,0 +1,86 @@
+{
+  "_읽는이에게": "사운드 프리셋. mix 의 키는 sounds.json 의 레이어 id, 값은 0~1 볼륨이다. art 는 카드 그림을 만드는 값 — from/to 는 배경 그라데이션, glow 는 빛 색, motif 는 style.css 의 .art-<motif> 클래스를 고른다. 카드를 추가하려면 여기에 항목만 넣으면 된다.",
+
+  "presets": [
+    {
+      "id": "rainy-window",
+      "label": "창밖에 비",
+      "note": "유리에 맺혔다 흘러내리는",
+      "scene": "rain",
+      "mix": { "rain": 0.55, "brown": 0.22 },
+      "art": { "from": "#1C2637", "to": "#0B0F17", "glow": "#6E90BC", "motif": "rain" }
+    },
+    {
+      "id": "downpour",
+      "label": "쏟아지는 비",
+      "note": "아무 소리도 들리지 않게",
+      "scene": "rain",
+      "mix": { "rain": 0.85, "brown": 0.34 },
+      "art": { "from": "#141C2A", "to": "#070A0F", "glow": "#4E6E96", "motif": "rain" }
+    },
+    {
+      "id": "night-sea",
+      "label": "밤바다",
+      "note": "멀리서 밀려왔다 물러가는",
+      "scene": "waves",
+      "mix": { "waves": 0.6, "wind": 0.24 },
+      "art": { "from": "#132133", "to": "#070C14", "glow": "#5B8CA8", "motif": "waves" }
+    },
+    {
+      "id": "hearth",
+      "label": "장작 난로",
+      "note": "이따금 탁 하고 튀는",
+      "scene": "fire",
+      "mix": { "fire": 0.62, "wind": 0.14 },
+      "art": { "from": "#2A1A10", "to": "#0E0806", "glow": "#E08B42", "motif": "fire" }
+    },
+    {
+      "id": "summer-yard",
+      "label": "여름밤 마당",
+      "note": "풀벌레가 우는 평상",
+      "scene": "stars",
+      "mix": { "crickets": 0.45, "wind": 0.2 },
+      "art": { "from": "#17231C", "to": "#080C0A", "glow": "#7FA46A", "motif": "stars" }
+    },
+    {
+      "id": "valley",
+      "label": "깊은 계곡",
+      "note": "돌 사이로 흐르는 물",
+      "scene": "waves",
+      "mix": { "stream": 0.55, "crickets": 0.18 },
+      "art": { "from": "#13232A", "to": "#070E11", "glow": "#5FA0A6", "motif": "stream" }
+    },
+    {
+      "id": "empty-dawn",
+      "label": "텅 빈 새벽",
+      "note": "아무것도 없는 낮은 웅웅",
+      "scene": "stars",
+      "mix": { "brown": 0.42 },
+      "art": { "from": "#1A1826", "to": "#08070D", "glow": "#8377B8", "motif": "plain" }
+    },
+    {
+      "id": "old-fan",
+      "label": "오래된 선풍기",
+      "note": "여름밤 머리맡에서 돌던",
+      "scene": "stars",
+      "mix": { "fan": 0.55, "white": 0.1 },
+      "art": { "from": "#22202C", "to": "#0A090E", "glow": "#9C93B6", "motif": "fan" }
+    },
+    {
+      "id": "snowfall",
+      "label": "눈 내리는 밤",
+      "note": "소리를 전부 삼킨 바깥",
+      "scene": "stars",
+      "mix": { "wind": 0.34, "pink": 0.17 },
+      "art": { "from": "#1E2531", "to": "#090C11", "glow": "#A9BDD4", "motif": "snow" }
+    },
+    {
+      "id": "rainy-library",
+      "label": "비 오는 도서관",
+      "note": "종이 넘기는 소리만 없는",
+      "scene": "rain",
+      "mix": { "rain": 0.3, "brown": 0.2, "fan": 0.14 },
+      "art": { "from": "#26201A", "to": "#0C0908", "glow": "#C3A278", "motif": "plain" }
+    }
+  ]
+}

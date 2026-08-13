@@ -241,6 +241,159 @@ main {
   box-shadow: inset 0 0 0 1px var(--accent-line);
 }
 
+/* ── 직접 입력 (수면 시간 / 낮잠 길이) ─────────────────── */
+
+.custom { margin-top: var(--sp-3); }
+
+.custom-row {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--sp-4);
+  min-height: var(--tap);
+  padding: 0 var(--sp-4);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line);
+  font-size: 15px; color: var(--text-2);
+}
+
+/* 네이티브 시간 선택기를 그대로 쓴다 — 모바일에서 OS 휠이 뜬다 */
+.custom-row input[type='time'],
+.custom-row input[type='number'] {
+  background: none; border: 0; padding: 0;
+  color: var(--text); font-size: 17px;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  min-height: 44px;
+}
+.custom-row input[type='time'] { min-width: 116px; }
+.custom-row input[type='number'] { width: 62px; text-align: center; -moz-appearance: textfield; }
+.custom-row input[type='number']::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.custom-row input::-webkit-calendar-picker-indicator { filter: invert(0.7); cursor: pointer; }
+.custom-row .stepper { display: flex; align-items: center; gap: var(--sp-1); }
+
+/* ── 사운드 프리셋 카드 ────────────────────────────────── */
+
+.rail {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 148px;
+  gap: var(--sp-3);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  /* 셸 패딩 밖으로 흘려보내 카드가 화면 끝까지 이어지게 한다 */
+  margin: 0 calc(var(--sp-5) * -1);
+  padding: var(--sp-1) var(--sp-5) var(--sp-3);
+}
+.rail::-webkit-scrollbar { display: none; }
+
+.preset {
+  scroll-snap-align: start;
+  display: flex; flex-direction: column;
+  padding: 0;
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  text-align: left;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line), 0 8px 22px -14px rgba(0, 0, 0, 0.9);
+  transition: box-shadow 220ms var(--ease), scale 130ms var(--ease);
+}
+.preset:active { scale: 0.97; }
+.preset[aria-pressed='true'] {
+  box-shadow: inset 0 0 0 1.5px var(--accent-line), 0 0 0 3px var(--accent-soft),
+              0 8px 22px -14px rgba(0, 0, 0, 0.9);
+}
+
+.preset .art {
+  position: relative;
+  height: 92px;
+  background: linear-gradient(160deg, var(--from), var(--to));
+  overflow: hidden;
+}
+.preset .art::before,
+.preset .art::after { content: ''; position: absolute; inset: 0; }
+
+/* 빛무리 — 모든 카드 공통 */
+.preset .art::before {
+  background: radial-gradient(60% 55% at 72% 18%, var(--glow), transparent 70%);
+  opacity: 0.5;
+}
+
+.preset .body { padding: var(--sp-3) var(--sp-3) var(--sp-4); }
+.preset .name { display: block; font-size: 15px; font-weight: 600; color: var(--text); }
+.preset .note {
+  display: block; margin-top: 2px;
+  font-size: 12px; line-height: 1.5; color: var(--text-3);
+  background: none; padding: 0; box-shadow: none; border-radius: 0;
+}
+.preset[aria-pressed='true'] .name { color: var(--accent); }
+
+/* 카드 그림 — 이미지 파일 없이 CSS 로만 그린다 */
+.art-rain::after {
+  background: repeating-linear-gradient(74deg,
+    transparent 0 7px, rgba(216, 232, 255, 0.22) 7px 8px);
+  opacity: 0.55;
+}
+.art-waves::after {
+  background:
+    radial-gradient(120% 42% at 50% 108%, rgba(190, 225, 245, 0.30), transparent 60%),
+    radial-gradient(120% 34% at 50% 128%, rgba(190, 225, 245, 0.24), transparent 60%),
+    radial-gradient(120% 26% at 50% 146%, rgba(190, 225, 245, 0.18), transparent 60%);
+}
+.art-fire::after {
+  background: radial-gradient(58% 46% at 50% 104%, rgba(255, 186, 92, 0.62), transparent 66%);
+}
+.art-stars::after {
+  background:
+    radial-gradient(1.4px 1.4px at 18% 26%, rgba(255,255,255,0.85), transparent),
+    radial-gradient(1.2px 1.2px at 62% 16%, rgba(255,255,255,0.7), transparent),
+    radial-gradient(1.6px 1.6px at 82% 44%, rgba(255,255,255,0.8), transparent),
+    radial-gradient(1.1px 1.1px at 34% 58%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1.3px 1.3px at 48% 34%, rgba(255,255,255,0.65), transparent),
+    radial-gradient(1px 1px at 74% 68%, rgba(255,255,255,0.5), transparent);
+}
+.art-stream::after {
+  background: repeating-linear-gradient(96deg,
+    transparent 0 9px, rgba(180, 234, 240, 0.18) 9px 11px);
+  opacity: 0.7;
+}
+.art-fan::after {
+  background: repeating-conic-gradient(from 0deg at 50% 55%,
+    rgba(255,255,255,0.10) 0deg 14deg, transparent 14deg 28deg);
+  opacity: 0.6;
+}
+.art-snow::after {
+  background:
+    radial-gradient(2px 2px at 22% 32%, rgba(255,255,255,0.75), transparent),
+    radial-gradient(1.6px 1.6px at 58% 22%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(2.2px 2.2px at 78% 56%, rgba(255,255,255,0.7), transparent),
+    radial-gradient(1.5px 1.5px at 38% 68%, rgba(255,255,255,0.55), transparent),
+    radial-gradient(1.8px 1.8px at 68% 82%, rgba(255,255,255,0.5), transparent);
+}
+.art-plain::after { background: none; }
+
+/* ── 접기 ──────────────────────────────────────────────── */
+
+.fold { margin-top: var(--sp-2); }
+.fold > summary {
+  list-style: none;
+  display: flex; align-items: center; gap: var(--sp-2);
+  min-height: var(--tap);
+  font-size: 14px; color: var(--text-3);
+  cursor: pointer;
+}
+.fold > summary::-webkit-details-marker { display: none; }
+.fold > summary::after {
+  content: '';
+  width: 7px; height: 7px;
+  border-right: 1.6px solid currentColor;
+  border-bottom: 1.6px solid currentColor;
+  transform: rotate(45deg) translate(-2px, -2px);
+  transition: transform 220ms var(--ease);
+}
+.fold[open] > summary::after { transform: rotate(-135deg) translate(-2px, -2px); }
+.fold > summary:hover { color: var(--text-2); }
+
 /* ── 카드 / 섹션 ───────────────────────────────────────── */
 
 .card {

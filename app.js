@@ -28,6 +28,7 @@ const store = {
   naps: load('naps', []),
   history: load('history', {}),
   mixer: load('mixer', {}),
+  preset: load('preset', null),
   scene: load('scene', 'stars'),
   pending: load('pending', null),   // 진행 중인 밤 (취침 기록 + 알람 시각)
 };
@@ -41,7 +42,7 @@ const watcher = createAlarmWatcher(fireAlarm);
 let narration = null;
 let manifest = null;
 let session = null;         // { stateId, hours, isNap, bedAt, alarmAt }
-let draft = { stateId: null, hours: 8, napMinutes: 30 };
+let draft = { stateId: null, mode: null, hours: 8, napMinutes: 30, custom: false, customMin: 480 };
 let napFormMinutes = 30;
 let dimTimer = null;
 let breathTimer = null;
@@ -80,42 +81,177 @@ function renderStates() {
 
 // ── 준비 ──────────────────────────────────────────────────
 
-const HOUR_CHOICES = [5, 6, 7, 8, 9];
+// 밤과 낮잠이 같은 화면·같은 컨트롤을 쓴다. 다른 건 프리셋 값과 단위뿐이다.
+const DURATION = {
+  night: { presets: [5, 6, 7, 8, 9], unit: '시간', head: '몇 시간 잘까요?', min: 30, max: 720 },
+  nap:   { presets: [20, 30, 45, 60], unit: '분',  head: '얼마나 잘까요?',   min: 5,  max: 240 },
+};
+
+const durMode = () => (manifest.states[draft.stateId]?.night === false ? 'nap' : 'night');
+/** 선택한 길이를 분으로. 밤 프리셋은 시간 단위라 60을 곱한다. */
+const draftMinutes = () => draft.custom ? draft.customMin
+  : durMode() === 'night' ? draft.hours * 60 : draft.napMinutes;
 
 function openPrepare(stateId) {
   draft.stateId = stateId;
-  $('#prep-state').textContent = manifest.states[stateId].label;
+  const state = manifest.states[stateId];
+  $('#prep-state').textContent = state.label;
+
+  // 밤에서 "직접 06:30"(=365분)을 고른 뒤 낮잠으로 넘어오면 그 값이 딸려온다.
+  // 낮잠에 6시간이 뜨면 안 되므로 단위가 바뀌면 직접 입력을 놓아준다.
+  const mode = durMode();
+  if (mode !== draft.mode) {
+    draft.mode = mode;
+    draft.custom = false;
+    draft.customMin = mode === 'night' ? draft.hours * 60 : draft.napMinutes;
+  }
 
   // 자다 깬 경우는 알람을 다시 잡지 않는다. 새벽 3시에 깬 사람의 알람을 날려먹으면 안 된다.
   const resuming = stateId === 'awoken' && store.pending;
-  $('#prep-h').textContent = resuming ? '다시 잠들기' : '몇 시간 잘까요?';
-  $('#hours-chips').hidden = resuming;
-  if (resuming) {
-    $('#prep-wake').textContent = `알람은 ${fmtClock(store.pending.alarmAt)} 그대로입니다.`;
-  }
+  const cfg = DURATION[durMode()];
+  $('#prep-h').textContent = resuming ? '다시 잠들기' : cfg.head;
+  $('#duration-block').hidden = resuming;
+  if (resuming) $('#prep-wake').textContent = `알람은 ${fmtClock(store.pending.alarmAt)} 그대로입니다.`;
 
-  renderHourChips();
+  renderDurationChips();
+  renderPresets();
   renderSceneChips();
   renderMixer();
   updateWakeLabel();
   go('prepare');
 }
 
-function renderHourChips() {
+function renderDurationChips() {
+  const cfg = DURATION[durMode()];
   const box = $('#hours-chips');
   box.innerHTML = '';
-  for (const h of HOUR_CHOICES) {
+
+  for (const v of cfg.presets) {
     const b = document.createElement('button');
     b.className = 'chip';
-    b.textContent = `${h}시간`;
-    b.setAttribute('aria-pressed', String(h === draft.hours));
+    b.textContent = `${v}${cfg.unit}`;
+    const on = !draft.custom
+      && (durMode() === 'night' ? draft.hours === v : draft.napMinutes === v);
+    b.setAttribute('aria-pressed', String(on));
     b.addEventListener('click', () => {
-      draft.hours = h;
-      renderHourChips();
-      updateWakeLabel();
+      draft.custom = false;
+      if (durMode() === 'night') draft.hours = v; else draft.napMinutes = v;
+      syncDuration();
     });
     box.appendChild(b);
   }
+
+  const custom = document.createElement('button');
+  custom.className = 'chip';
+  custom.textContent = '직접';
+  custom.setAttribute('aria-pressed', String(draft.custom));
+  custom.addEventListener('click', () => {
+    draft.custom = true;
+    draft.customMin = draftMinutes();
+    syncDuration();
+  });
+  box.appendChild(custom);
+
+  // 밤은 "몇 시에 일어날지"가 자연스럽고, 낮잠은 "몇 분"이 자연스럽다.
+  const isNight = durMode() === 'night';
+  $('#custom-duration').hidden = !draft.custom;
+  $('#custom-time-row').hidden = !isNight;
+  $('#custom-min-row').hidden = isNight;
+  if (draft.custom) {
+    if (isNight) {
+      const at = new Date(Date.now() + draft.customMin * 60000);
+      $('#wake-input').value = `${String(at.getHours()).padStart(2, '0')}:${String(at.getMinutes()).padStart(2, '0')}`;
+    } else {
+      $('#minutes-input').value = draft.customMin;
+    }
+  }
+}
+
+function syncDuration() {
+  renderDurationChips();
+  updateWakeLabel();
+}
+
+// 일어날 시각 → 길이. 이미 지난 시각이면 다음 날로 넘긴다 (자정을 넘겨 자는 게 정상이다).
+$('#wake-input').addEventListener('change', (e) => {
+  const [h, m] = e.target.value.split(':').map(Number);
+  if (Number.isNaN(h)) return;
+  const at = new Date();
+  at.setHours(h, m, 0, 0);
+  if (at.getTime() <= Date.now() + 60000) at.setDate(at.getDate() + 1);
+  draft.customMin = Math.round((at.getTime() - Date.now()) / 60000);
+  updateWakeLabel();
+});
+
+const clampMin = (v) => {
+  const cfg = DURATION[durMode()];
+  return Math.max(cfg.min, Math.min(cfg.max, v));
+};
+
+$('#minutes-input').addEventListener('input', (e) => {
+  const v = Number(e.target.value);
+  if (!Number.isFinite(v) || v <= 0) return;
+  draft.customMin = clampMin(v);
+  updateWakeLabel();
+});
+$('#minutes-input').addEventListener('blur', () => { $('#minutes-input').value = draft.customMin; });
+
+$$('[data-dur-step]').forEach((b) => b.addEventListener('click', () => {
+  draft.customMin = clampMin(draft.customMin + Number(b.dataset.durStep));
+  $('#minutes-input').value = draft.customMin;
+  updateWakeLabel();
+}));
+
+// ── 사운드 프리셋 ─────────────────────────────────────────
+
+function renderPresets() {
+  const rail = $('#preset-rail');
+  if (rail.childElementCount) { markPreset(); return; }
+  for (const p of manifest.presets) {
+    const b = document.createElement('button');
+    b.className = 'preset';
+    b.dataset.preset = p.id;
+    b.setAttribute('aria-pressed', 'false');
+    b.style.setProperty('--from', p.art.from);
+    b.style.setProperty('--to', p.art.to);
+    b.style.setProperty('--glow', p.art.glow);
+    b.innerHTML = `<span class="art art-${p.art.motif}" aria-hidden="true"></span>
+      <span class="body"><span class="name">${p.label}</span><span class="note">${p.note}</span></span>`;
+    b.addEventListener('click', () => applyPreset(p));
+    rail.appendChild(b);
+  }
+  markPreset();
+}
+
+function applyPreset(p) {
+  store.mixer = { ...p.mix };
+  save('mixer', store.mixer);
+  store.preset = p.id;
+  save('preset', p.id);
+  if (p.scene) { store.scene = p.scene; save('scene', p.scene); scenes.set(p.scene); renderSceneChips(); }
+
+  mixer.unlock().then(() => {
+    for (const l of mixer.layers.values()) mixer.setVolume(l.def.id, store.mixer[l.def.id] || 0);
+  });
+  syncMixerUI();
+  markPreset();
+}
+
+function markPreset() {
+  $$('#preset-rail .preset').forEach((el) => {
+    el.setAttribute('aria-pressed', String(el.dataset.preset === store.preset));
+  });
+}
+
+/** 프리셋을 고르면 슬라이더도 따라 움직여야 한다. 안 그러면 두 UI 가 서로 거짓말을 한다. */
+function syncMixerUI() {
+  $$('#mixer .mix-row').forEach((row) => {
+    const id = row.dataset.layer;
+    const v = Math.round((store.mixer[id] || 0) * 100);
+    row.querySelector('input').value = v;
+    row.querySelector('.val').textContent = v || '';
+    row.classList.toggle('is-on', v > 0);
+  });
 }
 
 function renderSceneChips() {
@@ -143,6 +279,7 @@ function renderMixer() {
     const layer = mixer.add(def);
     const row = document.createElement('div');
     row.className = 'mix-row';
+    row.dataset.layer = def.id;
     const saved = store.mixer[def.id] ?? 0;
     row.innerHTML = `
       <span class="name" id="lb-${def.id}">${def.label}</span>
@@ -166,6 +303,10 @@ function renderMixer() {
       val.textContent = input.value > 0 ? input.value : '';
       row.classList.toggle('is-on', v > 0);
       save('mixer', store.mixer);
+      // 손으로 만졌으면 더 이상 그 프리셋이 아니다
+      store.preset = null;
+      save('preset', null);
+      markPreset();
       mixer.unlock().then(() => mixer.setVolume(def.id, v));
     });
 
@@ -176,37 +317,21 @@ function renderMixer() {
 
 function updateWakeLabel() {
   if (draft.stateId === 'awoken' && store.pending) return;
-  const at = Date.now() + draft.hours * HOUR;
-  $('#prep-wake').textContent = `${fmtClock(at)}에 깨워 드립니다.`;
+  const min = draftMinutes();
+  const at = Date.now() + min * 60000;
+  $('#prep-wake').textContent = `${fmtHours(min / 60)} 뒤, ${fmtClock(at)}에 깨워 드립니다.`;
+  $('#start-btn').textContent = durMode() === 'nap' ? '낮잠 시작' : '시작';
 }
 
-$('#start-btn').addEventListener('click', () => startSession(draft.stateId, draft.hours, false));
+$('#start-btn').addEventListener('click', () =>
+  startSession(draft.stateId, draftMinutes() / 60, draft.stateId === 'nap'));
 
 // ── 낮 ────────────────────────────────────────────────────
-
-const NAP_CHOICES = [20, 30, 45, 60];
-
+// 낮잠도 밤과 같은 준비 화면을 쓴다 — 프리셋·배경·직접 입력을 그대로 물려받는다.
 $$('[data-day]').forEach((b) => b.addEventListener('click', () => {
   if (b.dataset.day === 'calm') return startSession('calm', 0, false);
-  renderNapChips();
-  $('#nap-length').hidden = false;
-  $('#nap-length').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  openPrepare('nap');
 }));
-
-function renderNapChips() {
-  const box = $('#nap-chips');
-  box.innerHTML = '';
-  for (const m of NAP_CHOICES) {
-    const b = document.createElement('button');
-    b.className = 'chip';
-    b.textContent = `${m}분`;
-    b.setAttribute('aria-pressed', String(m === draft.napMinutes));
-    b.addEventListener('click', () => { draft.napMinutes = m; renderNapChips(); });
-    box.appendChild(b);
-  }
-}
-
-$('#nap-start').addEventListener('click', () => startSession('nap', draft.napMinutes / 60, true));
 
 // ── 세션 ──────────────────────────────────────────────────
 
@@ -450,11 +575,21 @@ async function init() {
   $$('[data-app-name]').forEach((el) => (el.textContent = APP_NAME));
   document.title = APP_NAME;
 
-  const [nar, snd] = await Promise.all([
+  const [nar, snd, pre] = await Promise.all([
     loadManifest(),
     fetch('data/sounds.json').then((r) => r.json()),
+    fetch('data/presets.json').then((r) => r.json()),
   ]);
-  manifest = { ...nar, sounds: snd.layers };
+  manifest = { ...nar, sounds: snd.layers, presets: pre.presets };
+
+  // 소리가 전부 0인 채로 시작하면 무엇을 골라야 할지 알 수 없다. 첫 프리셋을 기본으로 둔다.
+  if (!Object.values(store.mixer).some((v) => v > 0)) {
+    const first = manifest.presets[0];
+    store.mixer = { ...first.mix };
+    store.preset = first.id;
+    store.scene = first.scene || store.scene;
+    save('mixer', store.mixer); save('preset', store.preset); save('scene', store.scene);
+  }
 
   renderStates();
   tickClock();
