@@ -25,7 +25,9 @@ const save = (k, v) => localStorage.setItem(`${KEY}.${k}`, JSON.stringify(v));
 const store = {
   settings: {
     ...DEFAULTS,
-    gapSeconds: 6, sentenceGap: 2.4, narrationVolume: 0.9,
+    // 말은 자연 속도(-5%)로 둔다. 느린 느낌은 여기 침묵이 만든다 —
+    // rate 를 낮추면 타임스트레치라 억양이 뭉개지지만 침묵은 아무것도 망가뜨리지 않는다.
+    gapSeconds: 6, sentenceGap: 3.2, narrationVolume: 0.9,
     voiceURI: null, voiceRate: 0.72, voicePitch: 0.9,
     ...load('settings', {}),
   },

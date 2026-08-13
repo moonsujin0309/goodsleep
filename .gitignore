@@ -1,6 +1,7 @@
 node_modules/
 .DS_Store
 Thumbs.db
+tools/.venv/
 
 # 직접 받은 음원은 커밋하지 않는다.
 # 무료 라이브러리 대부분이 "소스 파일과 함께 재배포"를 금지하므로
@@ -9,3 +10,9 @@ audio/**/*.mp3
 audio/**/*.ogg
 audio/**/*.wav
 audio/**/*.m4a
+
+# 비교용 샘플은 굳이 배포하지 않는다
+audio/_samples/
+
+# 예외: TTS 로 생성한 나레이션은 배포해야 앱이 소리를 낸다.
+!audio/narration/**/*.mp3

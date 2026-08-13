@@ -362,7 +362,7 @@ export function koreanVoices() {
  * TTS 는 오디오 파일이 채워지기 전까지의 임시 경로다 — 백그라운드 재생은 안 된다.
  */
 export class NarrationPlayer {
-  constructor({ gapSeconds = 6, sentenceGap = 2.4, volume = 0.9, voiceURI = null, rate = 0.72, pitch = 0.9 } = {}) {
+  constructor({ gapSeconds = 6, sentenceGap = 3.2, volume = 0.9, voiceURI = null, rate = 0.82, pitch = 0.9 } = {}) {
     this.gapSeconds = gapSeconds;
     this.sentenceGap = sentenceGap;
     this.volume = volume;

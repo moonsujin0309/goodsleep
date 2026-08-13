@@ -1,168 +1,780 @@
 {
-  "_읽는이에게": "조각을 추가하려면 해당 층 배열에 { id, text } 를 넣으면 된다. TTS 로 mp3 를 뽑았다면 같은 항목에 \"file\": \"audio/<상태>/<id>.mp3\" 를 추가한다. file 이 있으면 파일이 우선하고, 없으면 text 를 브라우저 TTS 가 읽는다. 코드는 고치지 않아도 된다.",
-
-  "order": ["racing", "anxious", "wired", "unknown", "awoken"],
-
+  "_읽는이에게": "조각을 추가하려면 해당 층 배열에 { id, text } 를 넣으면 된다. files 는 손으로 쓰지 말고 tools/tts.py 가 채우게 한다 — 문장별로 쪼갠 mp3 경로가 들어간다. files 가 있으면 파일이 우선하고, 없으면 text 를 브라우저 TTS 가 문장 단위로 읽는다. 어느 쪽이든 문장 사이 침묵은 앱이 직접 넣는다. 코드는 고치지 않아도 된다.",
+  "order": [
+    "racing",
+    "anxious",
+    "wired",
+    "unknown",
+    "awoken"
+  ],
   "states": {
     "racing": {
       "label": "생각이 안 멈춰요",
       "night": true,
-      "sequence": ["intro", "body", "outro"],
+      "sequence": [
+        "intro",
+        "body",
+        "outro"
+      ],
       "intro": [
-        { "id": "i1", "text": "눈을 감아 보세요. 지금부터는 아무것도 결정하지 않아도 됩니다. 오늘 하루가 어땠든, 이 시간은 그것과 상관없이 흘러갑니다." },
-        { "id": "i2", "text": "머릿속이 아직 바쁠 겁니다. 억지로 멈추려 하지 마세요. 생각은 멈추라고 하면 더 커집니다." },
-        { "id": "i3", "text": "누워 있는 자리를 느껴 보세요. 등이 닿은 곳, 머리가 놓인 곳. 몸은 이미 쉴 준비가 되어 있습니다." },
-        { "id": "i4", "text": "오늘은 여기까지입니다. 남은 일이 있어도, 그건 오늘의 몫이 아닙니다." }
+        {
+          "id": "i1",
+          "text": "눈을 감아 보세요. 지금부터는 아무것도 결정하지 않아도 됩니다. 오늘 하루가 어땠든, 이 시간은 그것과 상관없이 흘러갑니다.",
+          "files": [
+            "audio/narration/racing/i1-0.mp3",
+            "audio/narration/racing/i1-1.mp3",
+            "audio/narration/racing/i1-2.mp3"
+          ]
+        },
+        {
+          "id": "i2",
+          "text": "머릿속이 아직 바쁠 겁니다. 억지로 멈추려 하지 마세요. 생각은 멈추라고 하면 더 커집니다.",
+          "files": [
+            "audio/narration/racing/i2-0.mp3",
+            "audio/narration/racing/i2-1.mp3",
+            "audio/narration/racing/i2-2.mp3"
+          ]
+        },
+        {
+          "id": "i3",
+          "text": "누워 있는 자리를 느껴 보세요. 등이 닿은 곳, 머리가 놓인 곳. 몸은 이미 쉴 준비가 되어 있습니다.",
+          "files": [
+            "audio/narration/racing/i3-0.mp3",
+            "audio/narration/racing/i3-1.mp3",
+            "audio/narration/racing/i3-2.mp3"
+          ]
+        },
+        {
+          "id": "i4",
+          "text": "오늘은 여기까지입니다. 남은 일이 있어도, 그건 오늘의 몫이 아닙니다.",
+          "files": [
+            "audio/narration/racing/i4-0.mp3",
+            "audio/narration/racing/i4-1.mp3"
+          ]
+        }
       ],
       "body": [
-        { "id": "b1", "text": "떠오르는 생각에 이름을 붙여 보세요. 걱정. 계획. 후회. 이름을 붙이면 그것은 나에게서 조금 떨어져 나갑니다. 붙잡지 말고, 이름만 붙이고 보내 주세요." },
-        { "id": "b2", "text": "지금 떠오르는 일 중에 오늘 밤 해결할 수 있는 것은 하나도 없습니다. 하나도요. 그러니 지금 생각하는 것은 아무 소용이 없습니다. 내일의 나에게 맡기세요." },
-        { "id": "b3", "text": "숨을 천천히 내쉬어 보세요. 들이쉬는 것보다 길게. 내쉬는 숨이 길어지면 몸은 안전하다고 판단합니다. 서두르지 않아도 됩니다." },
-        { "id": "b4", "text": "머릿속을 창밖이라고 생각해 보세요. 생각이 지나가는 것을 보고 있을 뿐, 따라 나가지는 않습니다. 지나가게 두세요." },
-        { "id": "b5", "text": "생각이 또 시작되어도 괜찮습니다. 알아차렸다면 그것으로 충분합니다. 다시 숨으로 돌아오세요. 몇 번이든 상관없습니다." },
-        { "id": "b6", "text": "머리에서 가장 먼 곳부터 내려놓겠습니다. 발끝. 종아리. 무릎. 아래에서부터 힘이 빠져나갑니다." }
+        {
+          "id": "b1",
+          "text": "떠오르는 생각에 이름을 붙여 보세요. 걱정. 계획. 후회. 이름을 붙이면 그것은 나에게서 조금 떨어져 나갑니다. 붙잡지 말고, 이름만 붙이고 보내 주세요.",
+          "files": [
+            "audio/narration/racing/b1-0.mp3",
+            "audio/narration/racing/b1-1.mp3",
+            "audio/narration/racing/b1-2.mp3",
+            "audio/narration/racing/b1-3.mp3",
+            "audio/narration/racing/b1-4.mp3",
+            "audio/narration/racing/b1-5.mp3"
+          ]
+        },
+        {
+          "id": "b2",
+          "text": "지금 떠오르는 일 중에 오늘 밤 해결할 수 있는 것은 하나도 없습니다. 하나도요. 그러니 지금 생각하는 것은 아무 소용이 없습니다. 내일의 나에게 맡기세요.",
+          "files": [
+            "audio/narration/racing/b2-0.mp3",
+            "audio/narration/racing/b2-1.mp3",
+            "audio/narration/racing/b2-2.mp3",
+            "audio/narration/racing/b2-3.mp3"
+          ]
+        },
+        {
+          "id": "b3",
+          "text": "숨을 천천히 내쉬어 보세요. 들이쉬는 것보다 길게. 내쉬는 숨이 길어지면 몸은 안전하다고 판단합니다. 서두르지 않아도 됩니다.",
+          "files": [
+            "audio/narration/racing/b3-0.mp3",
+            "audio/narration/racing/b3-1.mp3",
+            "audio/narration/racing/b3-2.mp3",
+            "audio/narration/racing/b3-3.mp3"
+          ]
+        },
+        {
+          "id": "b4",
+          "text": "머릿속을 창밖이라고 생각해 보세요. 생각이 지나가는 것을 보고 있을 뿐, 따라 나가지는 않습니다. 지나가게 두세요.",
+          "files": [
+            "audio/narration/racing/b4-0.mp3",
+            "audio/narration/racing/b4-1.mp3",
+            "audio/narration/racing/b4-2.mp3"
+          ]
+        },
+        {
+          "id": "b5",
+          "text": "생각이 또 시작되어도 괜찮습니다. 알아차렸다면 그것으로 충분합니다. 다시 숨으로 돌아오세요. 몇 번이든 상관없습니다.",
+          "files": [
+            "audio/narration/racing/b5-0.mp3",
+            "audio/narration/racing/b5-1.mp3",
+            "audio/narration/racing/b5-2.mp3",
+            "audio/narration/racing/b5-3.mp3"
+          ]
+        },
+        {
+          "id": "b6",
+          "text": "머리에서 가장 먼 곳부터 내려놓겠습니다. 발끝. 종아리. 무릎. 아래에서부터 힘이 빠져나갑니다.",
+          "files": [
+            "audio/narration/racing/b6-0.mp3",
+            "audio/narration/racing/b6-1.mp3",
+            "audio/narration/racing/b6-2.mp3",
+            "audio/narration/racing/b6-3.mp3",
+            "audio/narration/racing/b6-4.mp3"
+          ]
+        }
       ],
       "outro": [
-        { "id": "o1", "text": "이제 아무것도 하지 않아도 됩니다. 듣는 것도 그만두어도 됩니다. 소리는 계속 남아 있을 겁니다." },
-        { "id": "o2", "text": "잠은 애써서 드는 것이 아닙니다. 그냥 오는 것입니다. 기다리지 말고, 그대로 계세요." },
-        { "id": "o3", "text": "숨만 남겨 두세요. 나머지는 놓아도 괜찮습니다." },
-        { "id": "o4", "text": "여기까지 오셨으면 충분합니다. 편히 계세요." }
+        {
+          "id": "o1",
+          "text": "이제 아무것도 하지 않아도 됩니다. 듣는 것도 그만두어도 됩니다. 소리는 계속 남아 있을 겁니다.",
+          "files": [
+            "audio/narration/racing/o1-0.mp3",
+            "audio/narration/racing/o1-1.mp3",
+            "audio/narration/racing/o1-2.mp3"
+          ]
+        },
+        {
+          "id": "o2",
+          "text": "잠은 애써서 드는 것이 아닙니다. 그냥 오는 것입니다. 기다리지 말고, 그대로 계세요.",
+          "files": [
+            "audio/narration/racing/o2-0.mp3",
+            "audio/narration/racing/o2-1.mp3",
+            "audio/narration/racing/o2-2.mp3"
+          ]
+        },
+        {
+          "id": "o3",
+          "text": "숨만 남겨 두세요. 나머지는 놓아도 괜찮습니다.",
+          "files": [
+            "audio/narration/racing/o3-0.mp3",
+            "audio/narration/racing/o3-1.mp3"
+          ]
+        },
+        {
+          "id": "o4",
+          "text": "여기까지 오셨으면 충분합니다. 편히 계세요.",
+          "files": [
+            "audio/narration/racing/o4-0.mp3",
+            "audio/narration/racing/o4-1.mp3"
+          ]
+        }
       ]
     },
-
     "anxious": {
       "label": "마음이 불안해요",
       "night": true,
-      "sequence": ["intro", "body", "outro"],
+      "sequence": [
+        "intro",
+        "body",
+        "outro"
+      ],
       "intro": [
-        { "id": "i1", "text": "가슴이 조금 답답할 수 있습니다. 그것은 몸이 아직 경계를 풀지 않아서입니다. 위험한 것은 아무것도 없습니다." },
-        { "id": "i2", "text": "지금 여기는 안전합니다. 문은 닫혀 있고, 오늘 할 일은 끝났습니다." },
-        { "id": "i3", "text": "불안은 없애야 하는 것이 아닙니다. 옆에 두고도 잠들 수 있습니다." },
-        { "id": "i4", "text": "지금 느끼는 것을 바꾸려 하지 마세요. 그냥 알아만 두세요. 그것만으로도 조금 옅어집니다." }
+        {
+          "id": "i1",
+          "text": "가슴이 조금 답답할 수 있습니다. 그것은 몸이 아직 경계를 풀지 않아서입니다. 위험한 것은 아무것도 없습니다.",
+          "files": [
+            "audio/narration/anxious/i1-0.mp3",
+            "audio/narration/anxious/i1-1.mp3",
+            "audio/narration/anxious/i1-2.mp3"
+          ]
+        },
+        {
+          "id": "i2",
+          "text": "지금 여기는 안전합니다. 문은 닫혀 있고, 오늘 할 일은 끝났습니다.",
+          "files": [
+            "audio/narration/anxious/i2-0.mp3",
+            "audio/narration/anxious/i2-1.mp3"
+          ]
+        },
+        {
+          "id": "i3",
+          "text": "불안은 없애야 하는 것이 아닙니다. 옆에 두고도 잠들 수 있습니다.",
+          "files": [
+            "audio/narration/anxious/i3-0.mp3",
+            "audio/narration/anxious/i3-1.mp3"
+          ]
+        },
+        {
+          "id": "i4",
+          "text": "지금 느끼는 것을 바꾸려 하지 마세요. 그냥 알아만 두세요. 그것만으로도 조금 옅어집니다.",
+          "files": [
+            "audio/narration/anxious/i4-0.mp3",
+            "audio/narration/anxious/i4-1.mp3",
+            "audio/narration/anxious/i4-2.mp3"
+          ]
+        }
       ],
       "body": [
-        { "id": "b1", "text": "손을 배 위에 올려 보세요. 숨을 쉴 때 손이 오르내리는 것을 느껴 보세요. 가슴이 아니라 배로 숨을 쉬면 몸은 긴장을 풉니다." },
-        { "id": "b2", "text": "넷을 세며 들이쉬고, 여섯을 세며 내쉬어 보세요. 하나, 둘, 셋, 넷. 그리고 천천히, 하나, 둘, 셋, 넷, 다섯, 여섯." },
-        { "id": "b3", "text": "어깨를 확인해 보세요. 아마 올라가 있을 겁니다. 한 번 더 내려 보세요. 턱도, 이마도 같이." },
-        { "id": "b4", "text": "지금 걱정하는 일의 대부분은 일어나지 않습니다. 그리고 일어난다 해도, 지금의 내가 아니라 그때의 내가 감당합니다." },
-        { "id": "b5", "text": "발끝이 이불에 닿는 감촉에 집중해 보세요. 몸이 어디에 있는지 확인하면 마음이 따라 돌아옵니다." },
-        { "id": "b6", "text": "가슴에 무언가 걸려 있다면, 그것을 내쉬는 숨에 실어 보내세요. 한 번에 다 나가지 않아도 됩니다." }
+        {
+          "id": "b1",
+          "text": "손을 배 위에 올려 보세요. 숨을 쉴 때 손이 오르내리는 것을 느껴 보세요. 가슴이 아니라 배로 숨을 쉬면 몸은 긴장을 풉니다.",
+          "files": [
+            "audio/narration/anxious/b1-0.mp3",
+            "audio/narration/anxious/b1-1.mp3",
+            "audio/narration/anxious/b1-2.mp3"
+          ]
+        },
+        {
+          "id": "b2",
+          "text": "넷을 세며 들이쉬고, 여섯을 세며 내쉬어 보세요. 하나, 둘, 셋, 넷. 그리고 천천히, 하나, 둘, 셋, 넷, 다섯, 여섯.",
+          "files": [
+            "audio/narration/anxious/b2-0.mp3",
+            "audio/narration/anxious/b2-1.mp3",
+            "audio/narration/anxious/b2-2.mp3"
+          ]
+        },
+        {
+          "id": "b3",
+          "text": "어깨를 확인해 보세요. 아마 올라가 있을 겁니다. 한 번 더 내려 보세요. 턱도, 이마도 같이.",
+          "files": [
+            "audio/narration/anxious/b3-0.mp3",
+            "audio/narration/anxious/b3-1.mp3",
+            "audio/narration/anxious/b3-2.mp3",
+            "audio/narration/anxious/b3-3.mp3"
+          ]
+        },
+        {
+          "id": "b4",
+          "text": "지금 걱정하는 일의 대부분은 일어나지 않습니다. 그리고 일어난다 해도, 지금의 내가 아니라 그때의 내가 감당합니다.",
+          "files": [
+            "audio/narration/anxious/b4-0.mp3",
+            "audio/narration/anxious/b4-1.mp3"
+          ]
+        },
+        {
+          "id": "b5",
+          "text": "발끝이 이불에 닿는 감촉에 집중해 보세요. 몸이 어디에 있는지 확인하면 마음이 따라 돌아옵니다.",
+          "files": [
+            "audio/narration/anxious/b5-0.mp3",
+            "audio/narration/anxious/b5-1.mp3"
+          ]
+        },
+        {
+          "id": "b6",
+          "text": "가슴에 무언가 걸려 있다면, 그것을 내쉬는 숨에 실어 보내세요. 한 번에 다 나가지 않아도 됩니다.",
+          "files": [
+            "audio/narration/anxious/b6-0.mp3",
+            "audio/narration/anxious/b6-1.mp3"
+          ]
+        }
       ],
       "outro": [
-        { "id": "o1", "text": "몸이 조금 무거워졌다면 잘 되고 있는 것입니다." },
-        { "id": "o2", "text": "이제 놓아도 됩니다. 아무도 지켜보지 않아도 밤은 지나갑니다." },
-        { "id": "o3", "text": "여기까지면 충분합니다. 남은 것은 잠이 알아서 합니다." },
-        { "id": "o4", "text": "숨은 계속 쉬어질 겁니다. 그것만 믿고 계세요." }
+        {
+          "id": "o1",
+          "text": "몸이 조금 무거워졌다면 잘 되고 있는 것입니다.",
+          "files": [
+            "audio/narration/anxious/o1-0.mp3"
+          ]
+        },
+        {
+          "id": "o2",
+          "text": "이제 놓아도 됩니다. 아무도 지켜보지 않아도 밤은 지나갑니다.",
+          "files": [
+            "audio/narration/anxious/o2-0.mp3",
+            "audio/narration/anxious/o2-1.mp3"
+          ]
+        },
+        {
+          "id": "o3",
+          "text": "여기까지면 충분합니다. 남은 것은 잠이 알아서 합니다.",
+          "files": [
+            "audio/narration/anxious/o3-0.mp3",
+            "audio/narration/anxious/o3-1.mp3"
+          ]
+        },
+        {
+          "id": "o4",
+          "text": "숨은 계속 쉬어질 겁니다. 그것만 믿고 계세요.",
+          "files": [
+            "audio/narration/anxious/o4-0.mp3",
+            "audio/narration/anxious/o4-1.mp3"
+          ]
+        }
       ]
     },
-
     "wired": {
       "label": "몸은 피곤한데 못 자요",
       "night": true,
-      "sequence": ["intro", "body", "outro"],
+      "sequence": [
+        "intro",
+        "body",
+        "outro"
+      ],
       "intro": [
-        { "id": "i1", "text": "몸은 이미 지쳐 있습니다. 다만 아직 스위치가 내려가지 않았을 뿐입니다." },
-        { "id": "i2", "text": "피곤한데 잠이 안 오는 것은 이상한 일이 아닙니다. 몸과 머리가 다른 속도로 움직이고 있을 뿐입니다." },
-        { "id": "i3", "text": "지금부터는 몸부터 재우겠습니다. 머리는 나중에 따라옵니다." },
-        { "id": "i4", "text": "오늘 많이 썼습니다. 그러니 지금은 아무것도 하지 않겠습니다." }
+        {
+          "id": "i1",
+          "text": "몸은 이미 지쳐 있습니다. 다만 아직 스위치가 내려가지 않았을 뿐입니다.",
+          "files": [
+            "audio/narration/wired/i1-0.mp3",
+            "audio/narration/wired/i1-1.mp3"
+          ]
+        },
+        {
+          "id": "i2",
+          "text": "피곤한데 잠이 안 오는 것은 이상한 일이 아닙니다. 몸과 머리가 다른 속도로 움직이고 있을 뿐입니다.",
+          "files": [
+            "audio/narration/wired/i2-0.mp3",
+            "audio/narration/wired/i2-1.mp3"
+          ]
+        },
+        {
+          "id": "i3",
+          "text": "지금부터는 몸부터 재우겠습니다. 머리는 나중에 따라옵니다.",
+          "files": [
+            "audio/narration/wired/i3-0.mp3",
+            "audio/narration/wired/i3-1.mp3"
+          ]
+        },
+        {
+          "id": "i4",
+          "text": "오늘 많이 썼습니다. 그러니 지금은 아무것도 하지 않겠습니다.",
+          "files": [
+            "audio/narration/wired/i4-0.mp3",
+            "audio/narration/wired/i4-1.mp3"
+          ]
+        }
       ],
       "body": [
-        { "id": "b1", "text": "발끝부터 시작하겠습니다. 발가락에 힘을 살짝 주었다가, 놓으세요. 종아리, 허벅지도 같은 방식으로. 힘을 준 다음에 놓으면 더 깊이 풀립니다." },
-        { "id": "b2", "text": "배와 등의 힘을 빼세요. 침대가 몸을 받치고 있습니다. 버티지 않아도 됩니다." },
-        { "id": "b3", "text": "손을 펴 보세요. 아마 쥐고 있었을 겁니다. 손가락을 하나씩 늘어뜨리세요." },
-        { "id": "b4", "text": "눈 주위의 힘을 빼세요. 눈꺼풀이 무거워지는 것을 그냥 두세요." },
-        { "id": "b5", "text": "턱에 힘이 들어가 있는지 확인해 보세요. 이가 맞닿아 있다면 살짝 떼어 놓으세요. 입술은 붙어 있어도 됩니다." },
-        { "id": "b6", "text": "몸이 침대로 조금씩 가라앉는다고 생각해 보세요. 붙잡을 필요 없습니다. 아래로 두면 됩니다." }
+        {
+          "id": "b1",
+          "text": "발끝부터 시작하겠습니다. 발가락에 힘을 살짝 주었다가, 놓으세요. 종아리, 허벅지도 같은 방식으로. 힘을 준 다음에 놓으면 더 깊이 풀립니다.",
+          "files": [
+            "audio/narration/wired/b1-0.mp3",
+            "audio/narration/wired/b1-1.mp3",
+            "audio/narration/wired/b1-2.mp3",
+            "audio/narration/wired/b1-3.mp3"
+          ]
+        },
+        {
+          "id": "b2",
+          "text": "배와 등의 힘을 빼세요. 침대가 몸을 받치고 있습니다. 버티지 않아도 됩니다.",
+          "files": [
+            "audio/narration/wired/b2-0.mp3",
+            "audio/narration/wired/b2-1.mp3",
+            "audio/narration/wired/b2-2.mp3"
+          ]
+        },
+        {
+          "id": "b3",
+          "text": "손을 펴 보세요. 아마 쥐고 있었을 겁니다. 손가락을 하나씩 늘어뜨리세요.",
+          "files": [
+            "audio/narration/wired/b3-0.mp3",
+            "audio/narration/wired/b3-1.mp3",
+            "audio/narration/wired/b3-2.mp3"
+          ]
+        },
+        {
+          "id": "b4",
+          "text": "눈 주위의 힘을 빼세요. 눈꺼풀이 무거워지는 것을 그냥 두세요.",
+          "files": [
+            "audio/narration/wired/b4-0.mp3",
+            "audio/narration/wired/b4-1.mp3"
+          ]
+        },
+        {
+          "id": "b5",
+          "text": "턱에 힘이 들어가 있는지 확인해 보세요. 이가 맞닿아 있다면 살짝 떼어 놓으세요. 입술은 붙어 있어도 됩니다.",
+          "files": [
+            "audio/narration/wired/b5-0.mp3",
+            "audio/narration/wired/b5-1.mp3",
+            "audio/narration/wired/b5-2.mp3"
+          ]
+        },
+        {
+          "id": "b6",
+          "text": "몸이 침대로 조금씩 가라앉는다고 생각해 보세요. 붙잡을 필요 없습니다. 아래로 두면 됩니다.",
+          "files": [
+            "audio/narration/wired/b6-0.mp3",
+            "audio/narration/wired/b6-1.mp3",
+            "audio/narration/wired/b6-2.mp3"
+          ]
+        }
       ],
       "outro": [
-        { "id": "o1", "text": "몸이 가라앉는 느낌이 들면 그대로 두세요." },
-        { "id": "o2", "text": "이제 아무것도 하지 않습니다. 여기서 끝입니다." },
-        { "id": "o3", "text": "천천히, 더 천천히. 그것이면 됩니다." },
-        { "id": "o4", "text": "다 내려놓으셨습니다. 편히 계세요." }
+        {
+          "id": "o1",
+          "text": "몸이 가라앉는 느낌이 들면 그대로 두세요.",
+          "files": [
+            "audio/narration/wired/o1-0.mp3"
+          ]
+        },
+        {
+          "id": "o2",
+          "text": "이제 아무것도 하지 않습니다. 여기서 끝입니다.",
+          "files": [
+            "audio/narration/wired/o2-0.mp3",
+            "audio/narration/wired/o2-1.mp3"
+          ]
+        },
+        {
+          "id": "o3",
+          "text": "천천히, 더 천천히. 그것이면 됩니다.",
+          "files": [
+            "audio/narration/wired/o3-0.mp3",
+            "audio/narration/wired/o3-1.mp3"
+          ]
+        },
+        {
+          "id": "o4",
+          "text": "다 내려놓으셨습니다. 편히 계세요.",
+          "files": [
+            "audio/narration/wired/o4-0.mp3",
+            "audio/narration/wired/o4-1.mp3"
+          ]
+        }
       ]
     },
-
     "unknown": {
       "label": "그냥 잠이 안 와요",
       "night": true,
-      "sequence": ["intro", "body", "outro"],
+      "sequence": [
+        "intro",
+        "body",
+        "outro"
+      ],
       "intro": [
-        { "id": "i1", "text": "이유가 없어도 됩니다. 어떤 밤은 그냥 그렇습니다." },
-        { "id": "i2", "text": "오늘 잠이 늦게 와도 괜찮습니다. 하루쯤은 그래도 됩니다." },
-        { "id": "i3", "text": "잠이 오지 않는다고 해서 쉬지 못하는 것은 아닙니다. 누워 있는 것만으로도 몸은 회복합니다." },
-        { "id": "i4", "text": "지금은 아무 목표도 없습니다. 잠드는 것조차 목표가 아닙니다." }
+        {
+          "id": "i1",
+          "text": "이유가 없어도 됩니다. 어떤 밤은 그냥 그렇습니다.",
+          "files": [
+            "audio/narration/unknown/i1-0.mp3",
+            "audio/narration/unknown/i1-1.mp3"
+          ]
+        },
+        {
+          "id": "i2",
+          "text": "오늘 잠이 늦게 와도 괜찮습니다. 하루쯤은 그래도 됩니다.",
+          "files": [
+            "audio/narration/unknown/i2-0.mp3",
+            "audio/narration/unknown/i2-1.mp3"
+          ]
+        },
+        {
+          "id": "i3",
+          "text": "잠이 오지 않는다고 해서 쉬지 못하는 것은 아닙니다. 누워 있는 것만으로도 몸은 회복합니다.",
+          "files": [
+            "audio/narration/unknown/i3-0.mp3",
+            "audio/narration/unknown/i3-1.mp3"
+          ]
+        },
+        {
+          "id": "i4",
+          "text": "지금은 아무 목표도 없습니다. 잠드는 것조차 목표가 아닙니다.",
+          "files": [
+            "audio/narration/unknown/i4-0.mp3",
+            "audio/narration/unknown/i4-1.mp3"
+          ]
+        }
       ],
       "body": [
-        { "id": "b1", "text": "숨을 세어 보겠습니다. 내쉴 때마다 하나씩. 열까지 가면 다시 하나로. 숫자를 놓쳐도 괜찮습니다. 놓치면 다시 하나부터." },
-        { "id": "b2", "text": "지금 들리는 소리에 집중해 보세요. 가장 멀리서 나는 소리부터. 그다음엔 방 안의 소리. 그다음엔 숨소리." },
-        { "id": "b3", "text": "몸에서 가장 편한 곳을 찾아보세요. 그 편안함이 옆으로 번지게 두세요." },
-        { "id": "b4", "text": "잠들려고 애쓰는 것을 그만두세요. 그것이 오히려 잠을 밀어냅니다." },
-        { "id": "b5", "text": "이불의 무게를 느껴 보세요. 몸을 덮고 있는 그 무게만 생각하세요." },
-        { "id": "b6", "text": "머리에서 발끝까지 천천히 훑어 내려가 보세요. 아직 힘이 남아 있는 곳이 있다면 거기만 풀어 주세요." }
+        {
+          "id": "b1",
+          "text": "숨을 세어 보겠습니다. 내쉴 때마다 하나씩. 열까지 가면 다시 하나로. 숫자를 놓쳐도 괜찮습니다. 놓치면 다시 하나부터.",
+          "files": [
+            "audio/narration/unknown/b1-0.mp3",
+            "audio/narration/unknown/b1-1.mp3",
+            "audio/narration/unknown/b1-2.mp3",
+            "audio/narration/unknown/b1-3.mp3",
+            "audio/narration/unknown/b1-4.mp3"
+          ]
+        },
+        {
+          "id": "b2",
+          "text": "지금 들리는 소리에 집중해 보세요. 가장 멀리서 나는 소리부터. 그다음엔 방 안의 소리. 그다음엔 숨소리.",
+          "files": [
+            "audio/narration/unknown/b2-0.mp3",
+            "audio/narration/unknown/b2-1.mp3",
+            "audio/narration/unknown/b2-2.mp3",
+            "audio/narration/unknown/b2-3.mp3"
+          ]
+        },
+        {
+          "id": "b3",
+          "text": "몸에서 가장 편한 곳을 찾아보세요. 그 편안함이 옆으로 번지게 두세요.",
+          "files": [
+            "audio/narration/unknown/b3-0.mp3",
+            "audio/narration/unknown/b3-1.mp3"
+          ]
+        },
+        {
+          "id": "b4",
+          "text": "잠들려고 애쓰는 것을 그만두세요. 그것이 오히려 잠을 밀어냅니다.",
+          "files": [
+            "audio/narration/unknown/b4-0.mp3",
+            "audio/narration/unknown/b4-1.mp3"
+          ]
+        },
+        {
+          "id": "b5",
+          "text": "이불의 무게를 느껴 보세요. 몸을 덮고 있는 그 무게만 생각하세요.",
+          "files": [
+            "audio/narration/unknown/b5-0.mp3",
+            "audio/narration/unknown/b5-1.mp3"
+          ]
+        },
+        {
+          "id": "b6",
+          "text": "머리에서 발끝까지 천천히 훑어 내려가 보세요. 아직 힘이 남아 있는 곳이 있다면 거기만 풀어 주세요.",
+          "files": [
+            "audio/narration/unknown/b6-0.mp3",
+            "audio/narration/unknown/b6-1.mp3"
+          ]
+        }
       ],
       "outro": [
-        { "id": "o1", "text": "이제 소리만 남겨 두겠습니다." },
-        { "id": "o2", "text": "여기 있어도 되고, 잠들어도 됩니다." },
-        { "id": "o3", "text": "충분합니다. 편히 계세요." },
-        { "id": "o4", "text": "더 할 것은 없습니다. 그대로 두세요." }
+        {
+          "id": "o1",
+          "text": "이제 소리만 남겨 두겠습니다.",
+          "files": [
+            "audio/narration/unknown/o1-0.mp3"
+          ]
+        },
+        {
+          "id": "o2",
+          "text": "여기 있어도 되고, 잠들어도 됩니다.",
+          "files": [
+            "audio/narration/unknown/o2-0.mp3"
+          ]
+        },
+        {
+          "id": "o3",
+          "text": "충분합니다. 편히 계세요.",
+          "files": [
+            "audio/narration/unknown/o3-0.mp3",
+            "audio/narration/unknown/o3-1.mp3"
+          ]
+        },
+        {
+          "id": "o4",
+          "text": "더 할 것은 없습니다. 그대로 두세요.",
+          "files": [
+            "audio/narration/unknown/o4-0.mp3",
+            "audio/narration/unknown/o4-1.mp3"
+          ]
+        }
       ]
     },
-
     "awoken": {
       "label": "자다가 깼어요",
       "night": true,
-      "sequence": ["intro", "outro"],
+      "sequence": [
+        "intro",
+        "outro"
+      ],
       "_주": "이미 밤중이다. 짧게 끝내고 기존 알람을 건드리지 않는다.",
       "intro": [
-        { "id": "i1", "text": "괜찮습니다. 밤중에 깨는 것은 흔한 일입니다. 시계는 보지 마세요." },
-        { "id": "i2", "text": "다시 잠들 겁니다. 지금은 그것만 알면 됩니다." },
-        { "id": "i3", "text": "몇 시인지 확인하지 마세요. 그 숫자는 도움이 되지 않습니다." },
-        { "id": "i4", "text": "깼다고 해서 밤이 망가진 것은 아닙니다. 아직 많이 남았습니다." }
+        {
+          "id": "i1",
+          "text": "괜찮습니다. 밤중에 깨는 것은 흔한 일입니다. 시계는 보지 마세요.",
+          "files": [
+            "audio/narration/awoken/i1-0.mp3",
+            "audio/narration/awoken/i1-1.mp3",
+            "audio/narration/awoken/i1-2.mp3"
+          ]
+        },
+        {
+          "id": "i2",
+          "text": "다시 잠들 겁니다. 지금은 그것만 알면 됩니다.",
+          "files": [
+            "audio/narration/awoken/i2-0.mp3",
+            "audio/narration/awoken/i2-1.mp3"
+          ]
+        },
+        {
+          "id": "i3",
+          "text": "몇 시인지 확인하지 마세요. 그 숫자는 도움이 되지 않습니다.",
+          "files": [
+            "audio/narration/awoken/i3-0.mp3",
+            "audio/narration/awoken/i3-1.mp3"
+          ]
+        },
+        {
+          "id": "i4",
+          "text": "깼다고 해서 밤이 망가진 것은 아닙니다. 아직 많이 남았습니다.",
+          "files": [
+            "audio/narration/awoken/i4-0.mp3",
+            "audio/narration/awoken/i4-1.mp3"
+          ]
+        }
       ],
       "outro": [
-        { "id": "o1", "text": "숨을 세 번만 길게 내쉬고, 그대로 계세요." },
-        { "id": "o2", "text": "눈은 계속 감고 계세요. 잠은 다시 옵니다." },
-        { "id": "o3", "text": "아무것도 하지 마세요. 그것이 지금 할 일입니다." },
-        { "id": "o4", "text": "몸에 힘을 한 번 빼고, 다시 놓으세요." }
+        {
+          "id": "o1",
+          "text": "숨을 세 번만 길게 내쉬고, 그대로 계세요.",
+          "files": [
+            "audio/narration/awoken/o1-0.mp3"
+          ]
+        },
+        {
+          "id": "o2",
+          "text": "눈은 계속 감고 계세요. 잠은 다시 옵니다.",
+          "files": [
+            "audio/narration/awoken/o2-0.mp3",
+            "audio/narration/awoken/o2-1.mp3"
+          ]
+        },
+        {
+          "id": "o3",
+          "text": "아무것도 하지 마세요. 그것이 지금 할 일입니다.",
+          "files": [
+            "audio/narration/awoken/o3-0.mp3",
+            "audio/narration/awoken/o3-1.mp3"
+          ]
+        },
+        {
+          "id": "o4",
+          "text": "몸에 힘을 한 번 빼고, 다시 놓으세요.",
+          "files": [
+            "audio/narration/awoken/o4-0.mp3"
+          ]
+        }
       ]
     },
-
     "calm": {
       "label": "잠깐 마음 가라앉히기",
       "night": false,
-      "sequence": ["intro", "body", "outro"],
+      "sequence": [
+        "intro",
+        "body",
+        "outro"
+      ],
       "intro": [
-        { "id": "i1", "text": "잠깐 멈추겠습니다. 몇 분이면 됩니다." },
-        { "id": "i2", "text": "지금 하던 것을 잠시 내려놓으세요." },
-        { "id": "i3", "text": "자세를 편하게 하고, 눈은 감아도 되고 떠 있어도 됩니다." }
+        {
+          "id": "i1",
+          "text": "잠깐 멈추겠습니다. 몇 분이면 됩니다.",
+          "files": [
+            "audio/narration/calm/i1-0.mp3",
+            "audio/narration/calm/i1-1.mp3"
+          ]
+        },
+        {
+          "id": "i2",
+          "text": "지금 하던 것을 잠시 내려놓으세요.",
+          "files": [
+            "audio/narration/calm/i2-0.mp3"
+          ]
+        },
+        {
+          "id": "i3",
+          "text": "자세를 편하게 하고, 눈은 감아도 되고 떠 있어도 됩니다.",
+          "files": [
+            "audio/narration/calm/i3-0.mp3"
+          ]
+        }
       ],
       "body": [
-        { "id": "b1", "text": "넷에 들이쉬고, 넷을 멈추고, 여섯에 내쉽니다. 두 번만 해 보겠습니다. 하나, 둘, 셋, 넷. 멈추고. 그리고 길게 내쉬세요." },
-        { "id": "b2", "text": "어깨를 한 번 크게 올렸다가 툭 떨어뜨리세요. 목을 좌우로 천천히 한 번씩." },
-        { "id": "b3", "text": "지금 발이 닿아 있는 바닥을 느껴 보세요. 몸이 어디에 있는지 확인하는 것만으로 마음이 돌아옵니다." },
-        { "id": "b4", "text": "지금 이 순간에 실제로 일어나고 있는 일만 세어 보세요. 대부분은 생각이지 사건이 아닙니다." }
+        {
+          "id": "b1",
+          "text": "넷에 들이쉬고, 넷을 멈추고, 여섯에 내쉽니다. 두 번만 해 보겠습니다. 하나, 둘, 셋, 넷. 멈추고. 그리고 길게 내쉬세요.",
+          "files": [
+            "audio/narration/calm/b1-0.mp3",
+            "audio/narration/calm/b1-1.mp3",
+            "audio/narration/calm/b1-2.mp3",
+            "audio/narration/calm/b1-3.mp3",
+            "audio/narration/calm/b1-4.mp3"
+          ]
+        },
+        {
+          "id": "b2",
+          "text": "어깨를 한 번 크게 올렸다가 툭 떨어뜨리세요. 목을 좌우로 천천히 한 번씩.",
+          "files": [
+            "audio/narration/calm/b2-0.mp3",
+            "audio/narration/calm/b2-1.mp3"
+          ]
+        },
+        {
+          "id": "b3",
+          "text": "지금 발이 닿아 있는 바닥을 느껴 보세요. 몸이 어디에 있는지 확인하는 것만으로 마음이 돌아옵니다.",
+          "files": [
+            "audio/narration/calm/b3-0.mp3",
+            "audio/narration/calm/b3-1.mp3"
+          ]
+        },
+        {
+          "id": "b4",
+          "text": "지금 이 순간에 실제로 일어나고 있는 일만 세어 보세요. 대부분은 생각이지 사건이 아닙니다.",
+          "files": [
+            "audio/narration/calm/b4-0.mp3",
+            "audio/narration/calm/b4-1.mp3"
+          ]
+        }
       ],
       "outro": [
-        { "id": "o1", "text": "됐습니다. 다시 하던 일로 돌아가세요." },
-        { "id": "o2", "text": "이 정도면 충분합니다." },
-        { "id": "o3", "text": "천천히 눈을 뜨세요." }
+        {
+          "id": "o1",
+          "text": "됐습니다. 다시 하던 일로 돌아가세요.",
+          "files": [
+            "audio/narration/calm/o1-0.mp3",
+            "audio/narration/calm/o1-1.mp3"
+          ]
+        },
+        {
+          "id": "o2",
+          "text": "이 정도면 충분합니다.",
+          "files": [
+            "audio/narration/calm/o2-0.mp3"
+          ]
+        },
+        {
+          "id": "o3",
+          "text": "천천히 눈을 뜨세요.",
+          "files": [
+            "audio/narration/calm/o3-0.mp3"
+          ]
+        }
       ]
     },
-
     "nap": {
       "label": "낮잠",
       "night": false,
-      "sequence": ["intro", "body"],
+      "sequence": [
+        "intro",
+        "body"
+      ],
       "_주": "깊이 들어가면 일어나기 힘들다. 마무리 층을 두지 않는다.",
       "intro": [
-        { "id": "i1", "text": "짧게 자겠습니다. 깊이 들어가지 않아도 됩니다." },
-        { "id": "i2", "text": "완전히 잠들지 않아도 괜찮습니다. 눈을 감고 있는 것만으로 충분합니다." },
-        { "id": "i3", "text": "알람이 깨워 줄 테니 시간은 신경 쓰지 마세요." }
+        {
+          "id": "i1",
+          "text": "짧게 자겠습니다. 깊이 들어가지 않아도 됩니다.",
+          "files": [
+            "audio/narration/nap/i1-0.mp3",
+            "audio/narration/nap/i1-1.mp3"
+          ]
+        },
+        {
+          "id": "i2",
+          "text": "완전히 잠들지 않아도 괜찮습니다. 눈을 감고 있는 것만으로 충분합니다.",
+          "files": [
+            "audio/narration/nap/i2-0.mp3",
+            "audio/narration/nap/i2-1.mp3"
+          ]
+        },
+        {
+          "id": "i3",
+          "text": "알람이 깨워 줄 테니 시간은 신경 쓰지 마세요.",
+          "files": [
+            "audio/narration/nap/i3-0.mp3"
+          ]
+        }
       ],
       "body": [
-        { "id": "b1", "text": "몸의 힘을 빼세요. 어깨부터, 팔, 손까지." },
-        { "id": "b2", "text": "숨을 길게 내쉬면서, 잠깐만 멈추겠습니다." },
-        { "id": "b3", "text": "눈꺼풀이 무거워지는 것을 그냥 두세요. 여기까지입니다." }
+        {
+          "id": "b1",
+          "text": "몸의 힘을 빼세요. 어깨부터, 팔, 손까지.",
+          "files": [
+            "audio/narration/nap/b1-0.mp3",
+            "audio/narration/nap/b1-1.mp3"
+          ]
+        },
+        {
+          "id": "b2",
+          "text": "숨을 길게 내쉬면서, 잠깐만 멈추겠습니다.",
+          "files": [
+            "audio/narration/nap/b2-0.mp3"
+          ]
+        },
+        {
+          "id": "b3",
+          "text": "눈꺼풀이 무거워지는 것을 그냥 두세요. 여기까지입니다.",
+          "files": [
+            "audio/narration/nap/b3-0.mp3",
+            "audio/narration/nap/b3-1.mp3"
+          ]
+        }
       ]
     }
   }
