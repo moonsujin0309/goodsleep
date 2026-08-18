@@ -41,6 +41,7 @@ Renight는 AI가 매일 새로 만든다는데도 "결국 똑같다"고 느껴�
 index.html  style.css  manifest.json
 app.js       화면 전환 · 저장 · 세션
 audio.js     믹서 · 나레이션 재생 · 백그라운드 유지 · 알람
+synth.js     사운드 합성 DSP (스테레오 44.1kHz)  ← 순수 함수. node 로 렌더 가능
 narration.js 조립 엔진 · 중복 회피      ← 순수 함수
 sleep.js     타이머 · 수면부채 계산      ← 순수 함수
 scenes.js    캔버스 비주얼

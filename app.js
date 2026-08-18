@@ -27,7 +27,9 @@ const store = {
     ...DEFAULTS,
     // 말은 자연 속도(-5%)로 둔다. 느린 느낌은 여기 침묵이 만든다 —
     // rate 를 낮추면 타임스트레치라 억양이 뭉개지지만 침묵은 아무것도 망가뜨리지 않는다.
-    gapSeconds: 6, sentenceGap: 3.2, narrationVolume: 0.9,
+    // 말 속도는 0.69 가 바닥이다 — 그 아래는 자음이 뭉개져 혀 꼬인 소리가 난다.
+    // 그래서 느림은 전부 여기서 가져온다.
+    gapSeconds: 6, sentenceGap: 3.6, narrationVolume: 0.9,
     voiceURI: null, voiceRate: 0.72, voicePitch: 0.9,
     ...load('settings', {}),
   },
@@ -53,6 +55,7 @@ let draft = { stateId: null, mode: null, wakeAt: 0, napMinutes: 30, custom: fals
 let napFormMinutes = 30;
 let dimTimer = null;
 let breathTimer = null;
+let breathTick = null;
 
 // ── 화면 ──────────────────────────────────────────────────
 
@@ -67,9 +70,33 @@ $$('[data-back]').forEach((b) => b.addEventListener('click', () => go(b.dataset.
 
 // ── 홈 ────────────────────────────────────────────────────
 
+const DOW = ['일', '월', '화', '수', '목', '금', '토'];
+const timeWord = (h) => h < 5 ? '깊은 밤' : h < 11 ? '아침' : h < 17 ? '낮' : h < 21 ? '저녁' : '밤';
+
 function tickClock() {
-  $('#home-clock').textContent = fmtClock(Date.now());
+  const d = new Date();
+  $('#home-clock').textContent = fmtClock(d.getTime());
+  $('#home-date').textContent =
+    `${d.getMonth() + 1}월 ${d.getDate()}일 ${DOW[d.getDay()]}요일 · ${timeWord(d.getHours())}`;
 }
+
+/**
+ * 오늘 달의 위상. 그림자 원을 옆으로 밀어 그믐→초승→보름을 그린다.
+ * 기준: 2000-01-06 18:14 UTC 새달, 삭망월 29.5306일. 장식용이라 이 정밀도면 충분하다.
+ */
+function setMoonPhase() {
+  const synodic = 29.53058867;
+  const days = ((Date.now() / 86400000 - 10957.76) % synodic + synodic) % synodic;
+  const p = days / synodic;                       // 0 새달 · 0.5 보름
+  const cx = p <= 0.5 ? 32 - 136 * p : 32 + 136 * (1 - p);
+  $('#moon-shadow').setAttribute('cx', cx.toFixed(1));
+}
+
+// 상태마다 고유한 점 색 — 목록이 한 가지 보라색이면 다섯 줄이 한 덩어리로 보인다.
+const STATE_HUES = {
+  racing: '#8A78C4', anxious: '#6FA8B8', wired: '#C98B62',
+  awoken: '#7C88C9', unknown: '#A79FB4',
+};
 
 function renderStates() {
   const list = $('#state-list');
@@ -78,6 +105,8 @@ function renderStates() {
     const st = manifest.states[id];
     const b = document.createElement('button');
     b.className = 'state';
+    b.style.setProperty('--dot', STATE_HUES[id] || 'var(--violet)');
+    b.style.setProperty('--dot-soft', (STATE_HUES[id] || '#8A78C4') + '29');
     b.innerHTML = `<span class="dot"></span><span>${st.label}</span>
                    <svg class="icon arrow"><use href="#i-next"/></svg>`;
     b.addEventListener('click', () => openPrepare(id));
@@ -230,6 +259,63 @@ $$('[data-dur-step]').forEach((b) => b.addEventListener('click', () => {
 
 // ── 사운드 프리셋 ─────────────────────────────────────────
 
+// 카드 그림 — 이미지 파일 없이 인라인 SVG 로 그린다 (사진은 라이선스가 걸린다).
+// 색은 프리셋의 --glow 를 물려받아 카드마다 분위기가 달라진다.
+const ART = {
+  waves: `<svg viewBox="0 0 160 92" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <circle cx="116" cy="22" r="11" fill="var(--glow)" opacity=".9"/>
+    <g stroke="var(--glow)" stroke-width="2" stroke-linecap="round" opacity=".45">
+      <path d="M108 56h16M112 68h10M110 80h14"/></g>
+    <g fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2" stroke-linecap="round">
+      <path d="M-4 52 Q12 46 28 52 T60 52 T92 52 T124 52 T156 52" opacity=".75"/>
+      <path d="M-8 66 Q8 60 24 66 T56 66 T88 66 T120 66 T152 66" opacity=".5"/>
+      <path d="M0 80 Q16 74 32 80 T64 80 T96 80 T128 80 T160 80" opacity=".3"/></g></svg>`,
+  rain: `<svg viewBox="0 0 160 92" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <g stroke="rgba(210,230,255,.5)" stroke-width="1.6" stroke-linecap="round">
+      <path d="M28 8l-7 18M64 4l-7 18M100 10l-7 18M132 2l-7 18M46 30l-6 16M84 28l-6 16M118 32l-6 16M22 52l-5 14M58 54l-5 14M96 52l-5 14M134 50l-5 14"/></g>
+    <g fill="rgba(220,238,255,.75)">
+      <circle cx="36" cy="74" r="2.4"/><circle cx="74" cy="80" r="1.8"/><circle cx="112" cy="76" r="2.1"/></g>
+    <ellipse cx="80" cy="88" rx="46" ry="3" fill="none" stroke="rgba(210,230,255,.28)" stroke-width="1.4"/></svg>`,
+  fire: `<svg viewBox="0 0 160 92" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <g stroke="rgba(122,82,52,.9)" stroke-width="5" stroke-linecap="round">
+      <path d="M54 84l52 -6M58 78l46 10"/></g>
+    <path d="M80 24 C64 44 62 58 70 68 C74 73 86 74 90 68 C98 58 96 42 80 24Z" fill="var(--glow)" opacity=".9"/>
+    <path d="M80 42 C73 52 72 60 77 66 C80 69 85 69 87 65 C91 58 88 50 80 42Z" fill="#FFE9C2" opacity=".85"/>
+    <g fill="var(--glow)"><circle cx="64" cy="26" r="1.6" opacity=".8"/><circle cx="98" cy="18" r="1.3" opacity=".6"/><circle cx="88" cy="9" r="1" opacity=".45"/></g></svg>`,
+  stars: `<svg viewBox="0 0 160 92" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <g fill="rgba(255,255,255,.8)">
+      <circle cx="24" cy="16" r="1.3"/><circle cx="58" cy="10" r="1"/><circle cx="96" cy="18" r="1.4"/><circle cx="128" cy="8" r="1"/><circle cx="144" cy="26" r="1.2"/></g>
+    <g fill="var(--glow)"><circle cx="52" cy="54" r="2.2" opacity=".95"/><circle cx="104" cy="46" r="1.8" opacity=".7"/><circle cx="78" cy="62" r="1.5" opacity=".85"/></g>
+    <g fill="none" stroke="rgba(163,196,142,.55)" stroke-width="1.8" stroke-linecap="round">
+      <path d="M12 92 C14 80 12 74 8 68M28 92 C30 78 34 72 32 62M52 92 C50 80 54 74 58 66M88 92 C90 82 86 76 84 70M116 92 C118 80 122 74 120 64M142 92 C140 82 144 76 148 70"/></g></svg>`,
+  stream: `<svg viewBox="0 0 160 92" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <g fill="rgba(255,255,255,.15)">
+      <ellipse cx="28" cy="82" rx="16" ry="8"/><ellipse cx="128" cy="84" rx="18" ry="9"/><ellipse cx="84" cy="88" rx="12" ry="6"/></g>
+    <g fill="none" stroke="var(--glow)" stroke-width="2" stroke-linecap="round">
+      <path d="M-4 58 C24 54 30 66 56 62 S96 52 118 60 S150 66 164 60" opacity=".75"/>
+      <path d="M-4 72 C20 68 34 78 60 74 S98 64 122 72 S150 78 164 72" opacity=".5"/></g>
+    <g stroke="rgba(255,255,255,.6)" stroke-width="1.6" stroke-linecap="round">
+      <path d="M48 56l6 -2M100 66l6 -2M70 76l6 -2"/></g></svg>`,
+  fan: `<svg viewBox="0 0 160 92" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <circle cx="80" cy="40" r="26" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="2"/>
+    <g fill="var(--glow)" opacity=".55">
+      <path d="M80 40 C70 24 74 16 84 14 C92 13 94 24 88 34Z"/>
+      <path d="M80 40 C96 44 102 52 96 60 C90 66 80 58 78 48Z"/>
+      <path d="M80 40 C66 50 56 48 54 40 C53 32 64 28 74 34Z"/></g>
+    <circle cx="80" cy="40" r="4" fill="rgba(255,255,255,.6)"/>
+    <path d="M80 66v14M64 84h32" fill="none" stroke="rgba(255,255,255,.4)" stroke-width="3" stroke-linecap="round"/></svg>`,
+  snow: `<svg viewBox="0 0 160 92" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <g fill="rgba(255,255,255,.85)">
+      <circle cx="26" cy="18" r="2"/><circle cx="62" cy="10" r="1.5"/><circle cx="98" cy="22" r="2.2"/><circle cx="132" cy="12" r="1.6"/>
+      <circle cx="42" cy="42" r="1.7"/><circle cx="82" cy="36" r="1.4"/><circle cx="118" cy="46" r="1.9"/><circle cx="148" cy="38" r="1.3"/>
+      <circle cx="30" cy="66" r="1.5"/><circle cx="70" cy="60" r="2"/><circle cx="108" cy="68" r="1.4"/><circle cx="140" cy="62" r="1.7"/></g>
+    <path d="M0 86 C30 80 60 88 90 84 S140 80 160 84 V92 H0Z" fill="rgba(255,255,255,.22)"/></svg>`,
+  plain: `<svg viewBox="0 0 160 92" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <path d="M0 70 H160" stroke="rgba(255,255,255,.22)" stroke-width="1.5"/>
+    <ellipse cx="80" cy="70" rx="34" ry="10" fill="var(--glow)" opacity=".3"/>
+    <circle cx="80" cy="66" r="5" fill="var(--glow)" opacity=".8"/></svg>`,
+};
+
 function renderPresets() {
   const rail = $('#preset-rail');
   if (rail.childElementCount) { markPreset(); return; }
@@ -241,7 +327,7 @@ function renderPresets() {
     b.style.setProperty('--from', p.art.from);
     b.style.setProperty('--to', p.art.to);
     b.style.setProperty('--glow', p.art.glow);
-    b.innerHTML = `<span class="art art-${p.art.motif}" aria-hidden="true"></span>
+    b.innerHTML = `<span class="art" aria-hidden="true">${ART[p.art.motif] || ''}</span>
       <span class="body"><span class="name">${p.label}</span><span class="note">${p.note}</span></span>`;
     b.addEventListener('click', () => applyPreset(p));
     rail.appendChild(b);
@@ -423,23 +509,48 @@ function playNarration(state) {
   });
 }
 
+// 4-2-6 — 나레이션 breath 층("넷을 세며 들이쉽니다 · 여섯을 세며 내쉽니다")과 같은 박자다.
+// 숫자도 나레이션처럼 올려 센다.
+const BREATH_PHASES = [
+  { label: '들이쉬기', secs: 4, cls: 'is-in' },
+  { label: '멈추기', secs: 2, cls: 'is-hold' },
+  { label: '내쉬기', secs: 6, cls: 'is-out' },
+];
+const RING_C = 540.4;   // 2πr (r=86) — style.css 의 stroke-dasharray 와 같아야 한다
+
 function startBreathing() {
-  clearInterval(breathTimer);
+  clearTimeout(breathTimer);
+  clearInterval(breathTick);
+  const root = $('.breath');
+  const prog = root.querySelector('.prog');
   const label = $('#breath-label');
-  const phases = [['들이쉬기', 4000], ['멈추기', 2000], ['내쉬기', 6000]];
+  const count = $('#breath-count');
   let i = 0;
-  const next = () => {
-    label.textContent = phases[i][0];
-    breathTimer = setTimeout(() => { i = (i + 1) % phases.length; next(); }, phases[i][1]);
+  const run = () => {
+    const p = BREATH_PHASES[i];
+    for (const q of BREATH_PHASES) root.classList.toggle(q.cls, q === p);
+    root.style.setProperty('--dur', `${p.secs}s`);
+    label.textContent = p.label;
+    // 링을 전환 없이 0으로 되감은 뒤, 이번 단계 길이만큼 선형으로 채운다.
+    // 진행 표시라 선형이 맞다 — 시간이 고르게 흐르는 게 보여야 한다.
+    prog.style.transition = 'none';
+    prog.style.strokeDashoffset = RING_C;
+    void prog.getBoundingClientRect();
+    prog.style.transition = `stroke-dashoffset ${p.secs}s linear, stroke 300ms ease-out`;
+    prog.style.strokeDashoffset = '0';
+    let s = 1;
+    count.textContent = s;
+    breathTick = setInterval(() => { s += 1; if (s <= p.secs) count.textContent = s; }, 1000);
+    breathTimer = setTimeout(() => { i = (i + 1) % BREATH_PHASES.length; run(); }, p.secs * 1000);
   };
-  next();
+  run();
 }
 
 function endSession() {
   narration?.stop();
   clearTimeout(dimTimer);
-  clearInterval(breathTimer);
   clearTimeout(breathTimer);
+  clearInterval(breathTick);
   mixer.duck(false);
   scenes.stop();
   $('#app').classList.remove('is-dim');
@@ -692,6 +803,7 @@ async function init() {
 
   renderStates();
   tickClock();
+  setMoonPhase();
   setInterval(tickClock, 20000);
   scenes.set(store.scene);
 

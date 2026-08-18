@@ -16,3 +16,8 @@ audio/_samples/
 
 # 예외: TTS 로 생성한 나레이션은 배포해야 앱이 소리를 낸다.
 !audio/narration/**/*.mp3
+
+# API 키. 절대 커밋하지 않는다.
+tools/.env
+
+__pycache__/

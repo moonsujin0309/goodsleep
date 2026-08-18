@@ -7,20 +7,20 @@
 
 const FADE_TICK = 50;
 
-/** 볼륨 페이드. setInterval 을 쓴다 — rAF 는 백그라운드에서 멈춘다. */
+/** 볼륨 페이드. setInterval 을 쓴다 — rAF 는 백그라운드에서 멈춘다.
+ *  진행은 틱 수가 아니라 벽시계로 잰다. 백그라운드 탭은 인터벌이 1초로 스로틀되는데,
+ *  틱 수로 세면 60초 알람 램프가 20분이 된다 — "알람이 안 울렸다"의 정체. */
 export function fade(el, to, ms, onDone) {
   if (el._fade) clearInterval(el._fade);
   const from = el.volume;
-  const steps = Math.max(1, Math.round(ms / FADE_TICK));
-  let i = 0;
   if (ms <= 0) {
     el.volume = clamp01(to);
     onDone?.();
     return;
   }
+  const t0 = Date.now();
   el._fade = setInterval(() => {
-    i++;
-    const t = Math.min(1, i / steps);
+    const t = Math.min(1, (Date.now() - t0) / ms);
     el.volume = clamp01(from + (to - from) * t);
     if (t >= 1) {
       clearInterval(el._fade);
@@ -34,198 +34,13 @@ const clamp01 = (v) => Math.min(1, Math.max(0, v));
 
 // ── 사운드 합성 ────────────────────────────────────────────
 //
-// 소리를 파일로 받지 않고 만든다. 이유가 셋 있다.
-//   1) 라이선스. Mixkit·Pixabay 같은 무료 라이브러리는 "소스 파일과 함께 재배포"를
-//      금지한다 — 공개 저장소에 mp3 를 올리는 것이 정확히 거기 걸린다.
-//      합성한 소리는 라이선스가 아예 존재하지 않는다.
-//   2) 이음매. 녹음 루프는 몇 분마다 툭 끊긴다. 조용한 방에서 그게 제일 거슬린다.
-//      아래 파형은 끝과 시작이 수학적으로 이어지므로 이음매가 없다.
-//   3) 용량. 밖에서 모바일 데이터로 여는 앱이다. 0바이트가 가장 빠르다.
-//
-// 주기 성분은 전부 cyc() 로 만든다 — 루프 길이당 정수 배 주기라 파형이 감길 때
-// 위상이 정확히 맞는다. 이게 없으면 물결·팬 소리에서 주기마다 턱이 생긴다.
+// 합성 DSP 는 전부 synth.js 에 있다 (순수 모듈 — node 로도 렌더돼 검수용 파일을 뽑는다).
+// 여기서는 브라우저 Blob URL 로 감싸기만 한다.
 
-const LENGTHS = { waves: 30, fire: 30, crickets: 30 };   // 나머지는 20초
+import { renderBed, wavBytes } from './synth.js';
 
-function generateBed(kind, n) {
-  const d = new Float32Array(n);
-  const TAU = Math.PI * 2;
-  const cyc = (k, i) => (TAU * k * i) / n;      // 루프당 정확히 k 주기
-  const w = () => Math.random() * 2 - 1;
-  let b = 0, lp = 0, lp2 = 0, env = 0;
-
-  switch (kind) {
-    case 'white':
-      for (let i = 0; i < n; i++) d[i] = w();
-      break;
-
-    case 'brown':
-      for (let i = 0; i < n; i++) { b = (b + 0.02 * w()) / 1.02; d[i] = b * 3.5; }
-      break;
-
-    case 'pink': {                                // Paul Kellet 근사
-      let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
-      for (let i = 0; i < n; i++) {
-        const x = w();
-        b0 = 0.99886 * b0 + x * 0.0555179;
-        b1 = 0.99332 * b1 + x * 0.0750759;
-        b2 = 0.969 * b2 + x * 0.153852;
-        b3 = 0.8665 * b3 + x * 0.3104856;
-        b4 = 0.55 * b4 + x * 0.5329522;
-        b5 = -0.7616 * b5 - x * 0.016898;
-        d[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + x * 0.5362) * 0.11;
-        b6 = x * 0.115926;
-      }
-      break;
-    }
-
-    case 'rain':                                  // 하이패스 히스 + 물방울 클릭
-      for (let i = 0; i < n; i++) {
-        const x = w();
-        lp2 += 0.004 * (x - lp2);
-        lp += 0.35 * (x - lp2 - lp);
-        let s = lp * 0.9;
-        if (env <= 0 && Math.random() < 0.0018) env = 1;
-        if (env > 0) { s += w() * env * env * 0.45; env -= 0.022; }
-        d[i] = s;
-      }
-      break;
-
-    case 'waves':                                 // 브라운 노이즈에 느린 너울
-      for (let i = 0; i < n; i++) {
-        b = (b + 0.02 * w()) / 1.02;
-        const a = Math.pow(0.5 + 0.5 * Math.sin(cyc(2, i) - Math.PI / 2), 1.9);
-        const c = Math.pow(0.5 + 0.5 * Math.sin(cyc(3, i) + 1.1), 2);
-        const swell = 0.2 + 0.8 * (0.65 * a + 0.35 * c);
-        const x = w();
-        lp += 0.3 * (x - lp);
-        d[i] = (b * 3.0 + (x - lp) * 0.35 * swell) * swell;   // 마루에서 부서지는 거품
-      }
-      break;
-
-    case 'wind':                                  // 돌풍에 따라 컷오프가 움직인다
-      for (let i = 0; i < n; i++) {
-        b = (b + 0.02 * w()) / 1.02;
-        const gust = 0.28 + 0.72
-          * Math.pow(0.5 + 0.5 * Math.sin(cyc(2, i) + 0.4), 2)
-          * (0.6 + 0.4 * (0.5 + 0.5 * Math.sin(cyc(5, i))));
-        lp += (0.03 + 0.1 * gust) * (b * 3.2 - lp);
-        d[i] = lp * gust * 1.5;
-      }
-      break;
-
-    case 'fire': {                                // 낮은 웅웅 + 불규칙한 탁탁
-      let crack = 0, big = 0;
-      for (let i = 0; i < n; i++) {
-        b = (b + 0.02 * w()) / 1.02;
-        const x = w();
-        lp += 0.12 * (x - lp);
-        let s = b * 1.9 + lp * 0.25;
-        if (crack <= 0 && Math.random() < 0.0026) crack = 1;
-        if (crack > 0) { s += w() * crack * crack * 0.8; crack -= 0.06; }
-        if (big <= 0 && Math.random() < 0.00012) big = 1;
-        if (big > 0) { s += w() * big * big * 1.6; big -= 0.012; }
-        d[i] = s;
-      }
-      break;
-    }
-
-    case 'stream':                                // 밝은 대역 + 물 흐르는 흔들림
-      for (let i = 0; i < n; i++) {
-        const x = w();
-        lp += 0.5 * (x - lp);
-        lp2 += 0.02 * (x - lp2);
-        const gurgle = 0.78 + 0.22 * Math.sin(cyc(7, i)) * Math.sin(cyc(11, i));
-        d[i] = (lp - lp2) * 1.1 * gurgle;
-      }
-      break;
-
-    case 'crickets': {                            // 세 마리가 서로 다른 박자로
-      const bugs = [
-        { k: 62, f: 4300, o: 0.0 },
-        { k: 74, f: 4900, o: 0.33 },
-        { k: 49, f: 3800, o: 0.66 },
-      ];
-      const rate = n / (LENGTHS.crickets || 30);
-      for (const bug of bugs) {
-        const period = n / bug.k;
-        const pulse = Math.round(rate * 0.018);   // 처프 하나 18ms
-        for (let i = 0; i < n; i++) {
-          const t = (i + bug.o * period) % period;
-          const idx = Math.floor(t / pulse);
-          if (idx > 5 || idx % 2 === 1) continue; // 3연속 처프 후 침묵
-          const local = t - idx * pulse;
-          const shape = Math.sin((local / pulse) * Math.PI);
-          d[i] += Math.sin((TAU * bug.f * i) / rate) * shape * shape * 0.22;
-        }
-      }
-      break;
-    }
-
-    case 'fan': {                                 // 넓은 바람 + 낮은 험 + 날개
-      const rate = n / 20;
-      for (let i = 0; i < n; i++) {
-        b = (b + 0.02 * w()) / 1.02;
-        lp += 0.08 * (b * 3.2 - lp);
-        const hum = Math.sin(cyc(Math.round((n / rate) * 100), i)) * 0.06;
-        const blade = 1 + 0.07 * Math.sin(cyc(Math.round((n / rate) * 22), i));
-        d[i] = (lp * 1.7 + hum) * blade;
-      }
-      break;
-    }
-
-    default:
-      for (let i = 0; i < n; i++) d[i] = w();
-  }
-  return d;
-}
-
-const TARGET_RMS = 0.13;
-
-/**
- * 이음매 없는 루프용 WAV. 끝 f 샘플을 앞으로 감아 크로스페이드한다.
- *
- * 정규화는 피크가 아니라 RMS 기준이다. 피크로 맞추면 모닥불(RMS 0.05)과
- * 백색 소음(RMS 0.385)이 같은 슬라이더 값에서 7배 차이로 들린다 —
- * 사람 귀는 피크가 아니라 평균 에너지로 크기를 느낀다.
- * 대신 모닥불의 탁탁 같은 순간 피크가 튀므로 tanh 로 부드럽게 눌러 준다.
- * 여유를 0.68 까지 두는 이유: 22050Hz 를 기기 샘플레이트로 리샘플링할 때
- * 보간이 원 파형 위로 넘친다. 꽉 채우면 재생 시점에 클리핑된다.
- */
-export function bedUrl(kind, seconds = LENGTHS[kind] || 20, rate = 22050) {
-  const n = seconds * rate;
-  const f = Math.floor(rate * 0.5);
-  const src = generateBed(kind, n + f);
-  const out = new Float32Array(n);
-  for (let i = 0; i < n; i++) out[i] = src[i];
-  for (let j = 0; j < f; j++) {
-    const t = j / f;
-    out[j] = src[j] * t + src[n + j] * (1 - t);
-  }
-
-  let mean = 0;
-  for (let i = 0; i < n; i++) mean += out[i];
-  mean /= n;                                    // 브라운 노이즈는 DC 가 떠 있다
-  let sum = 0;
-  for (let i = 0; i < n; i++) { out[i] -= mean; sum += out[i] * out[i]; }
-  const rms = Math.sqrt(sum / n);
-  const gain = rms > 0 ? TARGET_RMS / rms : 1;
-  // 0.58: 모닥불의 탁탁 같은 날카로운 과도 신호는 리샘플링에서 20% 가까이 넘친다.
-  // 0.68 로 두면 재생 시점에 피크가 1.08 까지 올라가 클리핑됐다.
-  for (let i = 0; i < n; i++) out[i] = Math.tanh(out[i] * gain * 1.5) * 0.58;
-
-  const buf = new ArrayBuffer(44 + n * 2);
-  const v = new DataView(buf);
-  const str = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
-  str(0, 'RIFF'); v.setUint32(4, 36 + n * 2, true); str(8, 'WAVEfmt ');
-  v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
-  v.setUint32(24, rate, true); v.setUint32(28, rate * 2, true);
-  v.setUint16(32, 2, true); v.setUint16(34, 16, true);
-  str(36, 'data'); v.setUint32(40, n * 2, true);
-  for (let i = 0; i < n; i++) {
-    v.setInt16(44 + i * 2, Math.max(-1, Math.min(1, out[i])) * 32767, true);
-  }
-  return URL.createObjectURL(new Blob([buf], { type: 'audio/wav' }));
+export function bedUrl(kind) {
+  return URL.createObjectURL(new Blob([wavBytes(renderBed(kind))], { type: 'audio/wav' }));
 }
 
 /** 무음 루프. 사운드를 하나도 안 켜도 탭이 살아 있어야 알람이 운다. */
@@ -285,18 +100,23 @@ export class Mixer {
     return layer;
   }
 
+  /** 슬라이더값 → 실제 엘리먼트 볼륨. 제곱 커브 — 귀는 로그로 듣는다.
+   *  선형이면 슬라이더 초입부터 너무 크다 ("기본 배경음이 너무 커"의 원인). */
+  _target(layer) {
+    return layer.volume * layer.volume * (this.ducked ? 0.45 : 1);
+  }
+
   setVolume(id, v) {
     const layer = this.layers.get(id);
     if (!layer) return;
     layer.volume = clamp01(v);
-    const target = layer.volume * (this.ducked ? 0.45 : 1);
     if (layer.volume > 0) {
       if (layer.def.generate && !layer.el.src) layer.el.src = bedUrl(layer.def.generate);
       if (layer.el.paused) {
         layer.el.volume = 0;
         layer.el.play().catch(() => { layer.available = false; layer.onstate?.(); });
       }
-      fade(layer.el, target, 400);
+      fade(layer.el, this._target(layer), 400);
     } else {
       fade(layer.el, 0, 500, () => layer.el.pause());
     }
@@ -306,7 +126,7 @@ export class Mixer {
   duck(on) {
     this.ducked = on;
     for (const l of this.layers.values()) {
-      if (l.volume > 0) fade(l.el, l.volume * (on ? 0.45 : 1), 1200);
+      if (l.volume > 0) fade(l.el, this._target(l), 1200);
     }
   }
 
@@ -349,6 +169,90 @@ export function splitSentences(text) {
     .map((s) => s.trim())
     .filter(Boolean);
 }
+
+const CLAUSE_MIN = 8;     // 이보다 짧은 토막은 앞에 붙인다
+const CLAUSE_SPLIT = 22;  // 이보다 긴 문장은 쉼표에서 나눈다
+// 연결어미 쪼개기는 시도했다가 버렸다. 문법적으로는 맞는 호흡 자리인데
+// 실제로 들으면 툭툭 끊긴다. 0 이면 끈다 (tools/chunking.py 와 같은 값이어야 한다).
+const CONNECT_SPLIT = 0;
+
+// 연결어미 뒤 — 한국어에서 원래 숨을 쉬는 자리다.
+// '서'는 뺐다 ('에서', '으로서' 같은 조사에서 잘못 끊긴다).
+// '~다고', '~라고' 는 인용이라 제외한다 — 끊으면 서술어가 반토막 난다.
+const CONNECTIVE = /(면|고|며|는데|지만|다가|거나|니까)(\s+)/g;
+const isHangul = (c) => c >= '가' && c <= '힣';
+
+/** tools/chunking.py 의 _split_connective 와 같은 알고리즘이어야 한다. */
+function splitConnective(s) {
+  const out = [];
+  let last = 0;
+  for (const m of s.matchAll(CONNECTIVE)) {
+    const head = m.index;
+    if (head === 0 || !isHangul(s[head - 1])) continue;
+    if (m[1] === '고' && (s[head - 1] === '다' || s[head - 1] === '라')) continue;
+    out.push(s.slice(last, head + m[1].length).trim());
+    last = head + m[0].length;
+  }
+  out.push(s.slice(last).trim());
+  return out.filter(Boolean);
+}
+
+const mergeShort = (parts) => parts.reduce((acc, p) => {
+  if (acc.length && p.length < CLAUSE_MIN) acc[acc.length - 1] += ' ' + p;
+  else acc.push(p);
+  return acc;
+}, []);
+
+const clean = (arr) => arr.map((p) => p.trim()).filter(Boolean);
+
+/**
+ * 문장을 다시 쉼표와 연결어미에서 나눈다. tools/chunking.py 와 같은 규칙이다.
+ *
+ * 말 속도에는 바닥이 있다 — 0.69 아래로 내리면 자음 조음이 뭉개져 혀 꼬인 소리가 난다.
+ * 그래서 남은 느림은 전부 쉼에서 가져와야 한다.
+ *
+ * end=true 면 문장이 끝난 자리(긴 쉼), false 면 문장 안(짧은 쉼)이다.
+ */
+export function splitChunks(text) {
+  const out = [];
+  for (const sentence of splitSentences(text)) {
+    if (sentence.length <= CLAUSE_SPLIT) {
+      out.push({ text: sentence, end: true });
+      continue;
+    }
+    const parts = mergeShort(clean(sentence.split(/(?<=,)\s+/)));
+    const finer = [];
+    for (const p of parts) {
+      if (CONNECT_SPLIT && p.length > CONNECT_SPLIT) finer.push(...mergeShort(splitConnective(p)));
+      else finer.push(p);
+    }
+    finer.forEach((p, i) => out.push({ text: p, end: i === finer.length - 1 }));
+  }
+  return out;
+}
+
+/**
+ * 문장 길이에 따른 침묵 배수.
+ *
+ * 처음엔 len/24 로 비례시켰다. 그건 틀렸다 — 대본은 뒤로 갈수록 문장이 짧아지도록
+ * 설계돼 있어서, 침묵이 가장 길어야 할 구간(이완·심상·소실)에서 오히려 줄어들었다.
+ * 짧게 끊어야 할 것은 "걱정." 같은 한두 단어 열거뿐이므로 거기만 따로 잘라낸다.
+ */
+export function sentenceScale(text = '') {
+  const n = text.length;
+  if (n < 7) return 0.45;                       // "걱정." 같은 열거
+  return Math.min(1, Math.max(0.82, n / 26));
+}
+
+/**
+ * 층마다 침묵이 길어진다. 이게 "점점 느려진다"는 감각을 만드는 진짜 장치다.
+ * 말의 속도를 늦추면 타임스트레치라 음질이 망가지지만 침묵은 아무것도 망가뜨리지 않는다.
+ * 정착 1.0 에서 소실 2.5 까지 2.5배로 벌어지는 동안 듣는 사람은 자기가 느려진다고 느낀다.
+ */
+export const LAYER_GAP = {
+  settle: 1.0, breath: 1.2, release: 1.45, drift: 1.75, fade: 2.1,
+  intro: 1.0, body: 1.2, outro: 1.45,      // 아직 3층인 상태들
+};
 
 /** 기기에 있는 한국어 음성 목록. 기기마다 크게 다르다. */
 export function koreanVoices() {
@@ -400,18 +304,23 @@ export class NarrationPlayer {
    */
   async _speak(piece) {
     const useFiles = !!(piece.files?.length || piece.file);
+    // 침묵은 원문 토막으로 계산한다 — 파일 경로 길이는 아무 뜻이 없다.
+    // 생성기(tools/tts.py)도 같은 규칙으로 쪼개므로 파일과 토막이 1:1 로 맞는다.
+    const chunks = splitChunks(piece.text);
     const parts = piece.files?.length ? piece.files
       : piece.file ? [piece.file]
-      : splitSentences(piece.text);
+      : chunks.map((c) => c.text);
+    const layerGap = LAYER_GAP[piece.layer] ?? 1;
 
     for (let i = 0; i < parts.length; i++) {
       if (this.stopped) return;
       await (useFiles ? this._file(parts[i]) : this._tts(parts[i]));
       if (this.stopped) return;
       if (i < parts.length - 1) {
-        const len = useFiles ? 30 : parts[i].length;
-        const scale = Math.min(1, Math.max(0.35, len / 24));
-        await this._wait(this.sentenceGap * scale * 1000);
+        const c = chunks[i] || { text: '', end: true };
+        // 문장 안의 쉼표는 문장 끝보다 짧게 쉰다
+        const kind = c.end ? 1 : 0.45;
+        await this._wait(this.sentenceGap * sentenceScale(c.text) * layerGap * kind * 1000);
       }
     }
   }
@@ -461,15 +370,18 @@ export class NarrationPlayer {
 
 // ── 알람 ──────────────────────────────────────────────────
 
-/** 무음에서 60초에 걸쳐 올라온다. 놀라서 깨는 것과 자연히 깨는 것은 다르다. */
+/** 무음에서 60초에 걸쳐 올라온다. 놀라서 깨는 것과 자연히 깨는 것은 다르다.
+ *  소리는 노이즈가 아니라 차임 — 9초 루프에 3음 아르페지오 + 침묵. */
 export function createAlarm() {
-  const el = new Audio(bedUrl('pink', 8, 22050));
+  const el = new Audio(bedUrl('chime'));
   el.loop = true;
   el.volume = 0;
   return {
     el,
     start(rampMs = 60000) {
-      el.volume = 0.02;
+      // 0.02 로 시작하면 첫 1분이 사실상 무음이라 "알람이 안 울렸다"가 된다.
+      // 속삭임 정도(0.15)에서 시작해 램프한다 — 자연히 깨되, 들리기는 바로 들리게.
+      el.volume = 0.15;
       el.play().catch(() => {});
       fade(el, 1, rampMs);
     },

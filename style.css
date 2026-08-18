@@ -104,23 +104,24 @@ main {
 }
 
 .screen { display: none; flex: 1; flex-direction: column; }
-.screen.is-active { display: flex; animation: screen-in 420ms var(--ease) both; }
+.screen.is-active { display: flex; animation: screen-in 280ms var(--ease) both; }
 
 @keyframes screen-in {
   from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: none; }
 }
 
-/* 진입 시 순차 등장. 컨테이너 하나를 통째로 움직이지 않는다. */
-.stagger > * { animation: piece-in 520ms var(--ease) both; }
-.stagger > *:nth-child(1) { animation-delay: 40ms; }
-.stagger > *:nth-child(2) { animation-delay: 130ms; }
-.stagger > *:nth-child(3) { animation-delay: 200ms; }
-.stagger > *:nth-child(4) { animation-delay: 260ms; }
-.stagger > *:nth-child(5) { animation-delay: 310ms; }
-.stagger > *:nth-child(6) { animation-delay: 350ms; }
-.stagger > *:nth-child(7) { animation-delay: 385ms; }
-.stagger > *:nth-child(8) { animation-delay: 415ms; }
+/* 진입 시 순차 등장. 컨테이너 하나를 통째로 움직이지 않는다.
+   간격은 항목당 35ms 이하 — 그 이상 벌리면 화면이 굼떠 보인다. */
+.stagger > * { animation: piece-in 380ms var(--ease) both; }
+.stagger > *:nth-child(1) { animation-delay: 20ms; }
+.stagger > *:nth-child(2) { animation-delay: 55ms; }
+.stagger > *:nth-child(3) { animation-delay: 90ms; }
+.stagger > *:nth-child(4) { animation-delay: 120ms; }
+.stagger > *:nth-child(5) { animation-delay: 150ms; }
+.stagger > *:nth-child(6) { animation-delay: 175ms; }
+.stagger > *:nth-child(7) { animation-delay: 200ms; }
+.stagger > *:nth-child(8) { animation-delay: 220ms; }
 
 @keyframes piece-in {
   from { opacity: 0; transform: translateY(12px); }
@@ -138,7 +139,29 @@ main {
 }
 
 .brand { font-size: 14px; font-weight: 600; letter-spacing: 0.06em; color: var(--text-2); }
-.top .clock { margin-left: auto; font-size: 14px; color: var(--text-3); }
+
+/* ── 홈 히어로 — 오늘의 하늘을 화면에 들인다 ──────────────── */
+
+.hero { text-align: center; margin: var(--sp-4) 0 var(--sp-7); }
+.hero .moon {
+  width: 76px; height: 76px;
+  margin-bottom: var(--sp-2);
+  filter: drop-shadow(0 0 26px rgba(234, 223, 198, 0.3));
+  animation: moon-float 7s ease-in-out infinite alternate;
+}
+@keyframes moon-float {
+  from { transform: translateY(0); }
+  to   { transform: translateY(-6px); }
+}
+.hero-clock {
+  font-size: 56px; font-weight: 200;
+  letter-spacing: -0.02em; line-height: 1.1;
+  color: var(--text);
+}
+.hero-date { margin: var(--sp-1) 0 0; font-size: 14px; color: var(--text-2); }
+
+#s-home .lede, #s-home .sub { text-align: center; }
+#s-home .sub { margin-bottom: var(--sp-5); }
 
 .iconbtn {
   width: var(--tap);
@@ -190,8 +213,8 @@ main {
 
 .state .dot {
   width: 8px; height: 8px; border-radius: 50%; flex: none;
-  background: var(--violet);
-  box-shadow: 0 0 0 5px var(--violet-soft);
+  background: var(--dot, var(--violet));
+  box-shadow: 0 0 0 5px var(--dot-soft, var(--violet-soft));
 }
 .state .arrow { margin-left: auto; color: var(--text-3); width: 16px; height: 16px; }
 
@@ -208,8 +231,14 @@ main {
 }
 .btn:active { scale: 0.97; }
 
-.btn-primary { background: var(--accent); color: #17110A; }
-.btn-primary:hover { background: #EDC069; }
+/* 등불 — 앱에서 단 하나뿐인 밝은 면이므로 살짝 입체감을 준다 */
+.btn-primary {
+  background: linear-gradient(180deg, #EDC069, #D9A54E);
+  color: #17110A;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25),
+              0 8px 20px -10px rgba(224, 177, 92, 0.45);
+}
+.btn-primary:hover { background: linear-gradient(180deg, #F2C97A, #E0AC55); }
 
 .btn-quiet {
   color: var(--text-2);
@@ -341,49 +370,11 @@ main {
 }
 .preset[aria-pressed='true'] .name { color: var(--accent); }
 
-/* 카드 그림 — 이미지 파일 없이 CSS 로만 그린다 */
-.art-rain::after {
-  background: repeating-linear-gradient(74deg,
-    transparent 0 7px, rgba(216, 232, 255, 0.22) 7px 8px);
-  opacity: 0.55;
+/* 카드 그림 — 이미지 파일 없이 인라인 SVG 로 그린다 (app.js 의 ART) */
+.preset .art svg {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
 }
-.art-waves::after {
-  background:
-    radial-gradient(120% 42% at 50% 108%, rgba(190, 225, 245, 0.30), transparent 60%),
-    radial-gradient(120% 34% at 50% 128%, rgba(190, 225, 245, 0.24), transparent 60%),
-    radial-gradient(120% 26% at 50% 146%, rgba(190, 225, 245, 0.18), transparent 60%);
-}
-.art-fire::after {
-  background: radial-gradient(58% 46% at 50% 104%, rgba(255, 186, 92, 0.62), transparent 66%);
-}
-.art-stars::after {
-  background:
-    radial-gradient(1.4px 1.4px at 18% 26%, rgba(255,255,255,0.85), transparent),
-    radial-gradient(1.2px 1.2px at 62% 16%, rgba(255,255,255,0.7), transparent),
-    radial-gradient(1.6px 1.6px at 82% 44%, rgba(255,255,255,0.8), transparent),
-    radial-gradient(1.1px 1.1px at 34% 58%, rgba(255,255,255,0.6), transparent),
-    radial-gradient(1.3px 1.3px at 48% 34%, rgba(255,255,255,0.65), transparent),
-    radial-gradient(1px 1px at 74% 68%, rgba(255,255,255,0.5), transparent);
-}
-.art-stream::after {
-  background: repeating-linear-gradient(96deg,
-    transparent 0 9px, rgba(180, 234, 240, 0.18) 9px 11px);
-  opacity: 0.7;
-}
-.art-fan::after {
-  background: repeating-conic-gradient(from 0deg at 50% 55%,
-    rgba(255,255,255,0.10) 0deg 14deg, transparent 14deg 28deg);
-  opacity: 0.6;
-}
-.art-snow::after {
-  background:
-    radial-gradient(2px 2px at 22% 32%, rgba(255,255,255,0.75), transparent),
-    radial-gradient(1.6px 1.6px at 58% 22%, rgba(255,255,255,0.6), transparent),
-    radial-gradient(2.2px 2.2px at 78% 56%, rgba(255,255,255,0.7), transparent),
-    radial-gradient(1.5px 1.5px at 38% 68%, rgba(255,255,255,0.55), transparent),
-    radial-gradient(1.8px 1.8px at 68% 82%, rgba(255,255,255,0.5), transparent);
-}
-.art-plain::after { background: none; }
 
 /* ── 접기 ──────────────────────────────────────────────── */
 
@@ -471,22 +462,42 @@ input[type='range']:disabled { cursor: not-allowed; }
 
 #s-play { justify-content: center; text-align: center; }
 
+/* 호흡 게이지 — 링은 단계 진행(선형), 원판은 들숨에 부풀고 날숨에 잦아든다.
+   위상 전환은 전부 JS(startBreathing)가 클래스로 지휘한다 —
+   CSS 키프레임으로 돌리면 JS 카운터와 몇 분 만에 어긋난다. */
 .breath {
-  width: 168px; height: 168px;
+  position: relative;
+  width: 184px; height: 184px;
   margin: 0 auto var(--sp-7);
-  border-radius: 50%;
   display: grid; place-items: center;
-  background: radial-gradient(circle, var(--violet-soft) 0%, transparent 68%);
+}
+.breath .ring {
+  position: absolute; inset: 0;
+  transform: rotate(-90deg);           /* 12시부터 차오르게 */
+}
+.breath .ring circle { fill: none; stroke-width: 2.5; }
+.breath .ring .track { stroke: var(--line); }
+.breath .ring .prog {
+  stroke: var(--violet);
+  stroke-linecap: round;
+  stroke-dasharray: 540.4;             /* 2πr (r=86) — app.js RING_C 와 같아야 한다 */
+  stroke-dashoffset: 540.4;
+}
+.breath.is-hold .ring .prog { stroke: var(--accent); }   /* 멈춤은 등불색 */
+.breath .disc {
+  position: absolute; inset: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--violet-soft) 0%, transparent 70%);
   box-shadow: inset 0 0 0 1px rgba(138, 120, 196, 0.24);
-  animation: breathe 12s ease-in-out infinite;
+  transform: scale(0.74);
+  transition: transform var(--dur, 4s) cubic-bezier(0.45, 0, 0.55, 1);
 }
-.breath span { font-size: 13px; color: var(--text-2); letter-spacing: 0.08em; }
-
-@keyframes breathe {
-  0%,   100% { transform: scale(0.86); }
-  33%        { transform: scale(1.06); }
-  50%        { transform: scale(1.06); }
-}
+.breath.is-in .disc,
+.breath.is-hold .disc { transform: scale(1); }
+.breath.is-out .disc { transform: scale(0.74); }
+.breath .txt { position: relative; display: grid; justify-items: center; gap: 2px; }
+.breath .count { font-size: 34px; font-weight: 300; line-height: 1.2; color: var(--text); }
+.breath .phase { font-size: 12px; color: var(--text-2); letter-spacing: 0.08em; }
 
 .caption {
   font-size: 18px; line-height: 1.85; color: var(--text);
@@ -513,7 +524,11 @@ input[type='range']:disabled { cursor: not-allowed; }
 /* ── 알람 ──────────────────────────────────────────────── */
 
 #s-alarm { justify-content: center; text-align: center; }
-.wake-time { font-size: 64px; font-weight: 300; letter-spacing: -0.03em; line-height: 1.1; margin-bottom: var(--sp-2); }
+.wake-time {
+  font-size: 64px; font-weight: 300; letter-spacing: -0.03em; line-height: 1.1;
+  margin-bottom: var(--sp-2);
+  text-shadow: 0 0 44px rgba(224, 177, 92, 0.35);   /* 등불이 켜진 느낌 */
+}
 
 /* ── 리포트 ────────────────────────────────────────────── */
 
@@ -608,5 +623,6 @@ input[type='range']:disabled { cursor: not-allowed; }
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
   }
-  .breath { transform: scale(0.96); }
+  /* 원판은 멈추지만 숫자 카운트와 링 채움은 그대로 안내한다 */
+  .breath .disc { transform: scale(0.9) !important; }
 }

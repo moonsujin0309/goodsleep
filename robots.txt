@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://moonsujin0309.github.io/goodsleep/sitemap.xml
