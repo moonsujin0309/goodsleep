@@ -28,6 +28,10 @@
 
   --r-sm: 10px; --r-md: 14px; --r-lg: 20px; --r-xl: 28px;
 
+  /* 나레이션 문장 전용. 한글은 이탤릭 전통이 없어 기울이지 않는다 —
+     브라우저가 합성한 기울기는 획이 무너져 보인다. 서체를 바꾸는 것으로 충분하다. */
+  --font-serif: 'Gowun Batang', 'Apple SD Gothic Neo', serif;
+
   --tap: 56px;                     /* 44 권장보다 크다. 반쯤 잠든 채 어둠 속에서 누른다 */
   --ease: cubic-bezier(0.2, 0, 0, 1);
   --shell: 460px;
@@ -514,7 +518,8 @@ input[type='range']:disabled { cursor: not-allowed; }
 .breath .phase { font-size: 12px; color: var(--text-2); letter-spacing: 0.08em; }
 
 .caption {
-  font-size: 18px; line-height: 1.85; color: var(--text);
+  font-family: var(--font-serif);
+  font-size: 19px; line-height: 1.9; color: var(--text);
   min-height: 6em;
   margin: 0 0 var(--sp-6);
   transition: opacity 900ms var(--ease);
