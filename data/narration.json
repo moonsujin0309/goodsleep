@@ -78,7 +78,15 @@
             "audio/narration/racing/b1-7.mp3",
             "audio/narration/racing/b1-8.mp3",
             "audio/narration/racing/b1-9.mp3",
-            "audio/narration/racing/b1-10.mp3"
+            "audio/narration/racing/b1-10.mp3",
+            "audio/narration/racing/b1-11.mp3",
+            "audio/narration/racing/b1-12.mp3",
+            "audio/narration/racing/b1-13.mp3",
+            "audio/narration/racing/b1-14.mp3",
+            "audio/narration/racing/b1-15.mp3",
+            "audio/narration/racing/b1-16.mp3",
+            "audio/narration/racing/b1-17.mp3",
+            "audio/narration/racing/b1-18.mp3"
           ]
         },
         {
@@ -237,35 +245,43 @@
       "fade": [
         {
           "id": "f1",
-          "text": "여기까지입니다. 이제 소리만 남습니다. 아무것도 하지 않습니다. 그대로 있습니다. 점점 멀어집니다.",
+          "text": "여기까지입니다. 이제 소리만 남습니다. 아무것도 하지 않습니다. 지금 잠들지 않아도 괜찮습니다. 소리는 밤새 곁에 있습니다. 그대로 있습니다. 조용해집니다. 점점 멀어집니다.",
           "files": [
             "audio/narration/racing/f1-0.mp3",
             "audio/narration/racing/f1-1.mp3",
             "audio/narration/racing/f1-2.mp3",
             "audio/narration/racing/f1-3.mp3",
-            "audio/narration/racing/f1-4.mp3"
+            "audio/narration/racing/f1-4.mp3",
+            "audio/narration/racing/f1-5.mp3",
+            "audio/narration/racing/f1-6.mp3",
+            "audio/narration/racing/f1-7.mp3"
           ]
         },
         {
           "id": "f2",
-          "text": "더 할 것이 없습니다. 남은 것도 없습니다. 소리는 계속 있습니다. 조용해집니다. 멀어집니다.",
+          "text": "더 할 것이 없습니다. 남은 것도 없습니다. 오늘 일은 오늘 자리에 두면 됩니다. 소리는 계속 있습니다. 언제 잠들어도 괜찮습니다. 조용해집니다. 천천히 멀어집니다.",
           "files": [
             "audio/narration/racing/f2-0.mp3",
             "audio/narration/racing/f2-1.mp3",
             "audio/narration/racing/f2-2.mp3",
             "audio/narration/racing/f2-3.mp3",
-            "audio/narration/racing/f2-4.mp3"
+            "audio/narration/racing/f2-4.mp3",
+            "audio/narration/racing/f2-5.mp3",
+            "audio/narration/racing/f2-6.mp3"
           ]
         },
         {
           "id": "f3",
-          "text": "이제 놓습니다. 다 놓습니다. 소리가 멀어집니다. 조용해집니다. 잠이 옵니다.",
+          "text": "이제 놓습니다. 다 놓습니다. 오늘은 이것으로 충분합니다. 나머지는 밤이 지킵니다. 소리가 멀어집니다. 생각도 함께 멀어집니다. 조용해집니다. 잠이 옵니다.",
           "files": [
             "audio/narration/racing/f3-0.mp3",
             "audio/narration/racing/f3-1.mp3",
             "audio/narration/racing/f3-2.mp3",
             "audio/narration/racing/f3-3.mp3",
-            "audio/narration/racing/f3-4.mp3"
+            "audio/narration/racing/f3-4.mp3",
+            "audio/narration/racing/f3-5.mp3",
+            "audio/narration/racing/f3-6.mp3",
+            "audio/narration/racing/f3-7.mp3"
           ]
         }
       ]
@@ -343,7 +359,23 @@
             "audio/narration/anxious/b1-10.mp3",
             "audio/narration/anxious/b1-11.mp3",
             "audio/narration/anxious/b1-12.mp3",
-            "audio/narration/anxious/b1-13.mp3"
+            "audio/narration/anxious/b1-13.mp3",
+            "audio/narration/anxious/b1-14.mp3",
+            "audio/narration/anxious/b1-15.mp3",
+            "audio/narration/anxious/b1-16.mp3",
+            "audio/narration/anxious/b1-17.mp3",
+            "audio/narration/anxious/b1-18.mp3",
+            "audio/narration/anxious/b1-19.mp3",
+            "audio/narration/anxious/b1-20.mp3",
+            "audio/narration/anxious/b1-21.mp3",
+            "audio/narration/anxious/b1-22.mp3",
+            "audio/narration/anxious/b1-23.mp3",
+            "audio/narration/anxious/b1-24.mp3",
+            "audio/narration/anxious/b1-25.mp3",
+            "audio/narration/anxious/b1-26.mp3",
+            "audio/narration/anxious/b1-27.mp3",
+            "audio/narration/anxious/b1-28.mp3",
+            "audio/narration/anxious/b1-29.mp3"
           ]
         },
         {
@@ -495,35 +527,42 @@
       "fade": [
         {
           "id": "f1",
-          "text": "이제 다 놓습니다. 지킬 것이 없습니다. 밤이 대신 지킵니다. 소리가 멀어집니다. 조용해집니다.",
+          "text": "이제 다 놓습니다. 지킬 것이 없습니다. 밤이 대신 지킵니다. 지금 이대로 안전합니다. 잠들 때까지 소리가 곁에 있습니다. 소리가 멀어집니다. 조용해집니다.",
           "files": [
             "audio/narration/anxious/f1-0.mp3",
             "audio/narration/anxious/f1-1.mp3",
             "audio/narration/anxious/f1-2.mp3",
             "audio/narration/anxious/f1-3.mp3",
-            "audio/narration/anxious/f1-4.mp3"
+            "audio/narration/anxious/f1-4.mp3",
+            "audio/narration/anxious/f1-5.mp3",
+            "audio/narration/anxious/f1-6.mp3"
           ]
         },
         {
           "id": "f2",
-          "text": "여기까지면 됩니다. 나머지는 밤이 합니다. 아무것도 하지 않습니다. 점점 멀어집니다. 잠이 옵니다.",
+          "text": "여기까지면 됩니다. 나머지는 밤이 합니다. 아무것도 하지 않습니다. 오늘 몫은 다 마쳤습니다. 언제 잠들어도 괜찮습니다. 점점 멀어집니다. 잠이 옵니다.",
           "files": [
             "audio/narration/anxious/f2-0.mp3",
             "audio/narration/anxious/f2-1.mp3",
             "audio/narration/anxious/f2-2.mp3",
             "audio/narration/anxious/f2-3.mp3",
-            "audio/narration/anxious/f2-4.mp3"
+            "audio/narration/anxious/f2-4.mp3",
+            "audio/narration/anxious/f2-5.mp3",
+            "audio/narration/anxious/f2-6.mp3"
           ]
         },
         {
           "id": "f3",
-          "text": "안전합니다. 그대로 있으면 됩니다. 생각이 멀어집니다. 소리도 멀어집니다. 조용합니다.",
+          "text": "안전합니다. 그대로 있으면 됩니다. 이불 속은 따뜻합니다. 아무 일도 일어나지 않습니다. 생각이 멀어집니다. 소리도 멀어집니다. 조용합니다. 그걸로 충분합니다.",
           "files": [
             "audio/narration/anxious/f3-0.mp3",
             "audio/narration/anxious/f3-1.mp3",
             "audio/narration/anxious/f3-2.mp3",
             "audio/narration/anxious/f3-3.mp3",
-            "audio/narration/anxious/f3-4.mp3"
+            "audio/narration/anxious/f3-4.mp3",
+            "audio/narration/anxious/f3-5.mp3",
+            "audio/narration/anxious/f3-6.mp3",
+            "audio/narration/anxious/f3-7.mp3"
           ]
         }
       ]
@@ -603,7 +642,15 @@
             "audio/narration/wired/b2-2.mp3",
             "audio/narration/wired/b2-3.mp3",
             "audio/narration/wired/b2-4.mp3",
-            "audio/narration/wired/b2-5.mp3"
+            "audio/narration/wired/b2-5.mp3",
+            "audio/narration/wired/b2-6.mp3",
+            "audio/narration/wired/b2-7.mp3",
+            "audio/narration/wired/b2-8.mp3",
+            "audio/narration/wired/b2-9.mp3",
+            "audio/narration/wired/b2-10.mp3",
+            "audio/narration/wired/b2-11.mp3",
+            "audio/narration/wired/b2-12.mp3",
+            "audio/narration/wired/b2-13.mp3"
           ]
         },
         {
@@ -744,35 +791,41 @@
       "fade": [
         {
           "id": "f1",
-          "text": "몸은 이미 쉬고 있습니다. 따라가기만 하면 됩니다. 소리가 멀어집니다. 점점 조용해집니다. 잠이 옵니다.",
+          "text": "몸은 이미 쉬고 있습니다. 따라가기만 하면 됩니다. 오늘 몫은 다 했습니다. 지금 잠들지 않아도 괜찮습니다. 소리가 멀어집니다. 점점 조용해집니다. 잠이 옵니다.",
           "files": [
             "audio/narration/wired/f1-0.mp3",
             "audio/narration/wired/f1-1.mp3",
             "audio/narration/wired/f1-2.mp3",
             "audio/narration/wired/f1-3.mp3",
-            "audio/narration/wired/f1-4.mp3"
+            "audio/narration/wired/f1-4.mp3",
+            "audio/narration/wired/f1-5.mp3",
+            "audio/narration/wired/f1-6.mp3"
           ]
         },
         {
           "id": "f2",
-          "text": "더 끌 것이 없습니다. 다 꺼졌습니다. 어둠이 포근합니다. 소리가 멀어집니다. 조용합니다.",
+          "text": "더 끌 것이 없습니다. 다 꺼졌습니다. 어둠이 포근합니다. 남은 일은 내일의 몸이 합니다. 소리는 밤새 곁에 있습니다. 소리가 멀어집니다. 조용합니다.",
           "files": [
             "audio/narration/wired/f2-0.mp3",
             "audio/narration/wired/f2-1.mp3",
             "audio/narration/wired/f2-2.mp3",
             "audio/narration/wired/f2-3.mp3",
-            "audio/narration/wired/f2-4.mp3"
+            "audio/narration/wired/f2-4.mp3",
+            "audio/narration/wired/f2-5.mp3",
+            "audio/narration/wired/f2-6.mp3"
           ]
         },
         {
           "id": "f3",
-          "text": "이제 다 놓습니다. 남은 일이 없습니다. 밤에 맡깁니다. 멀어집니다. 조용해집니다.",
+          "text": "이제 다 놓습니다. 남은 일이 없습니다. 밤에 맡깁니다. 언제 잠들어도 됩니다. 그대로 두면 됩니다. 멀어집니다. 조용해집니다.",
           "files": [
             "audio/narration/wired/f3-0.mp3",
             "audio/narration/wired/f3-1.mp3",
             "audio/narration/wired/f3-2.mp3",
             "audio/narration/wired/f3-3.mp3",
-            "audio/narration/wired/f3-4.mp3"
+            "audio/narration/wired/f3-4.mp3",
+            "audio/narration/wired/f3-5.mp3",
+            "audio/narration/wired/f3-6.mp3"
           ]
         }
       ]
@@ -846,7 +899,15 @@
             "audio/narration/unknown/b1-4.mp3",
             "audio/narration/unknown/b1-5.mp3",
             "audio/narration/unknown/b1-6.mp3",
-            "audio/narration/unknown/b1-7.mp3"
+            "audio/narration/unknown/b1-7.mp3",
+            "audio/narration/unknown/b1-8.mp3",
+            "audio/narration/unknown/b1-9.mp3",
+            "audio/narration/unknown/b1-10.mp3",
+            "audio/narration/unknown/b1-11.mp3",
+            "audio/narration/unknown/b1-12.mp3",
+            "audio/narration/unknown/b1-13.mp3",
+            "audio/narration/unknown/b1-14.mp3",
+            "audio/narration/unknown/b1-15.mp3"
           ]
         },
         {
@@ -993,35 +1054,41 @@
       "fade": [
         {
           "id": "f1",
-          "text": "이제 됐습니다. 자리는 만들어졌습니다. 나머지는 잠이 합니다. 소리가 멀어집니다. 조용해집니다.",
+          "text": "이제 됐습니다. 자리는 만들어졌습니다. 나머지는 잠이 합니다. 잠이 늦어도 괜찮습니다. 쉬는 것만으로 충분합니다. 소리가 멀어집니다. 조용해집니다.",
           "files": [
             "audio/narration/unknown/f1-0.mp3",
             "audio/narration/unknown/f1-1.mp3",
             "audio/narration/unknown/f1-2.mp3",
             "audio/narration/unknown/f1-3.mp3",
-            "audio/narration/unknown/f1-4.mp3"
+            "audio/narration/unknown/f1-4.mp3",
+            "audio/narration/unknown/f1-5.mp3",
+            "audio/narration/unknown/f1-6.mp3"
           ]
         },
         {
           "id": "f2",
-          "text": "더 할 것이 없습니다. 기다리지도 않습니다. 그냥 있습니다. 점점 멀어집니다. 잠이 옵니다.",
+          "text": "더 할 것이 없습니다. 기다리지도 않습니다. 그냥 있습니다. 소리는 밤새 이어집니다. 언제 잠들어도 괜찮습니다. 점점 멀어집니다. 잠이 옵니다.",
           "files": [
             "audio/narration/unknown/f2-0.mp3",
             "audio/narration/unknown/f2-1.mp3",
             "audio/narration/unknown/f2-2.mp3",
             "audio/narration/unknown/f2-3.mp3",
-            "audio/narration/unknown/f2-4.mp3"
+            "audio/narration/unknown/f2-4.mp3",
+            "audio/narration/unknown/f2-5.mp3",
+            "audio/narration/unknown/f2-6.mp3"
           ]
         },
         {
           "id": "f3",
-          "text": "다 놓았습니다. 밤이 이어받습니다. 생각이 멀어집니다. 소리도 멀어집니다. 조용합니다.",
+          "text": "다 놓았습니다. 밤이 이어받습니다. 오늘은 여기까지면 충분합니다. 생각이 멀어집니다. 소리도 멀어집니다. 그대로 조용합니다. 편안합니다.",
           "files": [
             "audio/narration/unknown/f3-0.mp3",
             "audio/narration/unknown/f3-1.mp3",
             "audio/narration/unknown/f3-2.mp3",
             "audio/narration/unknown/f3-3.mp3",
-            "audio/narration/unknown/f3-4.mp3"
+            "audio/narration/unknown/f3-4.mp3",
+            "audio/narration/unknown/f3-5.mp3",
+            "audio/narration/unknown/f3-6.mp3"
           ]
         }
       ]
@@ -1074,32 +1141,35 @@
       "fade": [
         {
           "id": "f1",
-          "text": "생각은 꺼 둡니다. 어둠이 이어집니다. 소리가 멀어집니다. 잠이 다시 옵니다.",
+          "text": "생각은 꺼 둡니다. 어둠이 이어집니다. 눈을 뜨지 않아도 됩니다. 소리가 멀어집니다. 잠이 다시 옵니다.",
           "files": [
             "audio/narration/awoken/f1-0.mp3",
             "audio/narration/awoken/f1-1.mp3",
             "audio/narration/awoken/f1-2.mp3",
-            "audio/narration/awoken/f1-3.mp3"
+            "audio/narration/awoken/f1-3.mp3",
+            "audio/narration/awoken/f1-4.mp3"
           ]
         },
         {
           "id": "f2",
-          "text": "아무것도 시작하지 않습니다. 밤에 다시 맡깁니다. 조용해집니다. 멀어집니다.",
+          "text": "아무것도 시작하지 않습니다. 밤에 다시 맡깁니다. 아직 시간이 많습니다. 조용해집니다. 멀어집니다.",
           "files": [
             "audio/narration/awoken/f2-0.mp3",
             "audio/narration/awoken/f2-1.mp3",
             "audio/narration/awoken/f2-2.mp3",
-            "audio/narration/awoken/f2-3.mp3"
+            "audio/narration/awoken/f2-3.mp3",
+            "audio/narration/awoken/f2-4.mp3"
           ]
         },
         {
           "id": "f3",
-          "text": "그대로 있습니다. 잠의 문은 열려 있습니다. 천천히 돌아갑니다. 조용합니다.",
+          "text": "그대로 있습니다. 잠의 문은 열려 있습니다. 서두르지 않아도 됩니다. 천천히 돌아갑니다. 조용합니다.",
           "files": [
             "audio/narration/awoken/f3-0.mp3",
             "audio/narration/awoken/f3-1.mp3",
             "audio/narration/awoken/f3-2.mp3",
-            "audio/narration/awoken/f3-3.mp3"
+            "audio/narration/awoken/f3-3.mp3",
+            "audio/narration/awoken/f3-4.mp3"
           ]
         }
       ]
@@ -1163,7 +1233,15 @@
             "audio/narration/calm/b1-4.mp3",
             "audio/narration/calm/b1-5.mp3",
             "audio/narration/calm/b1-6.mp3",
-            "audio/narration/calm/b1-7.mp3"
+            "audio/narration/calm/b1-7.mp3",
+            "audio/narration/calm/b1-8.mp3",
+            "audio/narration/calm/b1-9.mp3",
+            "audio/narration/calm/b1-10.mp3",
+            "audio/narration/calm/b1-11.mp3",
+            "audio/narration/calm/b1-12.mp3",
+            "audio/narration/calm/b1-13.mp3",
+            "audio/narration/calm/b1-14.mp3",
+            "audio/narration/calm/b1-15.mp3"
           ]
         },
         {

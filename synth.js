@@ -27,14 +27,16 @@ const TAU = Math.PI * 2;
 const w = () => Math.random() * 2 - 1;
 const r01 = () => Math.random();
 
-/** 감쇠 사인 하나를 버퍼에 더한다. 물방울·장작·종은 전부 이것이다. */
+/** 감쇠 사인 하나를 버퍼에 더한다. 물방울·장작·종은 전부 이것이다.
+ *  버퍼 끝을 넘는 꼬리는 앞으로 감긴다 — 이벤트 버퍼는 루프 길이(n)라서
+ *  이음매 근처의 이벤트가 잘리지 않고 자연스럽게 이어진다. */
 function ping(buf, at, freq, decaySec, amp, rate, attackSec = 0.002) {
-  const len = Math.min(buf.length - at, Math.round(decaySec * 6 * rate));
+  const len = Math.min(buf.length, Math.round(decaySec * 6 * rate));
   const atk = Math.max(1, Math.round(attackSec * rate));
   const k = 1 / (decaySec * rate);
   for (let j = 0; j < len; j++) {
     const env = (j < atk ? j / atk : 1) * Math.exp(-j * k);
-    buf[at + j] += Math.sin(TAU * freq * j / rate) * env * amp;
+    buf[(at + j) % buf.length] += Math.sin(TAU * freq * j / rate) * env * amp;
   }
 }
 
@@ -56,18 +58,23 @@ function panNoise(L, R, at, lenSec, amp, rate, pan, bright = 0.5) {
   const gL = Math.cos(a), gR = Math.sin(a);
   const k = 5 / len;
   let lp = 0;
-  for (let j = 0; j < len && at + j < L.length; j++) {
+  for (let j = 0; j < len; j++) {
     const env = (j < 3 ? j / 3 : 1) * Math.exp(-j * k);
     lp += bright * (w() - lp);
     const s = lp * env * amp;
-    L[at + j] += s * gL;
-    R[at + j] += s * gR;
+    const idx = (at + j) % L.length;
+    L[idx] += s * gL;
+    R[idx] += s * gR;
   }
 }
 
 // ── 생성기 ────────────────────────────────────────────────
-// 각 함수는 m 샘플의 [L, R] 을 돌려준다. m = 루프 n + 크로스페이드 f.
-// safeEnd 앞에서 이벤트를 끝내면 크로스페이드 구간이 깨끗하게 남는다.
+// 각 함수는 [bedL, bedR, evL?, evR?] 를 돌려준다.
+//   bed — m 샘플(루프 n + 크로스페이드 f). 넓은 텍스처. 꼬리를 크로스페이드로 잇는다.
+//   ev  — n 샘플 원형 버퍼. 빗방울·장작·처프 같은 이벤트. 꼬리가 루프 시작으로
+//         감기므로 이음매에서 잘리지도, 크로스페이드에 지워지지도 않는다.
+// 이 분리가 "루프가 급작스럽다"를 없애는 핵심이다 — 이벤트를 bed 에 섞고
+// 크로스페이드하면 이음매 근처 이벤트가 반쯤 지워지며 티가 난다.
 
 function genNoise(kind, m, rate) {
   const L = new Float32Array(m), R = new Float32Array(m);
@@ -118,21 +125,21 @@ function genRain(m, rate, n) {
     }
   }
 
-  // 층 3 — 개별 빗방울. '탁'(짧은 틱)과 '통'(공명 드립)을 섞는다.
-  const safeEnd = n - Math.round(0.15 * rate);
+  // 층 3 — 개별 빗방울. '탁'(짧은 틱)과 '통'(공명 드립)을 섞는다. 원형 버퍼로.
+  const evL = new Float32Array(n), evR = new Float32Array(n);
   const ticks = Math.round((n / rate) * 26);      // 초당 26개
   for (let e = 0; e < ticks; e++) {
-    const at = Math.floor(r01() * safeEnd);
-    panPing(L, R, at, 2600 + r01() * 5200, 0.004 + r01() * 0.01,
+    const at = Math.floor(r01() * n);
+    panPing(evL, evR, at, 2600 + r01() * 5200, 0.004 + r01() * 0.01,
       0.05 + r01() * r01() * 0.16, rate, w(), 0.0006);
   }
   const drips = Math.round((n / rate) * 1.6);     // 처마 물방울 — 성기고 낮고 둥글게
   for (let e = 0; e < drips; e++) {
-    const at = Math.floor(r01() * safeEnd);
-    panPing(L, R, at, 620 + r01() * 1400, 0.03 + r01() * 0.05,
+    const at = Math.floor(r01() * n);
+    panPing(evL, evR, at, 620 + r01() * 1400, 0.03 + r01() * 0.05,
       0.05 + r01() * 0.07, rate, w() * 0.8, 0.003);
   }
-  return [L, R];
+  return [L, R, evL, evR];
 }
 
 function genWaves(m, rate, n) {
@@ -141,8 +148,10 @@ function genWaves(m, rate, n) {
   // 파도 하나 = 빠르게 부서지고(히스) 천천히 물러난다(저역 워시).
   // 부서짐은 파도마다 좌우 위치가 다르다(해변을 따라 움직인다) — 채널별 포락선.
   // 물러나는 저역은 방향감이 없으므로 공유한다.
-  const crashL = new Float32Array(m), crashR = new Float32Array(m);
-  const washEnv = new Float32Array(m);
+  // 포락선은 길이 n 원형 버퍼다 — 마지막 파도의 긴 꼬리가 루프 시작으로 감겨
+  // 이음매에서 레벨이 뚝 떨어지지 않는다.
+  const crashL = new Float32Array(n), crashR = new Float32Array(n);
+  const washEnv = new Float32Array(n);
   const count = 5;
   let t = 0.05 + r01() * 0.03;
   for (let c = 0; c < count; c++) {
@@ -153,13 +162,14 @@ function genWaves(m, rate, n) {
     const attack = Math.round((0.5 + r01() * 0.4) * rate);
     const kCrash = 1 / ((2.2 + r01() * 1.2) * rate);
     const kWash = 1 / ((4.5 + r01() * 1.5) * rate);
-    const span = Math.min(m - at, Math.round(9 * rate));
+    const span = Math.min(n, Math.round(9 * rate));
     for (let j = 0; j < span; j++) {
       const a = j < attack ? Math.pow(j / attack, 2) : Math.exp(-(j - attack) * kCrash);
       const ww = j < attack ? Math.pow(j / attack, 1.5) : Math.exp(-(j - attack) * kWash);
-      crashL[at + j] += a * gL;
-      crashR[at + j] += a * gR;
-      washEnv[at + j] += ww;
+      const idx = (at + j) % n;
+      crashL[idx] += a * gL;
+      crashR[idx] += a * gR;
+      washEnv[idx] += ww;
     }
     // 다음 파도까지 6~10초 — 규칙적이면 기계가 된다
     t += (0.7 + r01() * 0.45) * (1 / count);
@@ -172,9 +182,9 @@ function genWaves(m, rate, n) {
       const x = w();
       foam += 0.42 * (x - foam);                  // 부서질 때만 커지는 밝은 거품
       lp += 0.05 * (x - lp);
-      const wash = washEnv[i];
+      const wash = washEnv[i % n];                // 크로스페이드 구간도 같은 포락선을 본다
       d[i] = b * (1.1 + 2.2 * wash)
-        + (x - foam) * 0.34 * crash[i]
+        + (x - foam) * 0.34 * crash[i % n]
         + lp * 0.5 * wash;
     }
   }
@@ -194,43 +204,43 @@ function genFire(m, rate, n) {
     }
   }
 
-  const safeEnd = n - Math.round(0.4 * rate);
+  const evL = new Float32Array(n), evR = new Float32Array(n);
   // 층 2 — 잔가지 탁탁. 감쇠 사인으로 했더니 전자음 '삐' 가 됐다 —
   // 부러지는 소리는 광대역 노이즈 클릭이고, 울림은 그 뒤에 아주 약하게만 붙는다.
   const snaps = Math.round((n / rate) * 9);
   for (let e = 0; e < snaps; e++) {
-    const at = Math.floor(r01() * safeEnd);
+    const at = Math.floor(r01() * n);
     const pan = w() * 0.9;
     const amp = 0.15 + r01() * r01() * 0.45;
-    panNoise(L, R, at, 0.006 + r01() * 0.014, amp, rate, pan, 0.45 + r01() * 0.4);
+    panNoise(evL, evR, at, 0.006 + r01() * 0.014, amp, rate, pan, 0.45 + r01() * 0.4);
     if (r01() < 0.35)                             // 가끔 나무 울림이 살짝 남는다
-      panPing(L, R, at + 2, 1400 + r01() * 2400, 0.005 + r01() * 0.006, amp * 0.25, rate, pan, 0.001);
+      panPing(evL, evR, at + 2, 1400 + r01() * 2400, 0.005 + r01() * 0.006, amp * 0.25, rate, pan, 0.001);
     if (r01() < 0.25)                             // 쩍- 하고 두 번 갈라지는 것
-      panNoise(L, R, at + Math.round((0.015 + r01() * 0.03) * rate),
+      panNoise(evL, evR, at + Math.round((0.015 + r01() * 0.03) * rate),
         0.005 + r01() * 0.008, amp * 0.6, rate, pan, 0.5);
   }
   // 층 3 — 옹이 터지는 중간 톡. 둔탁한 클릭 + 낮은 몸통 울림.
   const knots = Math.round((n / rate) * 1.2);
   for (let e = 0; e < knots; e++) {
-    const at = Math.floor(r01() * safeEnd);
+    const at = Math.floor(r01() * n);
     const pan = w() * 0.7;
-    panNoise(L, R, at, 0.03 + r01() * 0.04, 0.3 + r01() * 0.2, rate, pan, 0.18);
-    panPing(L, R, at + 3, 320 + r01() * 380, 0.02 + r01() * 0.02, 0.10, rate, pan, 0.002);
+    panNoise(evL, evR, at, 0.03 + r01() * 0.04, 0.3 + r01() * 0.2, rate, pan, 0.18);
+    panPing(evL, evR, at + 3, 320 + r01() * 380, 0.02 + r01() * 0.02, 0.10, rate, pan, 0.002);
   }
   // 층 4 — 드물게 큰 장작 무너짐: 저역 쿵 + 불티 촤르륵 (전부 노이즈 틱)
   const bigs = Math.max(2, Math.round(n / rate / 9));
   for (let e = 0; e < bigs; e++) {
-    const at = Math.floor(r01() * safeEnd);
+    const at = Math.floor(r01() * n);
     const pan = w() * 0.5;
-    panPing(L, R, at, 95 + r01() * 50, 0.14, 0.4, rate, pan, 0.005);
-    panNoise(L, R, at, 0.12, 0.25, rate, pan, 0.12);
+    panPing(evL, evR, at, 95 + r01() * 50, 0.14, 0.4, rate, pan, 0.005);
+    panNoise(evL, evR, at, 0.12, 0.25, rate, pan, 0.12);
     for (let s = 0; s < 12; s++) {
       const off = Math.floor(r01() * r01() * 0.5 * rate);
-      panNoise(L, R, Math.min(at + off, m - 1), 0.003 + r01() * 0.006,
+      panNoise(evL, evR, at + off, 0.003 + r01() * 0.006,
         0.10 * (1 - s / 14), rate, pan + w() * 0.3, 0.75);
     }
   }
-  return [L, R];
+  return [L, R, evL, evR];
 }
 
 function genStream(m, rate, n) {
@@ -265,13 +275,13 @@ function genStream(m, rate, n) {
     }
   }
   // 잔 물방울 — 아주 가끔, 아주 작게
-  const safeEnd = n - Math.round(0.1 * rate);
+  const evL = new Float32Array(n), evR = new Float32Array(n);
   const plips = Math.round((n / rate) * 0.8);
   for (let e = 0; e < plips; e++) {
-    panPing(L, R, Math.floor(r01() * safeEnd), 900 + r01() * 1800,
+    panPing(evL, evR, Math.floor(r01() * n), 900 + r01() * 1800,
       0.02 + r01() * 0.03, 0.04 + r01() * 0.04, rate, w() * 0.7, 0.002);
   }
-  return [L, R];
+  return [L, R, evL, evR];
 }
 
 function genCrickets(m, rate, n) {
@@ -300,30 +310,30 @@ function genCrickets(m, rate, n) {
   ];
   const pulseLen = Math.round(0.021 * rate);
   const gapLen = Math.round(0.013 * rate);
-  const safeEnd = n - Math.round(0.5 * rate);
+  const evL = new Float32Array(n), evR = new Float32Array(n);
   for (const bug of bugs) {
     const aL = Math.cos((bug.pan + 1) * Math.PI / 4);
     const aR = Math.sin((bug.pan + 1) * Math.PI / 4);
     let t = r01() * bug.period;
-    while (t * rate < safeEnd) {
+    while (t * rate < n) {
       if (r01() < 0.13) { t += bug.period; continue; }        // 가끔 쉰다
       const at = Math.round(t * rate);
       const loud = bug.amp * (0.7 + 0.3 * r01());
       for (let p = 0; p < bug.pulses; p++) {
         const start = at + p * (pulseLen + gapLen);
-        if (start + pulseLen >= m) break;
         const f = bug.f * (1 + 0.012 * p);                    // 펄스마다 살짝 올라간다
         for (let j = 0; j < pulseLen; j++) {
           const env = Math.pow(Math.sin((j / pulseLen) * Math.PI), 2);
           const s = Math.sin(TAU * f * j / rate) * env * loud;
-          L[start + j] += s * aL;
-          R[start + j] += s * aR;
+          const idx = (start + j) % n;                        // 이음매를 넘는 처프는 감긴다
+          evL[idx] += s * aL;
+          evR[idx] += s * aR;
         }
       }
       t += bug.period * (0.93 + 0.14 * r01());
     }
   }
-  return [L, R];
+  return [L, R, evL, evR];
 }
 
 function genWind(m, rate, n) {
@@ -377,6 +387,7 @@ function genFan(m, rate, n) {
 /** 알람 차임 — 부드러운 3음 아르페지오. 놀라서 깨는 소리가 아니라 열리는 소리. */
 function genChime(m, rate, n) {
   const L = new Float32Array(m), R = new Float32Array(m);
+  const evL = new Float32Array(n), evR = new Float32Array(n);
   const notes = [
     { f: 523.25, t: 0.4, pan: -0.3 },   // C5
     { f: 659.25, t: 1.6, pan: 0.1 },    // E5
@@ -386,10 +397,10 @@ function genChime(m, rate, n) {
   for (const nt of notes) {
     const at = Math.round(nt.t * rate);
     for (const [mult, amp, dec] of [[1, 0.5, 2.2], [2, 0.14, 1.3], [3, 0.05, 0.8]]) {
-      panPing(L, R, at, nt.f * mult, dec, amp, rate, nt.pan, 0.012);
+      panPing(evL, evR, at, nt.f * mult, dec, amp, rate, nt.pan, 0.012);
     }
   }
-  return [L, R];                        // 나머지 ~3초는 침묵 — 루프마다 숨이 생긴다
+  return [L, R, evL, evR];              // 나머지 ~3초는 침묵 — 루프마다 숨이 생긴다
 }
 
 // ── 마감: 크로스페이드 · 정규화 · WAV ─────────────────────
@@ -408,7 +419,7 @@ const TARGET_RMS = 0.13;
 export function renderBed(kind, rate = RATE) {
   const seconds = LENGTHS[kind] || 20;
   const n = seconds * rate;
-  const f = Math.floor(rate * 0.5);
+  const f = Math.floor(rate * 1.5);   // 텍스처 크로스페이드. 0.5초는 이음매가 귀에 걸렸다
   const m = n + f;
 
   const gen = {
@@ -425,7 +436,7 @@ export function renderBed(kind, rate = RATE) {
     chime: () => genChime(m, rate, n),
   }[kind] || (() => genNoise('white', m, rate));
 
-  const [srcL, srcR] = gen();
+  const [srcL, srcR, evL, evR] = gen();
   const chans = [new Float32Array(n), new Float32Array(n)];
   [srcL, srcR].forEach((src, ci) => {
     const out = chans[ci];
@@ -435,7 +446,18 @@ export function renderBed(kind, rate = RATE) {
       out[j] = src[j] * t + src[n + j] * (1 - t);
     }
   });
+  if (evL) {                                      // 이벤트는 크로스페이드를 거치지 않는다
+    for (let i = 0; i < n; i++) { chans[0][i] += evL[i]; chans[1][i] += evR[i]; }
+  }
 
+  masterize(chans, kind === 'chime');
+  return { left: chans[0], right: chans[1], rate };
+}
+
+/** DC 제거 + RMS 정규화 + tanh 리미터. 합성이든 실제 녹음이든 같은 규칙이라야
+ *  같은 슬라이더에서 같은 크기로 들린다. peakNorm 은 차임처럼 성긴 소리 전용. */
+function masterize(chans, peakNorm = false) {
+  const n = chans[0].length;
   let mean = 0, sum = 0, peak = 0;
   for (const out of chans) for (let i = 0; i < n; i++) mean += out[i];
   mean /= n * 2;                                  // 브라운 노이즈는 DC 가 떠 있다
@@ -446,7 +468,7 @@ export function renderBed(kind, rate = RATE) {
   }
   const rms = Math.sqrt(sum / (n * 2));
 
-  if (kind === 'chime') {
+  if (peakNorm) {
     const gain = peak > 0 ? 0.5 / peak : 1;
     for (const out of chans) for (let i = 0; i < n; i++) out[i] *= gain;
   } else {
@@ -455,6 +477,27 @@ export function renderBed(kind, rate = RATE) {
       out[i] = Math.tanh(out[i] * gain * 1.5) * 0.58;
     }
   }
+}
+
+/**
+ * 디코드한 실제 녹음을 이음매 없는 루프로 마감한다 — 꼬리 1.5초를 앞에 감아
+ * 크로스페이드하고, 합성과 같은 규칙으로 정규화한다.
+ * mp3 를 <audio loop> 로 바로 돌리면 인코더 패딩 때문에 루프마다 틈이 생긴다.
+ * 그래서 파일은 디코드 → 여기서 재조립 → WAV Blob 으로 돌린다.
+ */
+export function loopify(srcL, srcR, rate) {
+  const f = Math.min(Math.floor(rate * 1.5), Math.floor(srcL.length / 4));
+  const n = srcL.length - f;
+  const chans = [new Float32Array(n), new Float32Array(n)];
+  [srcL, srcR].forEach((src, ci) => {
+    const out = chans[ci];
+    for (let i = 0; i < n; i++) out[i] = src[i];
+    for (let j = 0; j < f; j++) {
+      const t = j / f;
+      out[j] = src[j] * t + src[n + j] * (1 - t);
+    }
+  });
+  masterize(chans);
   return { left: chans[0], right: chans[1], rate };
 }
 

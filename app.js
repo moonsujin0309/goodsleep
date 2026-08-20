@@ -491,6 +491,21 @@ function playNarration(state) {
   narration = new NarrationPlayer(voiceOpts());
   mixer.duck(true);
 
+  // 나레이션이 "하나"를 말하는 순간 게이지를 같은 위상으로 되감는다.
+  // 직전 토막(또는 같은 토막)의 동사가 들숨인지 날숨인지 알려 준다 —
+  // 뒤에 나온 동사가 세기와 더 가깝다.
+  let prevChunk = '';
+  narration.onChunk = (text) => {
+    if (/하나[.,!?]?$/.test(text.trim())) {
+      const src = prevChunk + ' ' + text;
+      const inAt = src.lastIndexOf('들이쉬');
+      const outAt = Math.max(src.lastIndexOf('내쉬'), src.lastIndexOf('내쉽'));
+      if (inAt > outAt && breathAlignFn) breathAlignFn(0);        // 들이쉬기
+      else if (outAt > inAt && breathAlignFn) breathAlignFn(2);   // 내쉬기
+    }
+    prevChunk = text;
+  };
+
   const caption = $('#play-caption');
   narration.play(picks, {
     onPiece: (p) => {
@@ -518,6 +533,8 @@ const BREATH_PHASES = [
 ];
 const RING_C = 540.4;   // 2πr (r=86) — style.css 의 stroke-dasharray 와 같아야 한다
 
+let breathAlignFn = null;   // 나레이션이 숫자를 세기 시작하면 게이지를 그 위상으로 맞춘다
+
 function startBreathing() {
   clearTimeout(breathTimer);
   clearInterval(breathTick);
@@ -527,6 +544,7 @@ function startBreathing() {
   const count = $('#breath-count');
   let i = 0;
   const run = () => {
+    clearInterval(breathTick);            // 이전 단계의 카운터가 살아남으면 안 된다
     const p = BREATH_PHASES[i];
     for (const q of BREATH_PHASES) root.classList.toggle(q.cls, q === p);
     root.style.setProperty('--dur', `${p.secs}s`);
@@ -542,6 +560,11 @@ function startBreathing() {
     count.textContent = s;
     breathTick = setInterval(() => { s += 1; if (s <= p.secs) count.textContent = s; }, 1000);
     breathTimer = setTimeout(() => { i = (i + 1) % BREATH_PHASES.length; run(); }, p.secs * 1000);
+  };
+  breathAlignFn = (idx) => {
+    clearTimeout(breathTimer);
+    i = idx;
+    run();
   };
   run();
 }

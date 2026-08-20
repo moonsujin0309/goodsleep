@@ -8,7 +8,7 @@
 
 import argparse, json, pathlib, random, subprocess, sys
 import imageio_ffmpeg
-from chunking import chunks as split_chunks
+from chunking import chunks as split_chunks, is_count
 
 ROOT = pathlib.Path(__file__).parent.parent
 MANIFEST = ROOT / "data" / "narration.json"
@@ -60,7 +60,9 @@ def main():
             parts.append(("file", path))
             if i < len(files) - 1:
                 text, is_end = marks[i] if i < len(marks) else ("x" * 24, True)
-                g = sentence_gap(text, layer, is_end)
+                nxt = marks[i + 1][0] if i + 1 < len(marks) else ""
+                # 숫자 세기는 고정 박자 — audio.js COUNT_GAP 과 같은 값
+                g = 0.5 if is_count(nxt) else sentence_gap(text, layer, is_end)
                 parts.append(("gap", g))
                 total += g
         if li < len(layers) - 1:

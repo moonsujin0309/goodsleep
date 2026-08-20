@@ -1,13 +1,13 @@
 {
-  "_읽는이에게": "모든 레이어는 코드가 실시간으로 합성한다(audio.js 의 generateBed). 음원 파일이 필요 없고, 라이선스도 없고, 루프 이음매도 없다. 진짜 녹음으로 바꾸고 싶으면 해당 레이어의 generate 를 지우고 file 경로를 넣으면 된다 — 단, 무료 라이브러리 대부분은 '소스 파일과 함께 재배포'를 금지하므로 공개 저장소에 올릴 파일은 CC0 인지 반드시 확인할 것. audio/README.md 참조.",
+  "_읽는이에게": "file 이 있으면 실제 녹음(디코드→이음매 재조립→WAV 재생), 없거나 못 받으면 generate 합성이 받친다. 실제 녹음의 출처·라이선스는 audio/LICENSES.md 에 반드시 기록할 것 — 공개 저장소라 라이선스 없는 파일을 넣으면 위반이다.",
 
   "layers": [
     { "id": "rain",     "label": "비",           "generate": "rain",     "scene": "rain" },
     { "id": "waves",    "label": "파도",         "generate": "waves",    "scene": "waves" },
-    { "id": "fire",     "label": "모닥불",       "generate": "fire",     "scene": "fire" },
+    { "id": "fire",     "label": "모닥불",       "file": "audio/loops/fire.mp3",     "generate": "fire",     "scene": "fire" },
     { "id": "wind",     "label": "바람",         "generate": "wind",     "scene": "stars" },
     { "id": "stream",   "label": "시냇물",       "generate": "stream",   "scene": "waves" },
-    { "id": "crickets", "label": "풀벌레",       "generate": "crickets", "scene": "stars" },
+    { "id": "crickets", "label": "풀벌레",       "file": "audio/loops/crickets.mp3", "generate": "crickets", "scene": "stars" },
     { "id": "fan",      "label": "선풍기",       "generate": "fan" },
 
     { "id": "brown", "label": "브라운 노이즈", "generate": "brown" },

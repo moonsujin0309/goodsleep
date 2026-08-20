@@ -36,6 +36,14 @@ def _split_connective(s):
 
 CLAUSE_MIN = 8      # 이보다 짧은 토막은 앞에 붙인다
 CLAUSE_SPLIT = 22   # 이보다 긴 문장은 쉼표에서 나눈다
+
+# 숫자 세기("하나, 둘, 셋, 넷")는 특별 취급 — 실제 초처럼 한 박자에 하나씩
+# 들려야 하므로 문장 길이와 무관하게 쉼표에서 쪼개고 앞말에 붙이지 않는다.
+# audio.js 의 COUNT_WORDS 와 같은 목록이어야 한다.
+COUNT = {"하나", "둘", "셋", "넷", "다섯", "여섯"}
+
+def is_count(part):
+    return part.strip().rstrip(".,!?") in COUNT
 # 연결어미 쪼개기는 시도했다가 버렸다. 문법적으로는 맞는 호흡 자리인데
 # 실제로 들으면 툭툭 끊긴다 — 쉼표만 쪼갠 쪽이 확실히 나았다.
 # 0 이면 끈다. 다시 시험하려면 20 쯤을 넣으면 된다.
@@ -49,7 +57,7 @@ def sentences(text):
 def _merge_short(parts):
     out = []
     for p in parts:
-        if out and len(p) < CLAUSE_MIN:
+        if out and len(p) < CLAUSE_MIN and not is_count(p) and not is_count(out[-1]):
             out[-1] += " " + p
         else:
             out.append(p)
@@ -60,11 +68,12 @@ def chunks(text):
     """[(토막, 문장끝인가)] 를 돌려준다."""
     out = []
     for s in sentences(text):
-        if len(s) <= CLAUSE_SPLIT:
+        raw = [p for p in (x.strip() for x in CLAUSE.split(s)) if p]
+        if len(s) <= CLAUSE_SPLIT and not any(is_count(p) for p in raw):
             out.append((s, True))
             continue
 
-        parts = _merge_short([p for p in (x.strip() for x in CLAUSE.split(s)) if p])
+        parts = _merge_short(raw)
 
         # 쉼표로 못 나눴거나 여전히 긴 토막은 연결어미에서 한 번 더 나눈다
         finer = []

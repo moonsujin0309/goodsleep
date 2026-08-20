@@ -37,10 +37,26 @@ const clamp01 = (v) => Math.min(1, Math.max(0, v));
 // 합성 DSP 는 전부 synth.js 에 있다 (순수 모듈 — node 로도 렌더돼 검수용 파일을 뽑는다).
 // 여기서는 브라우저 Blob URL 로 감싸기만 한다.
 
-import { renderBed, wavBytes } from './synth.js';
+import { renderBed, wavBytes, loopify } from './synth.js';
 
 export function bedUrl(kind) {
   return URL.createObjectURL(new Blob([wavBytes(renderBed(kind))], { type: 'audio/wav' }));
+}
+
+/**
+ * 실제 녹음 파일 → 이음매 없는 루프 Blob.
+ * mp3 를 <audio loop> 로 바로 돌리면 인코더 패딩 때문에 루프마다 틈이 생긴다.
+ * 디코드해서 꼬리를 감아 붙이고(synth.loopify) 합성과 같은 크기로 정규화한다.
+ * 디코드는 재생이 아니라서 화면이 꺼져도 상관없다 — 재생은 여전히 <audio> 다.
+ */
+async function fileBedUrl(src) {
+  const res = await fetch(src);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const ac = new OfflineAudioContext(2, 8, 44100);   // 디코드 전용. 44.1k 로 리샘플된다
+  const buf = await ac.decodeAudioData(await res.arrayBuffer());
+  const L = buf.getChannelData(0);
+  const R = buf.numberOfChannels > 1 ? buf.getChannelData(1) : L;
+  return URL.createObjectURL(new Blob([wavBytes(loopify(L, R, buf.sampleRate))], { type: 'audio/wav' }));
 }
 
 /** 무음 루프. 사운드를 하나도 안 켜도 탭이 살아 있어야 알람이 운다. */
@@ -87,23 +103,41 @@ export class Mixer {
     el.loop = true;
     el.preload = 'none';
     el.volume = 0;
-    // 합성 레이어는 볼륨을 처음 올릴 때 만든다. 10개를 미리 만들면 로딩이 멈춘다.
-    if (!def.generate) el.src = def.file;
-    const layer = { def, el, volume: 0, available: !!def.generate };
-    if (!def.generate) {
-      el.addEventListener('canplay', () => { layer.available = true; layer.onstate?.(); }, { once: true });
-      el.addEventListener('error', () => { layer.available = false; layer.onstate?.(); }, { once: true });
-      el.preload = 'metadata';
-      el.load();
-    }
+    // 소리는 볼륨을 처음 올릴 때 만든다 — 10개를 미리 만들면 로딩이 멈춘다.
+    const layer = { def, el, volume: 0, available: !!(def.generate || def.file), loading: null };
     this.layers.set(def.id, layer);
     return layer;
   }
 
+  /** 소스 준비. file(실제 녹음) 우선, 실패하면 generate(합성)로 조용히 내려간다. */
+  async _ensure(layer) {
+    if (layer.el.src) return true;
+    if (layer.loading) return layer.loading;
+    const d = layer.def;
+    layer.loading = (async () => {
+      if (d.file) {
+        try {
+          layer.el.src = await fileBedUrl(d.file);
+          return true;
+        } catch { /* 오프라인 첫 방문 등 — 합성이 받친다 */ }
+      }
+      if (d.generate) {
+        layer.el.src = bedUrl(d.generate);
+        return true;
+      }
+      layer.available = false;
+      layer.onstate?.();
+      return false;
+    })();
+    return layer.loading;
+  }
+
   /** 슬라이더값 → 실제 엘리먼트 볼륨. 제곱 커브 — 귀는 로그로 듣는다.
-   *  선형이면 슬라이더 초입부터 너무 크다 ("기본 배경음이 너무 커"의 원인). */
+   *  선형이면 슬라이더 초입부터 너무 크다 ("기본 배경음이 너무 커"의 원인).
+   *  0.55 는 전체 마스터 — 제곱 커브만으로도 여전히 크다는 실사용 피드백으로 내렸다.
+   *  수면 배경음은 "들리는 듯 마는 듯"이 맞고, 크게 듣고 싶으면 기기 볼륨이 있다. */
   _target(layer) {
-    return layer.volume * layer.volume * (this.ducked ? 0.45 : 1);
+    return layer.volume * layer.volume * 0.55 * (this.ducked ? 0.45 : 1);
   }
 
   setVolume(id, v) {
@@ -111,12 +145,14 @@ export class Mixer {
     if (!layer) return;
     layer.volume = clamp01(v);
     if (layer.volume > 0) {
-      if (layer.def.generate && !layer.el.src) layer.el.src = bedUrl(layer.def.generate);
-      if (layer.el.paused) {
-        layer.el.volume = 0;
-        layer.el.play().catch(() => { layer.available = false; layer.onstate?.(); });
-      }
-      fade(layer.el, this._target(layer), 400);
+      this._ensure(layer).then((ok) => {
+        if (!ok || layer.volume <= 0) return;   // 준비되는 사이 꺼졌으면 재생하지 않는다
+        if (layer.el.paused) {
+          layer.el.volume = 0;
+          layer.el.play().catch(() => { layer.available = false; layer.onstate?.(); });
+        }
+        fade(layer.el, this._target(layer), 400);
+      });
     } else {
       fade(layer.el, 0, 500, () => layer.el.pause());
     }
@@ -172,6 +208,7 @@ export function splitSentences(text) {
 
 const CLAUSE_MIN = 8;     // 이보다 짧은 토막은 앞에 붙인다
 const CLAUSE_SPLIT = 22;  // 이보다 긴 문장은 쉼표에서 나눈다
+const COUNT_GAP = 0.5;    // 숫자 세기 토막 사이 고정 침묵(초)
 // 연결어미 쪼개기는 시도했다가 버렸다. 문법적으로는 맞는 호흡 자리인데
 // 실제로 들으면 툭툭 끊긴다. 0 이면 끈다 (tools/chunking.py 와 같은 값이어야 한다).
 const CONNECT_SPLIT = 0;
@@ -197,9 +234,16 @@ function splitConnective(s) {
   return out.filter(Boolean);
 }
 
+// 숫자 세기("하나, 둘, 셋, 넷")는 특별 취급한다 — 실제 초처럼 한 박자에 하나씩
+// 들려야 하므로, 문장 길이와 무관하게 쉼표에서 쪼개고 앞말에 붙이지 않는다.
+// tools/chunking.py 의 COUNT 와 같은 목록이어야 한다.
+const COUNT_WORDS = new Set(['하나', '둘', '셋', '넷', '다섯', '여섯']);
+export const isCount = (t = '') => COUNT_WORDS.has(t.trim().replace(/[.,!?]+$/, ''));
+
 const mergeShort = (parts) => parts.reduce((acc, p) => {
-  if (acc.length && p.length < CLAUSE_MIN) acc[acc.length - 1] += ' ' + p;
-  else acc.push(p);
+  if (acc.length && p.length < CLAUSE_MIN && !isCount(p) && !isCount(acc[acc.length - 1])) {
+    acc[acc.length - 1] += ' ' + p;
+  } else acc.push(p);
   return acc;
 }, []);
 
@@ -216,11 +260,13 @@ const clean = (arr) => arr.map((p) => p.trim()).filter(Boolean);
 export function splitChunks(text) {
   const out = [];
   for (const sentence of splitSentences(text)) {
-    if (sentence.length <= CLAUSE_SPLIT) {
+    const raw = clean(sentence.split(/(?<=,)\s+/));
+    const hasCount = raw.some(isCount);
+    if (sentence.length <= CLAUSE_SPLIT && !hasCount) {
       out.push({ text: sentence, end: true });
       continue;
     }
-    const parts = mergeShort(clean(sentence.split(/(?<=,)\s+/)));
+    const parts = mergeShort(raw);
     const finer = [];
     for (const p of parts) {
       if (CONNECT_SPLIT && p.length > CONNECT_SPLIT) finer.push(...mergeShort(splitConnective(p)));
@@ -314,10 +360,17 @@ export class NarrationPlayer {
 
     for (let i = 0; i < parts.length; i++) {
       if (this.stopped) return;
+      this.onChunk?.(chunks[i]?.text || '');
       await (useFiles ? this._file(parts[i]) : this._tts(parts[i]));
       if (this.stopped) return;
       if (i < parts.length - 1) {
         const c = chunks[i] || { text: '', end: true };
+        // 다음 토막이 숫자면 세는 중이다 — 실제 초처럼 한 박자 간격을 고정한다.
+        // (숫자 발화 ~0.6초 + 0.5초 = 약 1.1초 주기)
+        if (chunks[i + 1] && isCount(chunks[i + 1].text)) {
+          await this._wait(COUNT_GAP * 1000);
+          continue;
+        }
         // 문장 안의 쉼표는 문장 끝보다 짧게 쉰다
         const kind = c.end ? 1 : 0.45;
         await this._wait(this.sentenceGap * sentenceScale(c.text) * layerGap * kind * 1000);
