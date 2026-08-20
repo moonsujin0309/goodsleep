@@ -116,7 +116,7 @@ Mixkit·Pixabay 등 무료 라이브러리는 **"소스 파일과 함께 재배�
     무겁다고 판단되면 419자 self-host woff2(~50KB)가 업그레이드 경로 (`index.html` 주석에 기록).
   - 검증: `node test.js` 29개 통과 / 재생 화면에서 `Gowun Batang` 27개 중 10개 로드 확인,
     computed `font-family` 적용 확인, 모바일 뷰포트 렌더 확인.
-  - **미배포. 로컬에만 있다.**
+  - **배포됨** (7ba1b37, main+gh-pages).
 
 ### 2026-08-19 (6) — 프리셋 카드를 실제 사진으로 + 피드백 배포
 
