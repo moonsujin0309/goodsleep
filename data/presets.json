@@ -6,6 +6,7 @@
   "presets": [
     {
       "id": "night-sea",
+      "img": "assets/presets/night-sea.jpg",
       "label": "밤바다",
       "note": "멀리서 밀려왔다 물러가는",
       "scene": "waves",
@@ -14,6 +15,7 @@
     },
     {
       "id": "rainy-window",
+      "img": "assets/presets/rainy-window.jpg",
       "label": "창밖에 비",
       "note": "유리에 맺혔다 흘러내리는",
       "scene": "rain",
@@ -22,6 +24,7 @@
     },
     {
       "id": "downpour",
+      "img": "assets/presets/downpour.jpg",
       "label": "쏟아지는 비",
       "note": "아무 소리도 들리지 않게",
       "scene": "rain",
@@ -30,6 +33,7 @@
     },
     {
       "id": "hearth",
+      "img": "assets/presets/hearth.jpg",
       "label": "장작 난로",
       "note": "이따금 탁 하고 튀는",
       "scene": "fire",
@@ -38,6 +42,7 @@
     },
     {
       "id": "summer-yard",
+      "img": "assets/presets/summer-yard.jpg",
       "label": "여름밤 마당",
       "note": "풀벌레가 우는 평상",
       "scene": "stars",
@@ -46,6 +51,7 @@
     },
     {
       "id": "valley",
+      "img": "assets/presets/valley.jpg",
       "label": "깊은 계곡",
       "note": "돌 사이로 흐르는 물",
       "scene": "waves",
@@ -54,6 +60,7 @@
     },
     {
       "id": "empty-dawn",
+      "img": "assets/presets/empty-dawn.jpg",
       "label": "텅 빈 새벽",
       "note": "아무것도 없는 낮은 웅웅",
       "scene": "stars",
@@ -62,6 +69,7 @@
     },
     {
       "id": "old-fan",
+      "img": "assets/presets/old-fan.jpg",
       "label": "오래된 선풍기",
       "note": "여름밤 머리맡에서 돌던",
       "scene": "stars",
@@ -70,6 +78,7 @@
     },
     {
       "id": "snowfall",
+      "img": "assets/presets/snowfall.jpg",
       "label": "눈 내리는 밤",
       "note": "소리를 전부 삼킨 바깥",
       "scene": "stars",
@@ -78,6 +87,7 @@
     },
     {
       "id": "rainy-library",
+      "img": "assets/presets/rainy-library.jpg",
       "label": "비 오는 도서관",
       "note": "종이 넘기는 소리만 없는",
       "scene": "rain",

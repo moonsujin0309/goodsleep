@@ -327,7 +327,10 @@ function renderPresets() {
     b.style.setProperty('--from', p.art.from);
     b.style.setProperty('--to', p.art.to);
     b.style.setProperty('--glow', p.art.glow);
-    b.innerHTML = `<span class="art" aria-hidden="true">${ART[p.art.motif] || ''}</span>
+    // 사진이 있으면 사진(SVG 위에 얹힘), 못 불러오면 img 가 스스로 빠져 SVG 가 남는다
+    const photo = p.img
+      ? `<img class="ph" src="${p.img}" alt="" loading="lazy" onerror="this.remove()">` : '';
+    b.innerHTML = `<span class="art" aria-hidden="true">${ART[p.art.motif] || ''}${photo}</span>
       <span class="body"><span class="name">${p.label}</span><span class="note">${p.note}</span></span>`;
     b.addEventListener('click', () => applyPreset(p));
     rail.appendChild(b);
