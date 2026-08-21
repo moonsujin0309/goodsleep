@@ -18,4 +18,25 @@
 | snowfall.jpg | Josh Hild | https://unsplash.com/photos/1609650793481-55b352ac866a |
 | rainy-library.jpg | Rhamely | https://unsplash.com/photos/1660836215734-e8b55eab2559 |
 
+# assets/scenes/ — 배경 루프 비디오 (Pexels License)
+
+[Pexels License](https://www.pexels.com/license/) — 상업 이용·수정 무료, 저작자 표기 의무 없음.
+스톡 플랫폼 재배포만 금지, 앱 자산으로 쓰는 것은 허용. 540×960 크롭·무음 재인코딩.
+
+| 파일 | 원본 (제작자는 페이지에서 확인) |
+|---|---|
+| stars.mp4 | https://www.pexels.com/video/32920021/ |
+| rain.mp4 | https://www.pexels.com/video/5197762/ |
+| fire.mp4 | https://www.pexels.com/video/11210466/ |
+| waves.mp4 | https://www.pexels.com/video/32864351/ |
+
+# assets/scenes/ — 재생 화면 배경 사진 (같은 Unsplash License)
+
+| 파일 | 사진가 | 원본 |
+|---|---|---|
+| stars.jpg | Ferenc Horvath | https://unsplash.com/photos/1519810755548-39cd217da494 |
+| rain.jpg | ERIC ZHU | https://unsplash.com/photos/1567688993206-43c34131b21f |
+| waves.jpg | Davide Sibilio | https://unsplash.com/photos/1566342088293-38debd381c63 |
+| fire.jpg | Luke Porter | https://unsplash.com/photos/1464808646948-8f732deb6e4b |
+
 새 사진을 추가하면 반드시 이 표에 한 줄 추가할 것. 라이선스를 모르는 이미지는 넣지 않는다.

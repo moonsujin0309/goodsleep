@@ -208,7 +208,10 @@ export function splitSentences(text) {
 
 const CLAUSE_MIN = 8;     // 이보다 짧은 토막은 앞에 붙인다
 const CLAUSE_SPLIT = 22;  // 이보다 긴 문장은 쉼표에서 나눈다
-const COUNT_GAP = 0.5;    // 숫자 세기 토막 사이 고정 침묵(초)
+// 숫자 하나당 정확히 1.0초 (발화 + 침묵). 고정 침묵 0.5초로 했더니 발화 ~0.6초와
+// 합쳐 1.1초가 되어 초읽기보다 느렸고, 호흡 게이지(1초)와도 어긋났다 —
+// 방금 재생한 파일의 실제 길이를 빼서 남는 만큼만 쉰다.
+const COUNT_CADENCE = 1.0;
 // 연결어미 쪼개기는 시도했다가 버렸다. 문법적으로는 맞는 호흡 자리인데
 // 실제로 들으면 툭툭 끊긴다. 0 이면 끈다 (tools/chunking.py 와 같은 값이어야 한다).
 const CONNECT_SPLIT = 0;
@@ -365,10 +368,9 @@ export class NarrationPlayer {
       if (this.stopped) return;
       if (i < parts.length - 1) {
         const c = chunks[i] || { text: '', end: true };
-        // 다음 토막이 숫자면 세는 중이다 — 실제 초처럼 한 박자 간격을 고정한다.
-        // (숫자 발화 ~0.6초 + 0.5초 = 약 1.1초 주기)
+        // 다음 토막이 숫자면 세는 중이다 — 발화 길이를 빼고 정확히 1초 주기로 맞춘다
         if (chunks[i + 1] && isCount(chunks[i + 1].text)) {
-          await this._wait(COUNT_GAP * 1000);
+          await this._wait(Math.max(0.2, COUNT_CADENCE - (this._lastDur || 0.55)) * 1000);
           continue;
         }
         // 문장 안의 쉼표는 문장 끝보다 짧게 쉰다
@@ -384,6 +386,8 @@ export class NarrationPlayer {
       el.src = src;
       el.volume = this.volume;
       const done = () => {
+        // 숫자 세기 박자 계산용 — 방금 토막이 실제로 몇 초였는지
+        this._lastDur = Number.isFinite(el.duration) ? el.duration : 0;
         el.removeEventListener('ended', done);
         el.removeEventListener('error', done);
         resolve();

@@ -75,14 +75,38 @@ button { background: none; border: 0; cursor: pointer; touch-action: manipulatio
 
 /* ── 셸 ────────────────────────────────────────────────── */
 
+/* 배경 바닥층 — 씬 사진 + 그라데이션. JS(SceneRenderer.set)가 채운다 */
+#scene-back {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+}
+
 #scene {
   position: fixed;
   inset: 0;
   width: 100%;
   height: 100%;
   z-index: 0;
+  /* 어둠 스크림 — 사진·비디오 어느 쪽이 밑에 있든 글자 대비와 수면 무드를 지킨다 */
+  background: linear-gradient(rgba(10, 9, 18, 0.32), rgba(10, 9, 18, 0.58) 70%, rgba(10, 9, 18, 0.82));
   transition: opacity 1200ms var(--ease);
 }
+
+/* 배경 비디오 — 캔버스 뒤. 재생이 실제로 시작되면(is-on) 떠오른다.
+   못 받거나 자동재생이 막히면 그대로 투명 — 캔버스의 사진 배경이 받친다. */
+#scene-video {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 1500ms var(--ease);
+}
+#scene-video.is-on { opacity: 1; }
+#app.is-dim #scene-video { opacity: 0.3; }
 
 .veil {
   position: fixed;
@@ -493,13 +517,14 @@ input[type='range']:disabled { cursor: not-allowed; }
   position: absolute; inset: 0;
   transform: rotate(-90deg);           /* 12시부터 차오르게 */
 }
-.breath .ring circle { fill: none; stroke-width: 2.5; }
+.breath .ring circle { fill: none; stroke-width: 2; }
 .breath .ring .track { stroke: var(--line); }
 .breath .ring .prog {
   stroke: var(--violet);
   stroke-linecap: round;
   stroke-dasharray: 540.4;             /* 2πr (r=86) — app.js RING_C 와 같아야 한다 */
   stroke-dashoffset: 540.4;
+  opacity: 0.75;
 }
 .breath.is-hold .ring .prog { stroke: var(--accent); }   /* 멈춤은 등불색 */
 .breath .disc {
@@ -507,15 +532,21 @@ input[type='range']:disabled { cursor: not-allowed; }
   border-radius: 50%;
   background: radial-gradient(circle, var(--violet-soft) 0%, transparent 70%);
   box-shadow: inset 0 0 0 1px rgba(138, 120, 196, 0.24);
-  transform: scale(0.74);
+  transform: scale(0.8);               /* 팽창 폭을 줄였다 — 크게 움직이면 숨이 급해 보인다 */
   transition: transform var(--dur, 4s) cubic-bezier(0.45, 0, 0.55, 1);
 }
 .breath.is-in .disc,
 .breath.is-hold .disc { transform: scale(1); }
-.breath.is-out .disc { transform: scale(0.74); }
+.breath.is-out .disc { transform: scale(0.8); }
 .breath .txt { position: relative; display: grid; justify-items: center; gap: 2px; }
-.breath .count { font-size: 34px; font-weight: 300; line-height: 1.2; color: var(--text); }
-.breath .phase { font-size: 12px; color: var(--text-2); letter-spacing: 0.08em; }
+.breath .count {
+  font-size: 24px; font-weight: 200; line-height: 1.3;
+  color: var(--text-2);                /* 숫자는 안내지 주인공이 아니다 — 흐리게 */
+}
+.breath .phase {
+  font-size: 12px; color: var(--text-3); letter-spacing: 0.08em;
+  transition: opacity 500ms var(--ease);
+}
 
 .caption {
   font-family: var(--font-serif);

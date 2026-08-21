@@ -16,36 +16,11 @@ const SCENES = {
   stars: {
     label: '별하늘',
     sky: ['#0B0A14', '#141026', '#1B1533'],
+    photo: 'assets/scenes/stars.jpg',   // 진짜 은하수. 캔버스는 반짝임·유성만 얹는다
+    video: 'assets/scenes/stars.mp4',
     init(w, h) {
       return {
-        // 은하수 — 화면을 비스듬히 가로지르는 옅은 빛의 강. 한 번만 그린다.
-        base: still(w, h, (ctx) => {
-          ctx.save();
-          ctx.translate(w * 0.5, h * 0.34);
-          ctx.rotate(-0.42);
-          for (let i = 0; i < 46; i++) {
-            const x = (Math.random() - 0.5) * w * 1.5;
-            const y = (Math.random() - 0.5) * h * 0.22;
-            const r = 24 + Math.random() * 60;
-            const g = ctx.createRadialGradient(x, y, 0, x, y, r);
-            g.addColorStop(0, `rgba(200, 190, 235, ${0.015 + Math.random() * 0.02})`);
-            g.addColorStop(1, 'rgba(200, 190, 235, 0)');
-            ctx.fillStyle = g;
-            ctx.fillRect(x - r, y - r, r * 2, r * 2);
-          }
-          ctx.restore();
-          // 은하수 속 미세한 별먼지
-          for (let i = 0; i < 140; i++) {
-            const t = Math.random();
-            const x = w * (0.1 + t * 0.9);
-            const y = h * 0.34 - (x - w * 0.5) * 0.45 + (Math.random() - 0.5) * h * 0.24;
-            ctx.globalAlpha = 0.1 + Math.random() * 0.3;
-            ctx.fillStyle = '#D8CFEE';
-            ctx.fillRect(x, y, 1, 1);
-          }
-          ctx.globalAlpha = 1;
-        }),
-        stars: Array.from({ length: 95 }, () => ({
+        stars: Array.from({ length: 70 }, () => ({
           x: Math.random() * w,
           y: Math.random() * h * 0.8,
           r: Math.random() * 1.3 + 0.35,
@@ -58,7 +33,6 @@ const SCENES = {
       };
     },
     draw(ctx, w, h, st, t) {
-      ctx.drawImage(st.base, 0, 0, w, h);
       for (const s of st.stars) {
         const a = 0.22 + 0.55 * (0.5 + 0.5 * Math.sin(t * 0.0007 * s.s + s.p));
         ctx.globalAlpha = a;
@@ -103,6 +77,8 @@ const SCENES = {
   rain: {
     label: '창밖 비',
     sky: ['#080A10', '#0F131C', '#151A26'],
+    photo: 'assets/scenes/rain.jpg',    // 유리에 맺힌 빗방울. 떨어지는 빗줄기는 캔버스가
+    video: 'assets/scenes/rain.mp4',
     init(w, h) {
       const mk = (n, far) => Array.from({ length: n }, () => ({
         x: Math.random() * w,
@@ -164,45 +140,10 @@ const SCENES = {
   waves: {
     label: '파도',
     sky: ['#080B14', '#0D1422', '#122032'],
-    init(w, h) {
-      return {
-        moon: still(w, h, (ctx) => {             // 수평선 위 낮은 달 + 달무리
-          const mx = w * 0.72, my = h * 0.3;
-          const halo = ctx.createRadialGradient(mx, my, 0, mx, my, 90);
-          halo.addColorStop(0, 'rgba(226, 216, 190, 0.2)');
-          halo.addColorStop(1, 'rgba(226, 216, 190, 0)');
-          ctx.fillStyle = halo;
-          ctx.fillRect(mx - 90, my - 90, 180, 180);
-          ctx.fillStyle = 'rgba(232, 223, 198, 0.85)';
-          ctx.beginPath();
-          ctx.arc(mx, my, 15, 0, 7);
-          ctx.fill();
-        }),
-        glints: Array.from({ length: 16 }, (_, i) => ({
-          y: 0.56 + (i / 16) * 0.4,              // 달빛 물기둥 — 아래로 갈수록 넓게 퍼진다
-          p: Math.random() * Math.PI * 2,
-          s: 0.6 + Math.random() * 1.2,
-        })),
-      };
-    },
+    photo: 'assets/scenes/waves.jpg',   // 진짜 달빛 바다. 물결 띠만 캔버스가 얹는다
+    video: 'assets/scenes/waves.mp4',
+    init() { return {}; },
     draw(ctx, w, h, st, t) {
-      ctx.drawImage(st.moon, 0, 0, w, h);
-      // 물에 비친 달 — 가로 반짝임이 물결 따라 흔들린다
-      const mx = w * 0.72;
-      for (const g of st.glints) {
-        const y = h * g.y;
-        const spread = 10 + (g.y - 0.56) * 120;
-        const a = 0.1 + 0.16 * (0.5 + 0.5 * Math.sin(t * 0.0011 * g.s + g.p));
-        ctx.globalAlpha = a;
-        ctx.strokeStyle = '#D8CCA8';
-        ctx.lineWidth = 1.3;
-        ctx.beginPath();
-        const wob = Math.sin(t * 0.0007 + g.p) * 6;
-        ctx.moveTo(mx - spread / 2 + wob, y);
-        ctx.lineTo(mx + spread / 2 + wob, y);
-        ctx.stroke();
-      }
-      ctx.globalAlpha = 1;
       for (let i = 0; i < 5; i++) {
         const base = h * (0.55 + i * 0.09);
         const amp = 9 + i * 5;
@@ -236,6 +177,8 @@ const SCENES = {
   fire: {
     label: '모닥불',
     sky: ['#0C0806', '#160E09', '#1E120A'],
+    photo: 'assets/scenes/fire.jpg',    // 진짜 모닥불. 불빛 맥동·불티·연기는 캔버스가
+    video: 'assets/scenes/fire.mp4',
     init(w, h) {
       return {
         embers: Array.from({ length: 30 }, () => ({
@@ -301,19 +244,49 @@ const SCENES = {
 export const sceneList = Object.entries(SCENES).map(([id, s]) => ({ id, label: s.label }));
 
 export class SceneRenderer {
-  constructor(canvas) {
+  constructor(canvas, video = null, back = null) {
     this.canvas = canvas;
-    this.ctx = canvas.getContext('2d');
+    this.video = video;
+    this.back = back;
     this.id = 'stars';
+    this.ctx = canvas.getContext('2d');
     this.state = null;
     this.raf = null;
     this.running = false;
     this._onResize = () => this.resize();
     window.addEventListener('resize', this._onResize);
     document.addEventListener('visibilitychange', () => {
-      if (document.hidden) this._pause();
-      else if (this.running) this._loop();
+      if (document.hidden) { this._pause(); this.video?.pause(); }
+      else if (this.running) { this._loop(); this._videoSync(); }
     });
+    if (video) {
+      // 실제로 첫 프레임이 나올 때만 떠오른다 — 로딩 중엔 사진 배경이 그대로 보인다
+      video.addEventListener('playing', () => video.classList.add('is-on'));
+      video.addEventListener('error', () => video.classList.remove('is-on'));
+      // 딤 상태(나레이션 끝, 화면 어둡게)면 비디오를 멈춘다 — 밤새 디코딩은 배터리를 먹는다.
+      // 앱 코드를 고치지 않으려고 클래스 변화를 여기서 감시한다.
+      const app = document.getElementById('app');
+      if (app) new MutationObserver(() => this._videoSync()).observe(app, {
+        attributes: true, attributeFilter: ['class'],
+      });
+    }
+  }
+
+  /** 지금 상태(세션 중인가·딤인가·씬에 비디오가 있는가)에 맞춰 비디오를 켜고 끈다. */
+  _videoSync() {
+    const v = this.video;
+    if (!v) return;
+    const src = SCENES[this.id].video;
+    const dim = document.getElementById('app')?.classList.contains('is-dim');
+    if (!this.running || !src || dim || document.hidden) {
+      v.pause();                       // 일시정지 프레임은 CSS 가 흐리게 남긴다
+      return;
+    }
+    if (v.getAttribute('src') !== src) {
+      v.classList.remove('is-on');
+      v.setAttribute('src', src);
+    }
+    v.play().catch(() => { /* 자동재생 거부 등 — 사진 배경이 받친다 */ });
   }
 
   resize() {
@@ -333,7 +306,13 @@ export class SceneRenderer {
     this.id = id;
     this.resize();
     const [a, b, c] = SCENES[id].sky;
-    this.canvas.style.background = `linear-gradient(#0000,#0000), radial-gradient(120% 80% at 50% 0%, ${c} 0%, ${b} 45%, ${a} 100%)`;
+    // 바닥층: 사진, 못 받으면 그라데이션 — 깨진 이미지 층은 그냥 건너뛰어진다.
+    // 스크림은 캔버스(CSS)가 항상 덮으므로 여기선 밝기를 걱정하지 않는다.
+    const photo = SCENES[id].photo ? `url("${SCENES[id].photo}") center / cover no-repeat, ` : '';
+    const bg = photo + `radial-gradient(120% 80% at 50% 0%, ${c} 0%, ${b} 45%, ${a} 100%)`;
+    if (this.back) this.back.style.background = bg;
+    else this.canvas.style.background = bg;
+    this._videoSync();
   }
 
   start() {
@@ -342,6 +321,7 @@ export class SceneRenderer {
     this.resize();
     this.set(this.id);
     this._loop();
+    this._videoSync();
   }
 
   _loop() {
@@ -362,6 +342,8 @@ export class SceneRenderer {
   stop() {
     this.running = false;
     this._pause();
+    this.video?.pause();
+    this.video?.classList.remove('is-on');
     this.ctx.clearRect(0, 0, this.w, this.h);
   }
 }

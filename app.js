@@ -45,7 +45,7 @@ const store = {
 // ── 런타임 ────────────────────────────────────────────────
 
 const mixer = new Mixer();
-const scenes = new SceneRenderer($('#scene'));
+const scenes = new SceneRenderer($('#scene'), $('#scene-video'), $('#scene-back'));
 const alarm = createAlarm();
 const watcher = createAlarmWatcher(fireAlarm);
 let narration = null;
@@ -538,6 +538,13 @@ const RING_C = 540.4;   // 2πr (r=86) — style.css 의 stroke-dasharray 와 �
 
 let breathAlignFn = null;   // 나레이션이 숫자를 세기 시작하면 게이지를 그 위상으로 맞춘다
 
+// 명상은 자극이 적어야 한다. 처음엔 위상마다 링을 되감고 숫자를 1로 돌렸는데,
+// 12초에 세 번씩 화면이 "새로 시작"해서 정신없다는 피드백 —
+// 링은 사이클(12초)에 한 바퀴만 돌고, 라벨은 크로스페이드, 멈추기엔 숫자 대신 점 하나.
+const BREATH_CYCLE = BREATH_PHASES.reduce((s, p) => s + p.secs, 0);
+const BREATH_OFFSETS = BREATH_PHASES.map((_, k) =>
+  BREATH_PHASES.slice(0, k).reduce((s, p) => s + p.secs, 0));
+
 function startBreathing() {
   clearTimeout(breathTimer);
   clearInterval(breathTick);
@@ -546,22 +553,34 @@ function startBreathing() {
   const label = $('#breath-label');
   const count = $('#breath-count');
   let i = 0;
+  const setLabel = (text) => {                    // 교체가 아니라 스며들 듯
+    if (label.textContent === text) return;
+    label.style.opacity = '0';
+    setTimeout(() => { label.textContent = text; label.style.opacity = ''; }, 260);
+  };
   const run = () => {
-    clearInterval(breathTick);            // 이전 단계의 카운터가 살아남으면 안 된다
+    clearInterval(breathTick);
     const p = BREATH_PHASES[i];
     for (const q of BREATH_PHASES) root.classList.toggle(q.cls, q === p);
     root.style.setProperty('--dur', `${p.secs}s`);
-    label.textContent = p.label;
-    // 링을 전환 없이 0으로 되감은 뒤, 이번 단계 길이만큼 선형으로 채운다.
-    // 진행 표시라 선형이 맞다 — 시간이 고르게 흐르는 게 보여야 한다.
+    setLabel(p.label);
+    // 링은 위상이 아니라 사이클 기준 — 지금 위치에 그대로 이어서 채운다.
+    // 위상 경계에서 아무 일도 일어나지 않는 것이 요점이다.
+    const done = BREATH_OFFSETS[i] / BREATH_CYCLE;
     prog.style.transition = 'none';
-    prog.style.strokeDashoffset = RING_C;
+    prog.style.strokeDashoffset = String(RING_C * (1 - done));
     void prog.getBoundingClientRect();
-    prog.style.transition = `stroke-dashoffset ${p.secs}s linear, stroke 300ms ease-out`;
+    prog.style.transition = `stroke-dashoffset ${BREATH_CYCLE - BREATH_OFFSETS[i]}s linear, stroke 600ms ease-out`;
     prog.style.strokeDashoffset = '0';
-    let s = 1;
-    count.textContent = s;
-    breathTick = setInterval(() => { s += 1; if (s <= p.secs) count.textContent = s; }, 1000);
+    if (p.cls === 'is-hold') {
+      count.textContent = '·';                    // 2초 멈춤에 1, 2 를 세는 건 소음이다
+    } else {
+      const t0 = Date.now();                      // 초는 벽시계로 — 누적 오차 방지
+      count.textContent = 1;
+      breathTick = setInterval(() => {
+        count.textContent = Math.min(p.secs, 1 + Math.floor((Date.now() - t0) / 1000));
+      }, 250);
+    }
     breathTimer = setTimeout(() => { i = (i + 1) % BREATH_PHASES.length; run(); }, p.secs * 1000);
   };
   breathAlignFn = (idx) => {

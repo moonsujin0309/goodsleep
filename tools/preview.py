@@ -23,6 +23,21 @@ SENTENCE_GAP = 3.6   # app.js settings.sentenceGap 기본값
 PIECE_GAP = 6.0      # app.js settings.gapSeconds 기본값
 
 
+_durs = {}
+
+def file_dur(path):
+    """mp3 길이(초). ffprobe 가 없어서 ffmpeg -i 의 stderr 를 읽는다."""
+    if path not in _durs:
+        r = subprocess.run([FFMPEG, "-i", str(path)], capture_output=True).stderr.decode("utf-8", "replace")
+        d = 0.0
+        for line in r.splitlines():
+            if "Duration:" in line:
+                hh, mm, ss = line.split("Duration: ")[1][:11].split(":")
+                d = int(hh) * 3600 + int(mm) * 60 + float(ss)
+        _durs[path] = d
+    return _durs[path]
+
+
 def sentence_gap(text, layer, is_end=True):
     """audio.js 의 sentenceScale · LAYER_GAP 과 같은 규칙."""
     n = len(text)
@@ -61,8 +76,8 @@ def main():
             if i < len(files) - 1:
                 text, is_end = marks[i] if i < len(marks) else ("x" * 24, True)
                 nxt = marks[i + 1][0] if i + 1 < len(marks) else ""
-                # 숫자 세기는 고정 박자 — audio.js COUNT_GAP 과 같은 값
-                g = 0.5 if is_count(nxt) else sentence_gap(text, layer, is_end)
+                # 숫자 세기는 정확히 1초 주기 — 방금 파일 길이를 빼고 쉰다 (audio.js 와 동일)
+                g = max(0.2, 1.0 - file_dur(path)) if is_count(nxt) else sentence_gap(text, layer, is_end)
                 parts.append(("gap", g))
                 total += g
         if li < len(layers) - 1:
