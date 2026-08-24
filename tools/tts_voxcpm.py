@@ -63,7 +63,8 @@ PACE_LO, PACE_HI = 0.55, 1.8    # 자르기 검증: 중앙값 대비 이 밖이�
 # 1.25 면 조각 내 최대 편차가 1.56배 — 승인된 미리듣기(1.53배) 수준이다.
 PACE_BAND = 1.25
 STRETCH_MIN = 0.75   # 이보다 크게 늘이지 않는다 (자음이 뭉개진다). 못 채우면 남긴다
-SPREAD_WARN = 2.06   # 사용자가 "긴박하다"고 거부한 편차. 넘으면 보고한다
+SPREAD_WARN = 2.06   # 사용자가 "긴박하다"고 거부한 편차. 넘으면 더 쪼갠다
+MAX_SPLIT = 3        # 강제 분할 한계. 더 가면 문장별 생성에 가까워져 되레 나빠진다
 MP3_KBPS = 64
 
 
@@ -158,16 +159,19 @@ def render(model, torch, parts, rate):
     return left + right, ln + rn
 
 
-def render_forced(model, torch, parts, rate):
-    """자르기가 됐더라도 일부러 반으로 쪼개 각각 뽑는다.
+def render_split(model, torch, parts, rate, depth):
+    """depth 단계만큼 강제로 반씩 쪼갠 뒤 각 덩어리를 render 한다.
 
     통짜가 잘 잘려도 그 안에서 속도가 앞뒤로 흐르는 조각이 있다 — 몸 훑기처럼
     비슷한 문장이 길게 이어지면 모델이 뒤로 갈수록 빨라진다 (0.229 → 0.106).
-    보정 폭 안에서는 못 따라잡으니, 흐름 자체를 반으로 잘라 줄인다.
+    보정 폭 안에서는 못 따라잡으니 흐름 자체를 잘라 줄인다.
+    실측: 16문장 조각이 2단계에서 2.17 → 1.63배, 3단계에서 2.38 → 1.75배로 내려갔다.
     """
+    if depth <= 0 or len(parts) <= 2:
+        return render(model, torch, parts, rate)
     i = split_point(parts)
-    left, ln = render(model, torch, parts[:i], rate)
-    right, rn = render(model, torch, parts[i:], rate)
+    left, ln = render_split(model, torch, parts[:i], rate, depth - 1)
+    right, rn = render_split(model, torch, parts[i:], rate, depth - 1)
     return left + right, ln + rn
 
 
@@ -266,9 +270,11 @@ def main():
         before = spread(wavs, parts, rate)
         wavs, fixed = equalize(wavs, parts, rate)
         after = spread(wavs, parts, rate)
-        if after > SPREAD_WARN and len(parts) > 3:
-            # 통짜 안에서 속도가 흘렀다. 강제로 쪼개 보고 나아지면 그쪽을 쓴다.
-            w2, b2 = render_forced(model, torch, parts, rate)
+        # 아직 고르지 않으면 더 잘게 쪼개 본다. 나아질 때만 바꾼다.
+        depth = 1
+        while after > SPREAD_WARN and depth < MAX_SPLIT and len(parts) > 3:
+            depth += 1
+            w2, b2 = render_split(model, torch, parts, rate, depth)
             w2, f2 = equalize(w2, parts, rate)
             a2 = spread(w2, parts, rate)
             if a2 < after:
