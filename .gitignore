@@ -1,7 +1,7 @@
 node_modules/
 .DS_Store
 Thumbs.db
-tools/.venv/
+tools/.venv*/
 
 # 직접 받은 음원은 커밋하지 않는다.
 # 무료 라이브러리 대부분이 "소스 파일과 함께 재배포"를 금지하므로

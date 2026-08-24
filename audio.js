@@ -73,6 +73,89 @@ function silentUrl(seconds = 5, rate = 8000) {
   return URL.createObjectURL(new Blob([buf], { type: 'audio/wav' }));
 }
 
+// ── 이음매 없는 루프 ──────────────────────────────────────
+
+/**
+ * `<audio loop>` 는 되감을 때 브라우저가 몇 ms~수십 ms 를 흘린다.
+ * 파형의 꼬리와 머리는 이미 크로스페이드해 뒀는데도(synth.renderBed) 파도 44초·바람 36초마다
+ * "뚝" 하고 끊겼다 다시 시작하는 것처럼 들리는 정체가 이것이다 — 백색소음은 아주 짧은
+ * 무음도 클릭으로 들린다.
+ *
+ * 그래서 같은 소스를 엘리먼트 두 개로 번갈아 돌리고 끝나기 전에 등파워로 넘긴다.
+ * Web Audio 그래프는 여전히 안 쓴다 — 화면이 꺼지면 iOS 가 AudioContext 를 정지시킨다.
+ *
+ * 바깥에서는 `<audio>` 하나처럼 보인다 (volume · play · pause · paused · src).
+ */
+const HANDOFF = 1.2;   // 넘겨주는 구간(초). 한 소리에 30~40초에 한 번뿐이라 넉넉히 준다
+
+export class SeamlessLoop {
+  constructor() {
+    this.els = [new Audio(), new Audio()];
+    this.i = 0;
+    this._volume = 0;
+    this._src = '';
+    this._x = null;
+    for (const el of this.els) {
+      el.preload = 'none';
+      el.volume = 0;
+      el.loop = true;                 // 넘기기를 놓쳐도 무음으로 떨어지지 않게 하는 안전망
+      el.addEventListener('timeupdate', () => this._tick());
+    }
+  }
+
+  get paused() { return this.els[0].paused && this.els[1].paused; }
+  get src() { return this._src; }
+  set src(v) { this._src = v; for (const el of this.els) el.src = v; }
+
+  get volume() { return this._volume; }
+  set volume(v) {
+    this._volume = clamp01(v);
+    if (this._x) return;              // 넘겨주는 중 — 인터벌이 반영한다
+    const el = this.els[this.i];
+    if (!el.paused) el.volume = this._volume;
+  }
+
+  play() {
+    const el = this.els[this.i];
+    el.volume = this._volume;
+    return el.play();
+  }
+
+  pause() {
+    if (this._x) { clearInterval(this._x); this._x = null; }
+    for (const el of this.els) { el.pause(); el.volume = 0; }
+  }
+
+  /** 끝이 다가오면 다음 엘리먼트를 띄우고 겹치는 동안 넘긴다. */
+  _tick() {
+    if (this._x) return;
+    const cur = this.els[this.i];
+    if (cur.paused || !Number.isFinite(cur.duration)) return;
+    if (cur.duration - cur.currentTime > HANDOFF) return;
+
+    const next = this.els[1 - this.i];
+    next.currentTime = 0;
+    next.volume = 0;
+    next.play().catch(() => {});
+    this.i = 1 - this.i;
+
+    // 등파워(√) 로 넘긴다 — 무상관 노이즈를 선형으로 겹치면 가운데가 파인다.
+    const t0 = Date.now();
+    this._x = setInterval(() => {
+      const t = Math.min(1, (Date.now() - t0) / (HANDOFF * 1000));
+      next.volume = clamp01(this._volume * Math.sqrt(t));
+      cur.volume = clamp01(this._volume * Math.sqrt(1 - t));
+      if (t >= 1) {
+        clearInterval(this._x);
+        this._x = null;
+        cur.pause();
+        cur.currentTime = 0;
+        next.volume = this._volume;
+      }
+    }, FADE_TICK);
+  }
+}
+
 // ── 믹서 ──────────────────────────────────────────────────
 
 export class Mixer {
@@ -99,10 +182,7 @@ export class Mixer {
   /** 매니페스트의 레이어를 등록한다. 파일이 없으면 available=false 로 남는다. */
   add(def) {
     if (this.layers.has(def.id)) return this.layers.get(def.id);
-    const el = new Audio();
-    el.loop = true;
-    el.preload = 'none';
-    el.volume = 0;
+    const el = new SeamlessLoop();
     // 소리는 볼륨을 처음 올릴 때 만든다 — 10개를 미리 만들면 로딩이 멈춘다.
     const layer = { def, el, volume: 0, available: !!(def.generate || def.file), loading: null };
     this.layers.set(def.id, layer);
@@ -134,10 +214,12 @@ export class Mixer {
 
   /** 슬라이더값 → 실제 엘리먼트 볼륨. 제곱 커브 — 귀는 로그로 듣는다.
    *  선형이면 슬라이더 초입부터 너무 크다 ("기본 배경음이 너무 커"의 원인).
-   *  0.55 는 전체 마스터 — 제곱 커브만으로도 여전히 크다는 실사용 피드백으로 내렸다.
-   *  수면 배경음은 "들리는 듯 마는 듯"이 맞고, 크게 듣고 싶으면 기기 볼륨이 있다. */
+   *  0.35 는 전체 마스터 — 제곱 커브만으로도 여전히 크다는 실사용 피드백으로 두 번 내렸다.
+   *  수면 배경음은 "들리는 듯 마는 듯"이 맞고, 크게 듣고 싶으면 기기 볼륨이 있다.
+   *  덕킹 0.22 — 나레이션 중에는 목소리가 주인공이라 배경을 확실히 눕힌다
+   *  (0.45 로는 "사람 목소리가 거의 안 들린다"는 피드백이 나왔다). */
   _target(layer) {
-    return layer.volume * layer.volume * 0.55 * (this.ducked ? 0.45 : 1);
+    return layer.volume * layer.volume * 0.35 * (this.ducked ? 0.22 : 1);
   }
 
   setVolume(id, v) {
@@ -151,7 +233,7 @@ export class Mixer {
           layer.el.volume = 0;
           layer.el.play().catch(() => { layer.available = false; layer.onstate?.(); });
         }
-        fade(layer.el, this._target(layer), 400);
+        fade(layer.el, this._target(layer), 1500);   // 400ms 는 소리가 "켜졌다". 스며들게 한다
       });
     } else {
       fade(layer.el, 0, 500, () => layer.el.pause());
@@ -315,7 +397,7 @@ export function koreanVoices() {
  * TTS 는 오디오 파일이 채워지기 전까지의 임시 경로다 — 백그라운드 재생은 안 된다.
  */
 export class NarrationPlayer {
-  constructor({ gapSeconds = 6, sentenceGap = 3.2, volume = 0.9, voiceURI = null, rate = 0.82, pitch = 0.9 } = {}) {
+  constructor({ gapSeconds = 6, sentenceGap = 4.2, volume = 0.9, voiceURI = null, rate = 0.82, pitch = 0.9 } = {}) {
     this.gapSeconds = gapSeconds;
     this.sentenceGap = sentenceGap;
     this.volume = volume;
@@ -325,6 +407,7 @@ export class NarrationPlayer {
     this.el = new Audio();
     this.el.preload = 'auto';
     this.stopped = false;
+    this.paused = false;
     this._timer = null;
   }
 
@@ -340,8 +423,38 @@ export class NarrationPlayer {
     if (!this.stopped) onEnd?.();
   }
 
+  /** 침묵. 일시정지에 대비해 남은 시간을 들고 있는다 —
+   *  멈췄다 이어 들을 때 남은 침묵부터 다시 흘러야 리듬이 안 깨진다. */
   _wait(ms) {
-    return new Promise((r) => { this._timer = setTimeout(r, ms); });
+    return new Promise((r) => {
+      this._resume = r;
+      this._deadline = Date.now() + ms;
+      this._timer = setTimeout(() => { this._resume = null; r(); }, ms);
+    });
+  }
+
+  /** 말과 침묵을 그 자리에서 멈춘다. stop() 과 달리 이어 들을 수 있다. */
+  pause() {
+    if (this.paused || this.stopped) return;
+    this.paused = true;
+    this.el.pause();
+    if (this._resume) {
+      clearTimeout(this._timer);
+      this._remain = Math.max(0, this._deadline - Date.now());
+    }
+    if ('speechSynthesis' in window) speechSynthesis.pause();
+  }
+
+  resume() {
+    if (!this.paused || this.stopped) return;
+    this.paused = false;
+    if (this._resume) {
+      const r = this._resume;
+      this._timer = setTimeout(() => { this._resume = null; r(); }, this._remain || 0);
+    } else if (this.el.src) {
+      this.el.play().catch(() => {});   // 파일 재생 중이었다 — ended 리스너가 그대로 받는다
+    }
+    if ('speechSynthesis' in window) speechSynthesis.resume();
   }
 
   /**
@@ -418,6 +531,8 @@ export class NarrationPlayer {
 
   stop() {
     this.stopped = true;
+    this.paused = false;
+    this._resume = null;
     clearTimeout(this._timer);
     if (this.el._fade) clearInterval(this.el._fade);
     this.el.pause();

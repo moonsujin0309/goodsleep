@@ -95,18 +95,25 @@ button { background: none; border: 0; cursor: pointer; touch-action: manipulatio
 
 /* 배경 비디오 — 캔버스 뒤. 재생이 실제로 시작되면(is-on) 떠오른다.
    못 받거나 자동재생이 막히면 그대로 투명 — 캔버스의 사진 배경이 받친다. */
+/* 층 전체의 밝기는 여기서 잡는다. 안쪽 <video> 두 개의 opacity 는 되감기 넘김 전용이라
+   여기 규칙과 섞이면 안 된다 — 그래서 감싸는 층을 따로 뒀다. */
 #scene-video {
   position: fixed;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
   z-index: 0;
   opacity: 0;
   transition: opacity 1500ms var(--ease);
 }
 #scene-video.is-on { opacity: 1; }
 #app.is-dim #scene-video { opacity: 0.3; }
+#scene-video .vid {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+}
 
 .veil {
   position: fixed;

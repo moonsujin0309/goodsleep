@@ -5,7 +5,7 @@
 //     배포가 즉시 반영되고, 끊겼을 때만 캐시가 받친다. 버전 올리기를 잊어도 안전.
 //   나레이션 mp3 — 캐시 우선.
 //     한 번 들은 조각은 다시 받지 않는다. 내용이 바뀌는 배포에서만 VER 을 올린다.
-const VER = 'goodsleep-v1';
+const VER = 'goodsleep-v2';   // 2026-08-24 나레이션 음성 전면 교체 (VoxCPM) — mp3 캐시를 비워야 한다
 const SHELL = [
   './', 'index.html', 'style.css', 'manifest.json',
   'app.js', 'audio.js', 'narration.js', 'sleep.js', 'scenes.js',
@@ -40,8 +40,10 @@ self.addEventListener('fetch', (e) => {
     return;
   }
 
+  // cache: 'reload' — 이게 없으면 브라우저 HTTP 캐시가 낡은 앱 파일을 그대로 돌려줘서
+  // "네트워크 우선"이 이름뿐이 된다 (배포해도 화면이 안 바뀌는 정체). 실측으로 걸렸다.
   e.respondWith(
-    fetch(e.request).then((res) => {
+    fetch(new Request(e.request, { cache: 'reload' })).then((res) => {
       if (res.status === 200) caches.open(VER).then((c) => c.put(e.request, res.clone()));
       return res;
     }).catch(() => caches.match(e.request, { ignoreSearch: true }))

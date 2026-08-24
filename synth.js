@@ -21,6 +21,8 @@ export const RATE = 44100;
 export const LENGTHS = {
   rain: 36, waves: 44, fire: 36, wind: 36, stream: 28, crickets: 36,
   fan: 20, white: 12, pink: 12, brown: 12, chime: 9,
+  // 천둥은 길게 — 한 바퀴에 우르릉이 두세 번뿐이라 짧으면 같은 자리에서 또 친다
+  thunder: 60, cabin: 24, cave: 40,
 };
 
 const TAU = Math.PI * 2;
@@ -403,6 +405,109 @@ function genChime(m, rate, n) {
   return [L, R, evL, evR];              // 나머지 ~3초는 침묵 — 루프마다 숨이 생긴다
 }
 
+/**
+ * 먼 천둥 — 비 오는 밤의 깊이. 가까운 벼락이 아니다.
+ * 번쩍하는 '쾅'(크랙)은 넣지 않는다. 놀라서 깨면 수면 앱이 아니다 —
+ * 지평선 너머에서 굴러오는 저역만 남긴다.
+ */
+function genThunder(m, rate, n) {
+  const L = new Float32Array(m), R = new Float32Array(m);
+  // 층 1 — 밤공기. 천둥이 무음 위에 뜨면 효과음처럼 들린다.
+  for (const d of [L, R]) {
+    let b = 0, lp = 0, air = 0;
+    for (let i = 0; i < m; i++) {
+      b = (b + 0.02 * w()) / 1.02;
+      lp += 0.03 * (b * 3.2 - lp);
+      air += 0.3 * (w() - air);
+      d[i] = lp * 0.9 + air * 0.03;
+    }
+  }
+  // 층 2 — 우르릉. 3중 저역통과 노이즈에 느린 진폭 흔들림을 얹으면 '구르는' 소리가 된다.
+  const evL = new Float32Array(n), evR = new Float32Array(n);
+  const rolls = Math.max(2, Math.round((n / rate) / 17));
+  for (let e = 0; e < rolls; e++) {
+    const at = Math.floor(r01() * n);
+    const len = Math.round((3.4 + r01() * 3.6) * rate);
+    const amp = 0.5 + r01() * 0.5;
+    const pan = w() * 0.7;
+    const a = (pan + 1) * Math.PI / 4;
+    const gL = Math.cos(a), gR = Math.sin(a);
+    const atk = Math.round(len * 0.09);           // 먼 소리는 시작이 뭉툭하다
+    let p1 = 0, p2 = 0, p3 = 0;
+    for (let j = 0; j < len; j++) {
+      const t = j / len;
+      const env = j < atk ? j / atk : Math.exp(-(j - atk) * 3.4 / len);
+      const roll = 0.5 + 0.5 * (0.5 + 0.5 * Math.sin(t * 31 + Math.sin(t * 9) * 2.4));
+      p1 += 0.02 * (w() - p1);
+      p2 += 0.02 * (p1 - p2);
+      p3 += 0.05 * (p2 - p3);
+      // 28 — 42 로 하면 리미터를 타서 피크가 0.578 까지 붙고 정규화 RMS 가 오히려 내려간다
+      const s = p3 * 28 * env * roll * amp;
+      const idx = (at + j) % n;                   // 이음매를 넘는 천둥은 감긴다
+      evL[idx] += s * gL;
+      evR[idx] += s * gR;
+    }
+  }
+  return [L, R, evL, evR];
+}
+
+/**
+ * 기내 소음 — 비행기 안의 그 소리. 선풍기와 다른 점은 날개 통과음(주기적 '펄럭')이 없다는 것,
+ * 브라운 노이즈와 다른 점은 동체 공명이 있어 "공간 안에 있다"고 들린다는 것.
+ */
+function genCabin(m, rate, n) {
+  const L = new Float32Array(m), R = new Float32Array(m);
+  const drift = new Float32Array(m);              // 아주 느린 출력 변화. 완전히 고르면 기계 같다
+  for (let i = 0; i < m; i++) {
+    drift[i] = 0.9 + 0.1 * Math.sin(TAU * 2 * i / n) + 0.05 * Math.sin(TAU * 5 * i / n + 1.3);
+  }
+  for (const [d, off] of [[L, 0], [R, 0.004]]) {
+    let b = 0, lp = 0, hiss = 0, res1 = 0, res2 = 0;
+    const f0 = 118;                               // 동체 공명
+    const rPole = 1 - TAU * f0 * 0.9 / rate;
+    const c = 2 * rPole * Math.cos(TAU * f0 / rate);
+    const r2 = rPole * rPole;
+    for (let i = 0; i < m; i++) {
+      b = (b + 0.02 * w()) / 1.02;
+      lp += (0.035 + off) * (b * 3.2 - lp);
+      hiss += 0.5 * (w() - hiss);                 // 환기구 공기
+      const y = c * res1 - r2 * res2 + w() * 0.5;
+      res2 = res1; res1 = y;
+      d[i] = (lp * 1.5 + y * 0.02 + hiss * 0.05) * drift[i];
+    }
+  }
+  return [L, R];
+}
+
+/**
+ * 동굴 물방울 — 넓고 빈 돌 공간. 시냇물과 달리 물줄기가 없고, 방울 하나하나가 떨어져 있다.
+ * 방울마다 0.2초쯤 뒤에 작은 반향을 하나 붙인다. 그게 "동굴"을 만드는 전부다.
+ */
+function genCave(m, rate, n) {
+  const L = new Float32Array(m), R = new Float32Array(m);
+  for (const d of [L, R]) {                       // 층 1 — 돌방의 공기. 거의 저역만 남는다
+    let b = 0, lp = 0;
+    for (let i = 0; i < m; i++) {
+      b = (b + 0.02 * w()) / 1.02;
+      lp += 0.014 * (b * 3.2 - lp);
+      d[i] = lp * 1.1;
+    }
+  }
+  const evL = new Float32Array(n), evR = new Float32Array(n);
+  const drips = Math.round((n / rate) * 0.55);    // 2초에 한 방울쯤 — 성겨야 넓게 들린다
+  for (let e = 0; e < drips; e++) {
+    const at = Math.floor(r01() * n);
+    const f = 480 + r01() * 900;
+    const amp = 0.10 + r01() * r01() * 0.16;
+    const pan = w() * 0.85;
+    panPing(evL, evR, at, f, 0.10 + r01() * 0.13, amp, rate, pan, 0.0012);
+    // 반향 — 반대쪽에서, 어둡고 작게
+    panPing(evL, evR, (at + Math.round((0.17 + r01() * 0.12) * rate)) % n,
+      f * 0.62, 0.16 + r01() * 0.14, amp * 0.3, rate, -pan * 0.7, 0.004);
+  }
+  return [L, R, evL, evR];
+}
+
 // ── 마감: 크로스페이드 · 정규화 · WAV ─────────────────────
 
 const TARGET_RMS = 0.13;
@@ -434,6 +539,9 @@ export function renderBed(kind, rate = RATE) {
     wind: () => genWind(m, rate, n),
     fan: () => genFan(m, rate, n),
     chime: () => genChime(m, rate, n),
+    thunder: () => genThunder(m, rate, n),
+    cabin: () => genCabin(m, rate, n),
+    cave: () => genCave(m, rate, n),
   }[kind] || (() => genNoise('white', m, rate));
 
   const [srcL, srcR, evL, evR] = gen();

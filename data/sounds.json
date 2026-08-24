@@ -10,6 +10,10 @@
     { "id": "crickets", "label": "풀벌레",       "file": "audio/loops/crickets.mp3", "generate": "crickets", "scene": "stars" },
     { "id": "fan",      "label": "선풍기",       "generate": "fan" },
 
+    { "id": "thunder",  "label": "먼 천둥",      "generate": "thunder",  "scene": "rain" },
+    { "id": "cave",     "label": "동굴 물방울",  "generate": "cave",     "scene": "clouds" },
+    { "id": "cabin",    "label": "기내 소음",    "generate": "cabin" },
+
     { "id": "brown", "label": "브라운 노이즈", "generate": "brown" },
     { "id": "pink",  "label": "핑크 노이즈",   "generate": "pink" },
     { "id": "white", "label": "백색 소음",     "generate": "white" }

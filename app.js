@@ -29,7 +29,7 @@ const store = {
     // rate 를 낮추면 타임스트레치라 억양이 뭉개지지만 침묵은 아무것도 망가뜨리지 않는다.
     // 말 속도는 0.69 가 바닥이다 — 그 아래는 자음이 뭉개져 혀 꼬인 소리가 난다.
     // 그래서 느림은 전부 여기서 가져온다.
-    gapSeconds: 6, sentenceGap: 3.6, narrationVolume: 0.9,
+    gapSeconds: 6, sentenceGap: 4.2, narrationVolume: 0.9,
     voiceURI: null, voiceRate: 0.72, voicePitch: 0.9,
     ...load('settings', {}),
   },
@@ -41,6 +41,12 @@ const store = {
   scene: load('scene', 'stars'),
   pending: load('pending', null),   // 진행 중인 밤 (취침 기록 + 알람 시각)
 };
+
+// 2026-08-24 목소리를 VoxCPM 으로 바꾸면서 문장 사이 여백 기본값을 3.6 → 4.2 로 올렸다.
+// 저장된 설정이 기본값을 덮으므로(위 스프레드 순서) 그냥 두면 쓰던 사람에게는 반영되지 않는다.
+// 손대지 않은 사람(값이 정확히 옛 기본값)만 옮기고, 직접 조절한 값은 존중한다 —
+// 새 기본값에서 스테퍼(0.4 단위)로는 3.6 이 나오지 않으므로 오인식 위험도 없다.
+if (store.settings.sentenceGap === 3.6) store.settings.sentenceGap = 4.2;
 
 // ── 런타임 ────────────────────────────────────────────────
 
@@ -54,6 +60,9 @@ let session = null;         // { stateId, hours, isNap, bedAt, alarmAt }
 let draft = { stateId: null, mode: null, wakeAt: 0, napMinutes: 30, custom: false, customMin: 30 };
 let napFormMinutes = 30;
 let dimTimer = null;
+let introTimer = null;      // 배경음 → 나레이션 순서를 여는 타이머
+let introState = null;      // 그 타이머가 기다리는 상태 (일시정지되면 여기서 다시 잡는다)
+let paused = false;
 let breathTimer = null;
 let breathTick = null;
 
@@ -474,18 +483,43 @@ async function startSession(stateId, hours, isNap) {
   $('#play-meta').textContent = alarmAt ? `알람 ${fmtClock(alarmAt)}` : '';
   $('#app').classList.remove('is-dim');
   scenes.start();
-  startBreathing();
   setMediaSession({
     title: state.label,
     artist: APP_NAME,
-    onPause: () => { narration?.stop(); mixer.duck(false); },
+    // 잠금화면 버튼도 같은 일시정지로 간다 — 예전엔 나레이션을 아예 끊어서 되돌릴 수 없었다
+    onPause: () => setPaused(true),
+    onPlay: () => setPaused(false),
   });
 
   go('play');
-  playNarration(state);
+  startIntro(state);
+}
+
+// 시작하자마자 말이 나오면 소리에 귀가 붙기도 전에 문장이 지나간다.
+// 배경음만 3초 두고 나레이션을 연다.
+const BED_LEAD_MS = 3000;
+
+function startIntro(state) {
+  hideBreathing();                          // 배경음만 나오는 동안은 게이지도 비운다
+  introState = state;                       // 아직 안 시작한 나레이션 — 일시정지가 붙잡을 대상
+  introTimer = setTimeout(() => playNarration(state), BED_LEAD_MS);
+}
+
+// 호흡 정리는 게이지 혼자 하는 게 아니라 나레이션의 breath 층이 이끈다
+// ("넷을 세며 들이쉽니다 · 하나, 둘, 셋, 넷"). 게이지는 그 층이 시작될 때 같이 뜬다.
+function hideBreathing() {
+  $('.breath').style.opacity = '0';
+}
+
+function showBreathing() {
+  const breath = $('.breath');
+  if (breath.style.opacity !== '0') return;   // 이미 돌고 있다
+  breath.style.opacity = '';
+  startBreathing();
 }
 
 function playNarration(state) {
+  introState = null;
   const { picks, nextHistory } = buildSequence(state, store.history);
   store.history = nextHistory;
   save('history', nextHistory);
@@ -509,9 +543,13 @@ function playNarration(state) {
     prevChunk = text;
   };
 
+  // breath 층이 없는 상태(자다가 깼어요·낮잠)는 게이지를 첫 조각부터 띄운다
+  const hasBreath = picks.some((p) => p.layer === 'breath');
+
   const caption = $('#play-caption');
   narration.play(picks, {
     onPiece: (p) => {
+      if (p.layer === 'breath' || !hasBreath) showBreathing();
       caption.classList.add('is-fading');
       setTimeout(() => {
         caption.textContent = p.text || '';
@@ -591,9 +629,41 @@ function startBreathing() {
   run();
 }
 
+// 일시정지 — 그만두기와 다르다. 알람도 취침 기록도 그대로 두고 소리만 멈춘다.
+// 밤중에 누가 말을 걸거나 전화가 오는 상황용이라, 다시 누르면 있던 자리에서 이어진다.
+function setPaused(on) {
+  if (paused === on || !session) return;
+  paused = on;
+  $('#pause-label').textContent = on ? '이어 듣기' : '일시정지';
+  $('#pause-btn').querySelector('use').setAttribute('href', on ? '#i-play' : '#i-pause');
+
+  if (on) {
+    clearTimeout(introTimer);               // 아직 나레이션 전이면 3초 대기부터 멈춘다
+    narration?.pause();
+    mixer.fadeAllOut(800);                  // keepAlive 는 안 건드린다 — 알람이 울어야 한다
+    scenes.stop();
+    clearTimeout(breathTimer);
+    clearInterval(breathTick);
+  } else {
+    for (const [id, v] of Object.entries(store.mixer)) if (v > 0) mixer.setVolume(id, v);
+    scenes.start();
+    if ($('.breath').style.opacity !== '0') startBreathing();
+    if (introState) introTimer = setTimeout(() => playNarration(introState), BED_LEAD_MS);
+    else narration?.resume();
+  }
+}
+
+$('#pause-btn').addEventListener('click', () => setPaused(!paused));
+
 function endSession() {
   narration?.stop();
+  paused = false;
+  introState = null;
+  $('#pause-label').textContent = '일시정지';
+  $('#pause-btn').querySelector('use').setAttribute('href', '#i-pause');
   clearTimeout(dimTimer);
+  clearTimeout(introTimer);
+  $('.breath').style.opacity = '';
   clearTimeout(breathTimer);
   clearInterval(breathTick);
   mixer.duck(false);
@@ -845,6 +915,16 @@ async function init() {
     store.scene = first.scene || store.scene;
     save('mixer', store.mixer); save('preset', store.preset); save('scene', store.scene);
   }
+
+  // 배경음은 앱을 여는 순간부터 흐르고 있어야 한다 — 세션을 시작해야 소리가 나면
+  // 홈 화면이 적막하고, 시작 버튼이 "소리를 켜는 버튼"처럼 느껴진다.
+  // 브라우저는 제스처 없이 재생을 허용하지 않으므로 첫 터치에 한 번만 건다.
+  for (const def of manifest.sounds) mixer.add(def);
+  const openBed = () => mixer.unlock().then(() => {
+    for (const [id, v] of Object.entries(store.mixer)) if (v > 0) mixer.setVolume(id, v);
+  });
+  addEventListener('pointerdown', openBed, { once: true });
+  addEventListener('keydown', openBed, { once: true });
 
   renderStates();
   tickClock();

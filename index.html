@@ -46,13 +46,19 @@ window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(argu
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
   <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
   <symbol id="i-stop" viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="2"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><path d="M9 6v12M15 6v12"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5l10 6.5-10 6.5z"/></symbol>
   <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 019.5 4a8.5 8.5 0 1010.5 10.5z"/></symbol>
 </svg>
 
 <div id="app">
   <!-- 배경 3층: 바닥(사진·그라데이션) → 비디오(무음 루프) → 캔버스(스크림+입자) -->
   <div id="scene-back" aria-hidden="true"></div>
-  <video id="scene-video" muted loop playsinline preload="none" aria-hidden="true"></video>
+  <!-- 비디오가 둘인 이유는 scenes.js 의 _videoTick 참조 — 루프 되감기 번쩍임을 겹쳐서 지운다 -->
+  <div id="scene-video" aria-hidden="true">
+    <video class="vid" muted loop playsinline preload="none"></video>
+    <video class="vid" muted loop playsinline preload="none"></video>
+  </div>
   <canvas id="scene" aria-hidden="true"></canvas>
   <div class="veil" aria-hidden="true"></div>
 
@@ -172,6 +178,9 @@ window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(argu
       <p class="caption" id="play-caption" aria-live="polite"></p>
       <p class="play-meta num" id="play-meta"></p>
       <div class="play-controls">
+        <button class="btn btn-quiet" id="pause-btn">
+          <svg class="icon"><use href="#i-pause"/></svg> <span id="pause-label">일시정지</span>
+        </button>
         <button class="btn btn-quiet" id="stop-btn">
           <svg class="icon"><use href="#i-stop"/></svg> 그만두기
         </button>
@@ -275,7 +284,7 @@ window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(argu
               <label for="sentence-gap">문장 사이 침묵</label>
               <div class="stepper">
                 <button class="step" data-gap-step="sentenceGap:-0.4" aria-label="줄이기"><svg class="icon"><use href="#i-minus"/></svg></button>
-                <span class="v num" id="sentence-gap">2.4초</span>
+                <span class="v num" id="sentence-gap">4.2초</span>
                 <button class="step" data-gap-step="sentenceGap:0.4" aria-label="늘리기"><svg class="icon"><use href="#i-plus"/></svg></button>
               </div>
             </div>
