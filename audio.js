@@ -39,8 +39,34 @@ const clamp01 = (v) => Math.min(1, Math.max(0, v));
 
 import { renderBed, wavBytes, loopify } from './synth.js';
 
-export function bedUrl(kind) {
-  return URL.createObjectURL(new Blob([wavBytes(renderBed(kind))], { type: 'audio/wav' }));
+/**
+ * **아이폰에서는 볼륨이 안 먹는다.**
+ *
+ * iOS Safari 는 `HTMLMediaElement.volume` 이 읽기 전용이다 — 대입해도 예외 없이 조용히
+ * 무시되고 항상 1 이다. 이 믹서는 전부 `el.volume` 위에 지어져 있어서, 아이폰에서는
+ * 슬라이더도 덕킹도 하나도 듣지 않았다. 배경음이 늘 최대치로 나오고 나레이션(RMS 0.034 짜리
+ * 속삭임)이 그 밑에 깔렸다 — "최소로 해도 너무너무 크고 목소리가 안 들린다"의 정체.
+ *
+ * Web Audio 의 GainNode 로 가면 될 일이지만 그 길은 막혀 있다 —
+ * 화면을 끄면 iOS 가 AudioContext 를 정지시킨다 (CLAUDE.md 의 첫 번째 결정).
+ * 그래서 그런 기기에서는 **볼륨을 파형에 구워서** 만든다.
+ */
+export const VOLUME_SETTABLE = (() => {
+  try {
+    const a = new Audio();
+    a.volume = 0.5;
+    return Math.abs(a.volume - 0.5) < 0.01;
+  } catch { return false; }
+})();
+
+// DSP 는 종류당 한 번만 돌린다 (파도 44초 렌더가 200ms 넘는다).
+// 볼륨을 바꿀 때는 이 PCM 을 다시 인코딩만 한다 — 그쪽이 훨씬 싸다.
+const pcmCache = new Map();
+
+export function bedUrl(kind, gain = 1) {
+  let pcm = pcmCache.get(kind);
+  if (!pcm) { pcm = renderBed(kind); pcmCache.set(kind, pcm); }
+  return URL.createObjectURL(new Blob([wavBytes(pcm, gain)], { type: 'audio/wav' }));
 }
 
 /**
@@ -49,15 +75,22 @@ export function bedUrl(kind) {
  * 디코드해서 꼬리를 감아 붙이고(synth.loopify) 합성과 같은 크기로 정규화한다.
  * 디코드는 재생이 아니라서 화면이 꺼져도 상관없다 — 재생은 여전히 <audio> 다.
  */
-async function fileBedUrl(src) {
+async function filePcm(src) {
+  let pcm = pcmCache.get(src);
+  if (pcm) return pcm;
   const res = await fetch(src);
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const ac = new OfflineAudioContext(2, 8, 44100);   // 디코드 전용. 44.1k 로 리샘플된다
   const buf = await ac.decodeAudioData(await res.arrayBuffer());
   const L = buf.getChannelData(0);
   const R = buf.numberOfChannels > 1 ? buf.getChannelData(1) : L;
-  return URL.createObjectURL(new Blob([wavBytes(loopify(L, R, buf.sampleRate))], { type: 'audio/wav' }));
+  pcm = loopify(L, R, buf.sampleRate);
+  pcmCache.set(src, pcm);
+  return pcm;
 }
+
+const pcmUrl = (pcm, gain = 1) =>
+  URL.createObjectURL(new Blob([wavBytes(pcm, gain)], { type: 'audio/wav' }));
 
 /** 무음 루프. 사운드를 하나도 안 켜도 탭이 살아 있어야 알람이 운다. */
 function silentUrl(seconds = 5, rate = 8000) {
@@ -107,12 +140,51 @@ export class SeamlessLoop {
   get src() { return this._src; }
   set src(v) { this._src = v; for (const el of this.els) el.src = v; }
 
+  /** 소스를 만들기 전에 목표 볼륨을 알려 둔다 — 0 으로 구웠다가 곧바로 다시 굽지 않게. */
+  prime(v) { this._volume = clamp01(v); }
+
+  /** 소스를 만드는 법을 받아 둔다 — 볼륨을 구워야 하는 기기에서 다시 부른다. */
+  open(make) {
+    this.make = make;
+    this._baked = VOLUME_SETTABLE ? 1 : this._volume;
+    this.src = make(this._baked);
+  }
+
   get volume() { return this._volume; }
   set volume(v) {
     this._volume = clamp01(v);
+    if (!VOLUME_SETTABLE) { this._bake(); return; }   // 아이폰 — 파형에 굽는다
     if (this._x) return;              // 넘겨주는 중 — 인터벌이 반영한다
     const el = this.els[this.i];
     if (!el.paused) el.volume = this._volume;
+  }
+
+  /**
+   * 볼륨을 파형에 구워 소스를 갈아 끼운다. 같은 자리에서 이어 붙이므로 흐름은 유지된다.
+   *
+   * fade() 는 50ms 마다 볼륨을 쓰므로 그대로 받으면 초당 20번 다시 인코딩한다.
+   * 그래서 멈춘 뒤 한 번만 굽는다 — 이 기기에서 페이드는 계단 하나가 된다.
+   * 슬라이더·덕킹처럼 드물게 일어나는 일이라 그걸로 충분하다.
+   */
+  _bake() {
+    clearTimeout(this._bt);
+    this._bt = setTimeout(() => {
+      if (!this.make || this._baked === this._volume) return;
+      if (this._volume <= 0) return;              // 어차피 pause 로 끈다. 굽지 않는다
+      this._baked = this._volume;
+      const el = this.els[this.i];
+      const at = el.currentTime || 0;
+      const playing = !el.paused;
+      const old = this._src;
+      const ready = () => {
+        el.removeEventListener('loadedmetadata', ready);
+        if (Number.isFinite(el.duration) && el.duration > 0) el.currentTime = at % el.duration;
+        if (playing) el.play().catch(() => {});
+      };
+      el.addEventListener('loadedmetadata', ready);
+      this.src = this.make(this._volume);
+      if (old) URL.revokeObjectURL(old);
+    }, 150);
   }
 
   play() {
@@ -128,6 +200,10 @@ export class SeamlessLoop {
 
   /** 끝이 다가오면 다음 엘리먼트를 띄우고 겹치는 동안 넘긴다. */
   _tick() {
+    // 볼륨이 안 먹는 기기에서는 겹치기가 오히려 해가 된다 —
+    // 둘 다 최대치로 나와서 넘기는 1.2초 동안 소리가 두 배가 된다.
+    // 그런 기기는 el.loop 안전망에 맡긴다 (되감기 틈은 남지만 두 배보다 낫다).
+    if (!VOLUME_SETTABLE) return;
     if (this._x) return;
     const cur = this.els[this.i];
     if (cur.paused || !Number.isFinite(cur.duration)) return;
@@ -197,12 +273,13 @@ export class Mixer {
     layer.loading = (async () => {
       if (d.file) {
         try {
-          layer.el.src = await fileBedUrl(d.file);
+          const pcm = await filePcm(d.file);
+          layer.el.open((g) => pcmUrl(pcm, g));
           return true;
         } catch { /* 오프라인 첫 방문 등 — 합성이 받친다 */ }
       }
       if (d.generate) {
-        layer.el.src = bedUrl(d.generate);
+        layer.el.open((g) => bedUrl(d.generate, g));
         return true;
       }
       layer.available = false;
@@ -214,7 +291,7 @@ export class Mixer {
 
   /** 슬라이더값 → 실제 엘리먼트 볼륨. 제곱 커브 — 귀는 로그로 듣는다.
    *  선형이면 슬라이더 초입부터 너무 크다 ("기본 배경음이 너무 커"의 원인).
-   *  0.30 은 전체 마스터 — 제곱 커브만으로도 여전히 크다는 피드백으로 세 번 내렸다.
+   *  0.15 는 전체 마스터. "지금의 절반이면 되겠다"는 요청으로 0.30 에서 반으로 내렸다.
    *  수면 배경음은 "들리는 듯 마는 듯"이 맞고, 크게 듣고 싶으면 기기 볼륨이 있다.
    *
    *  덕킹 0.08 — 왜 이렇게까지 깊은가. VoxCPM 목소리는 속삭임이라 파일이 아주 작다:
@@ -223,7 +300,7 @@ export class Mixer {
    *  게다가 광대역 소음은 속삭임을 RMS 비율보다 훨씬 심하게 덮는다 — 말은 짧은 봉우리에
    *  에너지가 몰려 있고 소음은 끊기지 않기 때문이다. 0.22 로도 "목소리가 안 들린다"가 두 번 나왔다. */
   _target(layer) {
-    return layer.volume * layer.volume * 0.30 * (this.ducked ? 0.08 : 1);
+    return layer.volume * layer.volume * 0.15 * (this.ducked ? 0.08 : 1);
   }
 
   setVolume(id, v) {
@@ -231,6 +308,7 @@ export class Mixer {
     if (!layer) return;
     layer.volume = clamp01(v);
     if (layer.volume > 0) {
+      if (!VOLUME_SETTABLE) layer.el.prime(this._target(layer));
       this._ensure(layer).then((ok) => {
         if (!ok || layer.volume <= 0) return;   // 준비되는 사이 꺼졌으면 재생하지 않는다
         if (layer.el.paused) {

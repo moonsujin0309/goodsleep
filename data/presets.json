@@ -28,7 +28,7 @@
       "label": "쏟아지는 비",
       "note": "아무 소리도 들리지 않게",
       "scene": "rain",
-      "mix": { "rain": 0.85, "brown": 0.34 },
+      "mix": { "rain": 0.6, "brown": 0.24 },
       "art": { "from": "#141C2A", "to": "#070A0F", "glow": "#4E6E96", "motif": "rain" }
     },
     {

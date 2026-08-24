@@ -610,7 +610,12 @@ export function loopify(srcL, srcR, rate) {
 }
 
 /** 스테레오 16비트 WAV 바이트. 브라우저는 Blob 으로, node 는 파일로 감싼다. */
-export function wavBytes({ left, right, rate }) {
+/**
+ * gain 은 iOS 때문에 있다. iOS Safari 는 `HTMLMediaElement.volume` 이 읽기 전용이라
+ * 대입해도 조용히 무시된다 — 아이폰에서는 믹서 슬라이더도 덕킹도 하나도 안 먹었다.
+ * 그런 기기에서는 볼륨을 여기서 파형에 굽는다 (audio.js 의 SeamlessLoop._bake).
+ */
+export function wavBytes({ left, right, rate }, gain = 1) {
   const n = left.length;
   const bytes = n * 4;                            // 2ch × 16bit
   const buf = new ArrayBuffer(44 + bytes);
@@ -622,8 +627,8 @@ export function wavBytes({ left, right, rate }) {
   v.setUint16(32, 4, true); v.setUint16(34, 16, true);
   str(36, 'data'); v.setUint32(40, bytes, true);
   for (let i = 0; i < n; i++) {
-    v.setInt16(44 + i * 4, Math.max(-1, Math.min(1, left[i])) * 32767, true);
-    v.setInt16(46 + i * 4, Math.max(-1, Math.min(1, right[i])) * 32767, true);
+    v.setInt16(44 + i * 4, Math.max(-1, Math.min(1, left[i] * gain)) * 32767, true);
+    v.setInt16(46 + i * 4, Math.max(-1, Math.min(1, right[i] * gain)) * 32767, true);
   }
   return buf;
 }
