@@ -12,7 +12,7 @@
 # ── 왜 통짜로 뽑아 자르는가 (2026-08-24) ──────────────────────────
 # 문장별로 따로 생성하면 문장마다 발화 속도가 제각각이다. 실측 최대 2.06배 —
 # 한 조각 안에서 마지막 문장만 갑자기 빨라지는 게 귀에 그대로 들렸다.
-# 한 번의 생성 안에서는 속도가 저절로 균일하다 (1.5배 안쪽).
+# 한 번의 생성 안에서는 속도가 저절로 균일하다.
 # 시드를 바꿔 다시 뽑는 건 해결책이 아니다 — 시드가 목소리 자체를 바꾼다.
 #
 # ── 확정값 ────────────────────────────────────────────────────────
@@ -27,19 +27,25 @@
 # 경계째로 밀렸고 2자짜리 "셋," 이 1.05초를 먹었다.
 # 지금은 **글자 수 대비 길이가 가장 잘 맞는 묶음**을 고른다 (cut 참조).
 #
-# 그래도 못 고치는 경우가 남는다. 자르기는 모델이 실제로 쉰 자리에서만
-# 가능해서, 아예 안 쉬고 붙여 읽어 버리면 나눌 지점이 없다. 숫자 세기가
-# 많은 대본에서 그렇다.
-#   → 그때는 **문장별로 따로 뽑는다.** 정렬이 정의상 정확해진다.
-#     대신 그 조각 안에서는 속도가 고르지 않다. 목소리가 섞이는 것보다 낫고,
-#     숫자 세기 구간은 어차피 앱이 1초 주기로 침묵을 덮어쓴다.
+# 그래도 못 자르는 경우가 남는다. 그때 곧장 문장별 생성으로 내려갔더니
+# 속도 편차가 오히려 커졌다 (문장별 1.96배 vs 통짜 1.73배) — 문장별 생성이
+# 편차의 주범이기 때문이다. 그래서 **반씩 쪼개 통짜로 다시 뽑는다**(render).
+# 단위는 줄이되 통짜는 지킨다. 문장 하나까지 내려가는 건 정말 마지막이다.
+#
+# ── 속도 보정 ─────────────────────────────────────────────────────
+# 자르기가 맞아도 모델이 고르지 않게 말한 조각이 남는다. 쪼개도 안 고쳐진다 —
+# 말 자체가 그런 것이라서. 그래서 마지막에 튀는 토막만 시간축으로 당긴다.
+# 폭은 좁게 묶는다(STRETCH_MIN). 크게 늘리면 자음이 뭉개지는 게 이 프로젝트의
+# 오래된 결론이고, 여기서 하려는 건 전면 감속이 아니라 이웃과 보조를 맞추는 것뿐이다.
+# 숫자 세기 토막은 건드리지 않는다 — 길이가 원래 다르고 앱이 1초 주기로 덮어쓴다.
+#
 # 조용히 넘어가는 선택지는 없다 — 파일과 침묵이 밀리면 앱 전체가 어긋난다
 # (CLAUDE.md 가 경고하는 그것).
 
 import argparse, json, pathlib, statistics, subprocess, sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).parent))
-from chunking import chunks as split_chunks
+from chunking import chunks as split_chunks, is_count
 
 ROOT = pathlib.Path(__file__).parent.parent
 MANIFEST = ROOT / "data" / "narration.json"
@@ -52,7 +58,12 @@ DESIGN = ("A calm man in his early 30s, soft low voice, "
 CFG, TIMESTEPS = 2.0, 10
 
 TOP_DB = 40          # 무음 판정. 35~45 는 결과가 같았다
-PACE_LO, PACE_HI = 0.55, 1.8    # 조각 중앙값 대비 허용 배수
+PACE_LO, PACE_HI = 0.55, 1.8    # 자르기 검증: 중앙값 대비 이 밖이면 잘못 잘린 것
+# 속도 보정: 조각 안 초/글자를 중앙값의 ±PACE_BAND 안에 묶는다.
+# 1.25 면 조각 내 최대 편차가 1.56배 — 승인된 미리듣기(1.53배) 수준이다.
+PACE_BAND = 1.25
+STRETCH_MIN = 0.75   # 이보다 크게 늘이지 않는다 (자음이 뭉개진다). 못 채우면 남긴다
+SPREAD_WARN = 2.06   # 사용자가 "긴박하다"고 거부한 편차. 넘으면 보고한다
 MP3_KBPS = 64
 
 
@@ -61,8 +72,7 @@ def cut(wav, rate, parts):
 
     간격이 큰 순으로 자르는 방법을 먼저 썼는데 틀렸다. 모델이 항상 우리가
     쪼갠 자리에서 쉬지는 않는다 — "넷을 세며 들이쉽니다. 하나," 를 붙여 읽고
-    엉뚱한 데서 쉬면 경계가 통째로 밀린다. 실제로 81조각 중 23개가 그렇게
-    어긋났고, 2자짜리 "셋," 이 1.05초를 먹는 식이었다.
+    엉뚱한 데서 쉬면 경계가 통째로 밀린다.
 
     그래서 간격 크기 대신 **각 조각이 제 글자 수만큼의 길이를 갖는가** 로 고른다.
     소리 구간을 순서대로 N 덩어리로 묶는 모든 경우 중 오차가 가장 작은 것을
@@ -78,9 +88,8 @@ def cut(wav, rate, parts):
         return [(spans[0][0], spans[-1][1])]
 
     lens = [max(1, len(t)) for t, _ in parts]
-    total_len = sum(lens)
     total_dur = spans[-1][1] - spans[0][0]
-    exp = [total_dur * n / total_len for n in lens]
+    exp = [total_dur * n / sum(lens) for n in lens]
 
     m = len(spans)
     INF = float("inf")
@@ -89,14 +98,12 @@ def cut(wav, rate, parts):
     pick = [[-1] * (m + 1) for _ in range(want + 1)]
     best[want][m] = 0.0
     for i in range(want - 1, -1, -1):
-        # 남은 조각 수만큼은 구간을 남겨 둬야 한다
         for a in range(m - (want - i), -1, -1):
             for b in range(a, m - (want - i - 1)):
                 rest = best[i + 1][b + 1]
                 if rest == INF:
                     continue
-                dur = spans[b][1] - spans[a][0]
-                cost = abs(dur - exp[i]) / exp[i] + rest
+                cost = abs((spans[b][1] - spans[a][0]) - exp[i]) / exp[i] + rest
                 if cost < best[i][a]:
                     best[i][a] = cost
                     pick[i][a] = b
@@ -112,12 +119,85 @@ def cut(wav, rate, parts):
 
 
 def check(spans, parts, rate):
-    """초/글자가 튀는 조각을 찾는다. 반환: (문제 목록, 편차배수)."""
+    """잘못 잘린 토막을 찾는다 — 글자 수에 비해 터무니없이 길거나 짧은 것."""
     paces = [(e - s) / rate / max(1, len(t)) for (s, e), (t, _) in zip(spans, parts)]
     med = statistics.median(paces)
-    bad = [(t, p) for (t, _), p in zip(parts, paces)
-           if p < med * PACE_LO or p > med * PACE_HI]
-    return bad, max(paces) / min(paces)
+    return [t for (t, _), p in zip(parts, paces)
+            if p < med * PACE_LO or p > med * PACE_HI]
+
+
+def split_point(parts):
+    """가운데에 가장 가까운 문장 끝. 문장 중간에서 자르면 억양이 끊긴다."""
+    mid = len(parts) // 2
+    ends = [i + 1 for i, (_, end) in enumerate(parts[:-1]) if end]
+    return min(ends, key=lambda i: abs(i - mid)) if ends else mid
+
+
+def render(model, torch, parts, rate):
+    """parts 를 소리로 만든다. 반환: (parts 와 1:1 인 파형 목록, 생성 덩어리 수).
+
+    통짜를 먼저 시도하고, 못 자르면 반으로 쪼개 각각 다시 통짜로 뽑는다.
+    덩어리 수가 1 이면 조각 전체가 한 번에 나온 것 = 속도가 가장 고르다.
+    """
+    if len(parts) == 1:
+        torch.manual_seed(SEED)
+        return [model.generate(text=f"({DESIGN}){parts[0][0]}",
+                               cfg_value=CFG, inference_timesteps=TIMESTEPS)], 1
+
+    torch.manual_seed(SEED)
+    joined = " ".join(t for t, _ in parts)
+    wav = model.generate(text=f"({DESIGN}){joined}",
+                         cfg_value=CFG, inference_timesteps=TIMESTEPS)
+    spans = cut(wav, rate, parts)
+    if spans is not None and not check(spans, parts, rate):
+        return [wav[s:e] for s, e in spans], 1
+
+    i = split_point(parts)
+    left, ln = render(model, torch, parts[:i], rate)
+    right, rn = render(model, torch, parts[i:], rate)
+    return left + right, ln + rn
+
+
+def render_forced(model, torch, parts, rate):
+    """자르기가 됐더라도 일부러 반으로 쪼개 각각 뽑는다.
+
+    통짜가 잘 잘려도 그 안에서 속도가 앞뒤로 흐르는 조각이 있다 — 몸 훑기처럼
+    비슷한 문장이 길게 이어지면 모델이 뒤로 갈수록 빨라진다 (0.229 → 0.106).
+    보정 폭 안에서는 못 따라잡으니, 흐름 자체를 반으로 잘라 줄인다.
+    """
+    i = split_point(parts)
+    left, ln = render(model, torch, parts[:i], rate)
+    right, rn = render(model, torch, parts[i:], rate)
+    return left + right, ln + rn
+
+
+def spread(wavs, parts, rate):
+    """숫자 세기 토막을 뺀 조각 내 속도 편차 (최대/최소)."""
+    ps = [len(w) / rate / len(t) for w, (t, _) in zip(wavs, parts) if not is_count(t)]
+    return max(ps) / min(ps) if len(ps) >= 2 else 1.0
+
+
+def equalize(wavs, parts, rate):
+    """튀는 토막만 시간축으로 당겨 이웃과 보조를 맞춘다. 반환: (파형, 고친 수)."""
+    import librosa
+    idx = [i for i, (t, _) in enumerate(parts) if not is_count(t)]
+    if len(idx) < 3:
+        return wavs, 0
+    pace = {i: len(wavs[i]) / rate / len(parts[i][0]) for i in idx}
+    med = statistics.median(pace.values())
+    lo, hi = med / PACE_BAND, med * PACE_BAND
+    fixed = 0
+    for i in idx:
+        want = lo if pace[i] < lo else hi if pace[i] > hi else None
+        if want is None:
+            continue
+        # r < 1 이면 늘이고(느려지고), r > 1 이면 줄인다
+        r = max(STRETCH_MIN, min(1 / STRETCH_MIN, pace[i] / want))
+        if abs(r - 1) < 0.02:
+            continue
+        wavs[i] = librosa.effects.time_stretch(wavs[i], rate=r)
+        fixed += 1
+    return wavs, fixed
 
 
 def to_mp3(ffmpeg, samples, rate, path):
@@ -147,7 +227,6 @@ def main():
         if s not in states:
             sys.exit(f"그런 상태가 없습니다: {s}\n있는 것: {', '.join(states)}")
 
-    # 계획: 조각 하나 = 통짜 생성 한 번 = 파일 여러 개
     plan = []
     for sid in targets:
         (OUT_DIR / sid).mkdir(parents=True, exist_ok=True)
@@ -161,74 +240,63 @@ def main():
                          for i in range(len(parts))]
                 piece["files"] = [f"audio/narration/{sid}/{p.name}" for p in paths]
                 if args.force or not all(p.exists() for p in paths):
-                    plan.append((f"{sid}/{layer}/{piece['id']}",
-                                 piece["text"], parts, paths))
+                    plan.append((f"{sid}/{layer}/{piece['id']}", parts, paths))
 
-    files = sum(len(p[3]) for p in plan)
-    print(f"상태 {len(targets)}개 · 새로 만들 조각 {len(plan)}개 (파일 {files}개)")
+    print(f"상태 {len(targets)}개 · 새로 만들 조각 {len(plan)}개 "
+          f"(파일 {sum(len(p[2]) for p in plan)}개)")
     if args.dry_run:
-        for name, _, parts, _ in plan:
+        for name, parts, _ in plan:
             print(f"  {name:<26} 문장 {len(parts)}")
         return
 
-    import numpy as np, torch, imageio_ffmpeg
+    import torch, imageio_ffmpeg
     from voxcpm import VoxCPM
     ffmpeg = imageio_ffmpeg.get_ffmpeg_exe()
 
     print("모델 로드 중...")
     model = VoxCPM.from_pretrained("openbmb/VoxCPM2", load_denoiser=False)
     rate = model.tts_model.sample_rate
-    print(f"로드 완료 · {rate}Hz · seed{SEED}\n")
+    print(f"로드 완료 · {rate}Hz · seed{SEED}")
+    print()
 
-    done = total = 0
-    failed = []
-    fellback = []
-    for n, (name, text, parts, paths) in enumerate(plan, 1):
-        torch.manual_seed(SEED)
-        wav = model.generate(text=f"({DESIGN}){text}",
-                             cfg_value=CFG, inference_timesteps=TIMESTEPS)
-        spans = cut(wav, rate, parts)
-        bad = None
-        if spans is not None:
-            bad, spread = check(spans, parts, rate)
-        if spans is None or bad:
-            # 통짜에서 경계를 못 찾았다. 문장별로 다시 뽑으면 정렬은 정확해진다.
-            why = "조각 부족" if spans is None else f"초/글자 튐 {len(bad)}개"
-            size = 0
-            for (t, _), path in zip(parts, paths):
-                torch.manual_seed(SEED)
-                w = model.generate(text=f"({DESIGN}){t}",
-                                   cfg_value=CFG, inference_timesteps=TIMESTEPS)
-                size += to_mp3(ffmpeg, w, rate, path)
-            done += 1
-            total += size
-            fellback.append((name, why))
-            print(f"  [{n}/{len(plan)}] {name:<26} 문장 {len(parts):>2} · "
-                  f"문장별 생성으로 대체 ({why}) · {size // 1024}KB")
-            continue
-        size = sum(to_mp3(ffmpeg, wav[s:e], rate, p)
-                   for (s, e), p in zip(spans, paths))
-        done += 1
-        total += size
+    total = 0
+    wide, splits = [], []
+    for n, (name, parts, paths) in enumerate(plan, 1):
+        wavs, blocks = render(model, torch, parts, rate)
+        before = spread(wavs, parts, rate)
+        wavs, fixed = equalize(wavs, parts, rate)
+        after = spread(wavs, parts, rate)
+        if after > SPREAD_WARN and len(parts) > 3:
+            # 통짜 안에서 속도가 흘렀다. 강제로 쪼개 보고 나아지면 그쪽을 쓴다.
+            w2, b2 = render_forced(model, torch, parts, rate)
+            w2, f2 = equalize(w2, parts, rate)
+            a2 = spread(w2, parts, rate)
+            if a2 < after:
+                wavs, blocks, fixed, after = w2, b2, f2, a2
+        total += sum(to_mp3(ffmpeg, w, rate, p) for w, p in zip(wavs, paths))
+        if blocks > 1:
+            splits.append((name, blocks))
+        if after > SPREAD_WARN:
+            wide.append((name, after))
         print(f"  [{n}/{len(plan)}] {name:<26} 문장 {len(parts):>2} · "
-              f"{len(wav) / rate:5.1f}초 · 편차 {spread:.2f}배 · {size // 1024}KB")
+              f"덩어리 {blocks} · 편차 {before:.2f}→{after:.2f}배 · 보정 {fixed}개")
 
     MANIFEST.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
                         encoding="utf-8")
-    print(f"\n조각 {done}/{len(plan)} · {total / 1024 / 1024:.1f}MB")
+    print()
+    print(f"조각 {len(plan)}개 · {total / 1024 / 1024:.1f}MB")
     print(f"매니페스트 갱신: {MANIFEST.relative_to(ROOT)}")
-    if fellback:
-        print()
-        print(f"통짜 자르기가 안 돼 문장별로 뽑은 조각 {len(fellback)}개 "
-              f"(소리는 정상, 그 안에서 속도만 덜 고름):")
-        for name, why in fellback:
-            print(f"  {name}: {why}")
-    if failed:
-        print(f"\n실패 {len(failed)}개 — 이 조각들은 옛 파일이 그대로 남아 있습니다:",
-              file=sys.stderr)
-        for name, why in failed:
-            print(f"  {name}: {why}", file=sys.stderr)
+    if splits:
+        print(f"통짜로 못 뽑아 쪼갠 조각 {len(splits)}개 "
+              f"(덩어리 수가 클수록 속도가 덜 고르다):")
+        for name, b in sorted(splits, key=lambda x: -x[1])[:8]:
+            print(f"  {name}: {b}덩어리")
+    if wide:
+        print(f"편차 {SPREAD_WARN}배를 여전히 넘는 조각 {len(wide)}개:", file=sys.stderr)
+        for name, sp in sorted(wide, key=lambda x: -x[1]):
+            print(f"  {name}: {sp:.2f}배", file=sys.stderr)
         sys.exit(1)
+    print(f"편차 {SPREAD_WARN}배 초과: 없음")
 
 
 main()

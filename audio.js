@@ -214,12 +214,16 @@ export class Mixer {
 
   /** 슬라이더값 → 실제 엘리먼트 볼륨. 제곱 커브 — 귀는 로그로 듣는다.
    *  선형이면 슬라이더 초입부터 너무 크다 ("기본 배경음이 너무 커"의 원인).
-   *  0.35 는 전체 마스터 — 제곱 커브만으로도 여전히 크다는 실사용 피드백으로 두 번 내렸다.
+   *  0.30 은 전체 마스터 — 제곱 커브만으로도 여전히 크다는 피드백으로 세 번 내렸다.
    *  수면 배경음은 "들리는 듯 마는 듯"이 맞고, 크게 듣고 싶으면 기기 볼륨이 있다.
-   *  덕킹 0.22 — 나레이션 중에는 목소리가 주인공이라 배경을 확실히 눕힌다
-   *  (0.45 로는 "사람 목소리가 거의 안 들린다"는 피드백이 나왔다). */
+   *
+   *  덕킹 0.08 — 왜 이렇게까지 깊은가. VoxCPM 목소리는 속삭임이라 파일이 아주 작다:
+   *  나레이션 mp3 의 RMS 가 0.027~0.109(중앙값 0.034), 피크는 0.15~0.40 밖에 안 된다.
+   *  합성 배경음은 RMS 0.108 로 맞춰져 있으니 같은 볼륨이면 목소리가 배경의 1/3이다.
+   *  게다가 광대역 소음은 속삭임을 RMS 비율보다 훨씬 심하게 덮는다 — 말은 짧은 봉우리에
+   *  에너지가 몰려 있고 소음은 끊기지 않기 때문이다. 0.22 로도 "목소리가 안 들린다"가 두 번 나왔다. */
   _target(layer) {
-    return layer.volume * layer.volume * 0.35 * (this.ducked ? 0.22 : 1);
+    return layer.volume * layer.volume * 0.30 * (this.ducked ? 0.08 : 1);
   }
 
   setVolume(id, v) {
@@ -231,7 +235,16 @@ export class Mixer {
         if (!ok || layer.volume <= 0) return;   // 준비되는 사이 꺼졌으면 재생하지 않는다
         if (layer.el.paused) {
           layer.el.volume = 0;
-          layer.el.play().catch(() => { layer.available = false; layer.onstate?.(); });
+          // play() 거부를 전부 "음원 없음"으로 보면 안 된다. 슬라이더를 0 으로 내리자마자
+          // 다시 올리면 AbortError, 자동재생이 아직 안 풀렸으면 NotAllowedError 가 나는데
+          // 둘 다 소리가 없다는 뜻이 아니다. 그런데 여기서 available 을 내려 버려서
+          // 프리셋에 든 레이어만 슬라이더가 영영 잠겼다 — "포함 안 된 것만 조절된다"의 정체.
+          // 소스를 못 쓰는 경우(NotSupportedError)만 진짜 없는 것이다.
+          layer.el.play().catch((e) => {
+            if (e?.name !== 'NotSupportedError') return;
+            layer.available = false;
+            layer.onstate?.();
+          });
         }
         fade(layer.el, this._target(layer), 1500);   // 400ms 는 소리가 "켜졌다". 스며들게 한다
       });
