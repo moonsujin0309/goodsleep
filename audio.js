@@ -51,7 +51,21 @@ import { renderBed, wavBytes, loopify } from './synth.js';
  * 화면을 끄면 iOS 가 AudioContext 를 정지시킨다 (CLAUDE.md 의 첫 번째 결정).
  * 그래서 그런 기기에서는 **볼륨을 파형에 구워서** 만든다.
  */
+export const IS_IOS = (() => {
+  const ua = navigator.userAgent || '';
+  if (/iPad|iPhone|iPod/.test(ua)) return true;
+  // 아이패드는 데스크톱 사파리로 위장한다 — 터치가 있는 Mac 은 아이패드다
+  return /Macintosh|MacIntel/.test(ua) && (navigator.maxTouchPoints || 0) > 1;
+})();
+
+/**
+ * 되읽기 검사만으로는 못 잡는다. **iOS 는 대입을 무시하면서 값은 되돌려 주는 버전이 있다** —
+ * 그래서 "넣고 되읽어 같으면 지원됨"으로 판정하면 아이폰이 '지원됨'으로 통과해 버리고
+ * 굽기 경로가 영영 안 켜진다. 실제로 그렇게 한 번 헛돌았다.
+ * 기기 판별을 먼저 하고, 그다음에 되읽기를 본다.
+ */
 export const VOLUME_SETTABLE = (() => {
+  if (IS_IOS) return false;
   try {
     const a = new Audio();
     a.volume = 0.5;
@@ -120,6 +134,8 @@ function silentUrl(seconds = 5, rate = 8000) {
  * 바깥에서는 `<audio>` 하나처럼 보인다 (volume · play · pause · paused · src).
  */
 const HANDOFF = 1.2;   // 넘겨주는 구간(초). 한 소리에 30~40초에 한 번뿐이라 넉넉히 준다
+const BAKE_WAIT = 150; // 볼륨이 멎으면 이만큼 뒤에 굽는다
+const BAKE_MAX = 4000; // 계속 움직여도 이 간격으로는 반드시 굽는다 (알람 60초 램프용)
 
 export class SeamlessLoop {
   constructor() {
@@ -163,28 +179,38 @@ export class SeamlessLoop {
    * 볼륨을 파형에 구워 소스를 갈아 끼운다. 같은 자리에서 이어 붙이므로 흐름은 유지된다.
    *
    * fade() 는 50ms 마다 볼륨을 쓰므로 그대로 받으면 초당 20번 다시 인코딩한다.
-   * 그래서 멈춘 뒤 한 번만 굽는다 — 이 기기에서 페이드는 계단 하나가 된다.
-   * 슬라이더·덕킹처럼 드물게 일어나는 일이라 그걸로 충분하다.
+   * 그래서 값이 멎은 뒤에 한 번만 굽는다 — 이 기기에서 짧은 페이드는 계단 하나가 된다.
+   * 슬라이더·덕킹(1.2~1.5초)은 그걸로 충분하다.
+   *
+   * 다만 **알람의 60초 램프**는 값이 1분 내내 움직여서 디바운스만으로는 영영 안 구워진다.
+   * 그러면 처음 볼륨 그대로 1분을 울다가 끝에서 한 번에 커진다 — "알람이 안 울렸다"의 재판이다.
+   * 그래서 계속 움직이더라도 BAKE_MAX 간격으로는 반드시 굽는다 (60초 램프 = 15단계).
    */
   _bake() {
+    if (!this._baked) { this._bakeNow(); return; }   // 아직 들리는 게 안 구워졌다 — 지금 굽는다
+    if (Date.now() - (this._bakeAt || 0) >= BAKE_MAX) { this._bakeNow(); return; }
     clearTimeout(this._bt);
-    this._bt = setTimeout(() => {
-      if (!this.make || this._baked === this._volume) return;
-      if (this._volume <= 0) return;              // 어차피 pause 로 끈다. 굽지 않는다
-      this._baked = this._volume;
-      const el = this.els[this.i];
-      const at = el.currentTime || 0;
-      const playing = !el.paused;
-      const old = this._src;
-      const ready = () => {
-        el.removeEventListener('loadedmetadata', ready);
-        if (Number.isFinite(el.duration) && el.duration > 0) el.currentTime = at % el.duration;
-        if (playing) el.play().catch(() => {});
-      };
-      el.addEventListener('loadedmetadata', ready);
-      this.src = this.make(this._volume);
-      if (old) URL.revokeObjectURL(old);
-    }, 150);
+    this._bt = setTimeout(() => this._bakeNow(), BAKE_WAIT);
+  }
+
+  _bakeNow() {
+    clearTimeout(this._bt);
+    this._bakeAt = Date.now();
+    if (!this.make || this._baked === this._volume) return;
+    if (this._volume <= 0) return;                   // 어차피 pause 로 끈다. 굽지 않는다
+    this._baked = this._volume;
+    const el = this.els[this.i];
+    const at = el.currentTime || 0;
+    const playing = !el.paused;
+    const old = this._src;
+    const ready = () => {
+      el.removeEventListener('loadedmetadata', ready);
+      if (Number.isFinite(el.duration) && el.duration > 0) el.currentTime = at % el.duration;
+      if (playing) el.play().catch(() => {});
+    };
+    el.addEventListener('loadedmetadata', ready);
+    this.src = this.make(this._volume);
+    if (old) URL.revokeObjectURL(old);
   }
 
   play() {
@@ -195,6 +221,7 @@ export class SeamlessLoop {
 
   pause() {
     if (this._x) { clearInterval(this._x); this._x = null; }
+    clearTimeout(this._bt);
     for (const el of this.els) { el.pause(); el.volume = 0; }
   }
 
@@ -636,9 +663,10 @@ export class NarrationPlayer {
 /** 무음에서 60초에 걸쳐 올라온다. 놀라서 깨는 것과 자연히 깨는 것은 다르다.
  *  소리는 노이즈가 아니라 차임 — 9초 루프에 3음 아르페지오 + 침묵. */
 export function createAlarm() {
-  const el = new Audio(bedUrl('chime'));
-  el.loop = true;
-  el.volume = 0;
+  // 배경음과 같은 SeamlessLoop 을 쓴다. 볼륨이 안 먹는 기기(아이폰)에서는
+  // 이쪽도 램프가 통째로 죽어 처음부터 최대로 울고 있었다 — 굽기 경로를 그대로 물려받는다.
+  const el = new SeamlessLoop();
+  el.open((g) => bedUrl('chime', g));
   return {
     el,
     start(rampMs = 60000) {

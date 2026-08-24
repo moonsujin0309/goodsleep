@@ -1,5 +1,8 @@
 // 화면 전환 · 전역 상태 · 저장
-import { Mixer, NarrationPlayer, createAlarm, setMediaSession, koreanVoices, splitSentences } from './audio.js';
+import {
+  Mixer, NarrationPlayer, createAlarm, setMediaSession, koreanVoices, splitSentences,
+  VOLUME_SETTABLE,
+} from './audio.js';
 import { loadManifest, buildSequence } from './narration.js';
 import { SceneRenderer, sceneList } from './scenes.js';
 import {
@@ -890,6 +893,28 @@ $('#voice-test').addEventListener('click', () => {
   );
 });
 
+// 알람 미리듣기. 밤새 기다려야만 들을 수 있으면 고쳤는지 확인할 방법이 없다 —
+// 램프를 12초로 줄여 같은 경로로 울린다 (60초를 앉아서 듣고 있을 수는 없다).
+let alarmTest = null;
+$('#alarm-test').addEventListener('click', async () => {
+  const btn = $('#alarm-test');
+  if (alarmTest) {
+    clearTimeout(alarmTest);
+    alarmTest = null;
+    alarm.stop();
+    btn.textContent = '알람 들어보기';
+    return;
+  }
+  await mixer.unlock();
+  alarm.start(12000);
+  btn.textContent = '멈추기';
+  alarmTest = setTimeout(() => {
+    alarmTest = null;
+    alarm.stop();
+    btn.textContent = '알람 들어보기';
+  }, 17000);
+});
+
 $$('[data-set-step]').forEach((b) => b.addEventListener('click', () => {
   const [key, delta] = b.dataset.setStep.split(':');
   const bounds = { needHours: [4, 12], sleepOnsetMin: [0, 90] }[key];
@@ -929,6 +954,12 @@ async function init() {
   });
   addEventListener('pointerdown', openBed, { once: true });
   addEventListener('keydown', openBed, { once: true });
+
+  // 볼륨이 왜 안 줄어드는지 화면에서 바로 알 수 있게 한다 —
+  // 기기에서 어느 경로가 켜졌는지 눈으로 못 보면 또 추측으로 고치게 된다.
+  $('#audio-mode').textContent = VOLUME_SETTABLE
+    ? '볼륨 방식: 엘리먼트'
+    : '볼륨 방식: 파형에 굽기 (이 기기는 볼륨 조절을 무시합니다)';
 
   renderStates();
   tickClock();
