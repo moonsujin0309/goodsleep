@@ -24,3 +24,6 @@ audio/_samples/
 tools/.env
 
 __pycache__/
+
+# 재생성 전 나레이션 백업. 되돌릴 때만 쓰고 배포하지 않는다.
+audio/_backup*/

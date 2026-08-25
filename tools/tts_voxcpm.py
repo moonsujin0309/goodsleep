@@ -59,6 +59,11 @@ CFG, TIMESTEPS = 2.0, 10
 
 TOP_DB = 40          # 무음 판정. 35~45 는 결과가 같았다
 PACE_LO, PACE_HI = 0.55, 1.8    # 자르기 검증: 중앙값 대비 이 밖이면 잘못 잘린 것
+# 경계로 인정할 최소 쉼. 이보다 짧은 자리는 모델이 쉰 게 아니라 에너지가 잠깐
+# 흔들린 것뿐이라, 거기서 자르면 문장이 반토막 난다 (2026-08-25 조사 참조).
+MIN_GAP_SEC = 0.15
+# 조각 안에 이보다 긴 침묵이 남으면 그 조각은 문장 경계를 넘어간 것이다.
+MAX_INNER_SEC = 0.6
 # 속도 보정: 조각 안 초/글자를 중앙값의 ±PACE_BAND 안에 묶는다.
 # 1.25 면 조각 내 최대 편차가 1.56배 — 승인된 미리듣기(1.53배) 수준이다.
 PACE_BAND = 1.25
@@ -78,6 +83,14 @@ def cut(wav, rate, parts):
     그래서 간격 크기 대신 **각 조각이 제 글자 수만큼의 길이를 갖는가** 로 고른다.
     소리 구간을 순서대로 N 덩어리로 묶는 모든 경우 중 오차가 가장 작은 것을
     고르면 되고, 구간이 수십 개뿐이라 전부 따져도 금방이다.
+
+    다만 길이만 보면 안 된다 (2026-08-25). 길이 비례만으로 고르면 모델이 안 쉰
+    자리에도 경계가 찍히는데, check() 도 같은 길이 비례를 보기 때문에 그 판은
+    **구조적으로 검사를 통과한다.** 실제로 배포본의 26% 가 남의 문장 조각을
+    물고 있었다. 그래서 경계는 두 조건을 함께 만족해야 한다 —
+      1. 그 자리에 실제로 쉼이 있을 것 (MIN_GAP_SEC)
+      2. 조각 안에 문장 사이만 한 침묵이 남지 않을 것 (MAX_INNER_SEC)
+    둘 다 못 지키면 None 을 돌려주고, render 가 반으로 쪼개 다시 뽑는다.
     """
     import librosa
     spans = librosa.effects.split(wav, top_db=TOP_DB,
@@ -93,6 +106,14 @@ def cut(wav, rate, parts):
     exp = [total_dur * n / sum(lens) for n in lens]
 
     m = len(spans)
+    gaps = [spans[k + 1][0] - spans[k][1] for k in range(m - 1)]
+    min_gap = max(MIN_GAP_SEC * rate, 0.5 * statistics.median(gaps))
+    # stop[a] = a 에서 시작한 조각이 넘을 수 없는 마지막 소리구간.
+    # 긴 침묵을 삼키면 그 조각은 이미 다음 문장까지 먹은 것이다.
+    stop = [m - 1] * m
+    for a in range(m - 2, -1, -1):
+        stop[a] = a if gaps[a] >= MAX_INNER_SEC * rate else stop[a + 1]
+
     INF = float("inf")
     # best[i][a] = 조각 i..N-1 을 소리구간 a..m-1 로 채울 때의 최소 오차
     best = [[INF] * (m + 1) for _ in range(want + 1)]
@@ -101,6 +122,10 @@ def cut(wav, rate, parts):
     for i in range(want - 1, -1, -1):
         for a in range(m - (want - i), -1, -1):
             for b in range(a, m - (want - i - 1)):
+                if b > stop[a]:
+                    break                      # 조각 안에 문장 사이만 한 침묵이 생겼다
+                if b + 1 < m and gaps[b] < min_gap:
+                    continue                   # 모델이 안 쉰 자리 — 경계로 못 쓴다
                 rest = best[i + 1][b + 1]
                 if rest == INF:
                     continue
@@ -175,9 +200,21 @@ def render_split(model, torch, parts, rate, depth):
     return left + right, ln + rn
 
 
+def voiced(w, rate):
+    """침묵을 뺀 실제 발화 시간.
+
+    속도는 반드시 이걸로 재야 한다 (2026-08-25). 파일 길이로 재면 남의 문장
+    사이 침묵이 섞여 들어온 토막이 오히려 '길이가 맞는' 것으로 보이고,
+    equalize 가 그걸 줄여서 흔적까지 지운다 — 배포본에서 실제로 그랬다.
+    """
+    import librosa
+    sp = librosa.effects.split(w, top_db=TOP_DB, frame_length=2048, hop_length=512)
+    return (sum(int(b - a) for a, b in sp) or len(w)) / rate
+
+
 def spread(wavs, parts, rate):
     """숫자 세기 토막을 뺀 조각 내 속도 편차 (최대/최소)."""
-    ps = [len(w) / rate / len(t) for w, (t, _) in zip(wavs, parts) if not is_count(t)]
+    ps = [voiced(w, rate) / len(t) for w, (t, _) in zip(wavs, parts) if not is_count(t)]
     return max(ps) / min(ps) if len(ps) >= 2 else 1.0
 
 
@@ -187,7 +224,7 @@ def equalize(wavs, parts, rate):
     idx = [i for i, (t, _) in enumerate(parts) if not is_count(t)]
     if len(idx) < 3:
         return wavs, 0
-    pace = {i: len(wavs[i]) / rate / len(parts[i][0]) for i in idx}
+    pace = {i: voiced(wavs[i], rate) / len(parts[i][0]) for i in idx}
     med = statistics.median(pace.values())
     lo, hi = med / PACE_BAND, med * PACE_BAND
     fixed = 0
@@ -305,4 +342,5 @@ def main():
     print(f"편차 {SPREAD_WARN}배 초과: 없음")
 
 
-main()
+if __name__ == "__main__":      # tools/test_cut.py 가 cut() 만 가져다 쓴다
+    main()
