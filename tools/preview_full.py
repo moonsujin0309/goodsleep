@@ -34,10 +34,32 @@ def sentence_scale(text):
     return min(1.0, max(0.82, n / 26))
 
 
+def stretch(y, sr, factor, ffmpeg):
+    """말을 factor 배로 늘린다 (1.12 면 12% 느리게).
+
+    librosa 의 time_stretch 는 위상 보코더라 음성에서 쇳소리가 난다.
+    ffmpeg 의 atempo 는 시간 영역(WSOLA)이라 같은 배수에서도 훨씬 깨끗하다.
+    """
+    p = subprocess.run(
+        [ffmpeg, "-hide_banner", "-loglevel", "error",
+         "-f", "f32le", "-ar", str(sr), "-ac", "1", "-i", "pipe:0",
+         "-filter:a", f"atempo={1 / factor:.6f}",
+         "-f", "f32le", "-ar", str(sr), "-ac", "1", "pipe:1"],
+        input=y.astype("float32").tobytes(),
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if p.returncode != 0:
+        sys.exit(p.stderr.decode("utf-8", "replace")[:300])
+    return np.frombuffer(p.stdout, dtype=np.float32)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--state", default="racing")
     ap.add_argument("--pick", type=int, default=0, help="층마다 몇 번째 조각을 쓸지")
+    # 말 자체를 늘려 본다. 침묵만으로는 안 잡히는 "말이 빠르다" 를 판단하려는 것.
+    # 0.69 아래로 내리면 자음이 뭉개진다는 게 이 프로젝트의 오래된 결론이라,
+    # 배수로 치면 1.45 배가 천장이다.
+    ap.add_argument("--slow", type=float, default=1.0, help="말 길이 배수. 1.25 면 25%% 느리게")
     args = ap.parse_args()
 
     import librosa, imageio_ffmpeg
@@ -65,6 +87,10 @@ def main():
         print(f"  {layer:<8} {piece['id']:<4} 문장 {len(parts):>2} · 침묵배수 {lg}")
         for i, ((text, end), rel) in enumerate(zip(parts, files)):
             y, sr = librosa.load(str(ROOT / rel), sr=None, mono=True)
+            # 숫자 세기는 늘리지 않는다. 앱이 1초 주기로 맞춰 재생하는 데다,
+            # 한 음절짜리를 늘리면 늘어지는 신음처럼 들린다.
+            if args.slow != 1.0 and not is_count(text):
+                y = stretch(y, sr, args.slow, ffmpeg)
             rate = rate or sr
             out.append(y)
             spoken += len(y) / sr
@@ -79,7 +105,8 @@ def main():
 
     merged = np.concatenate(out)
     OUT.mkdir(parents=True, exist_ok=True)
-    path = OUT / f"full-{args.state}.mp3"
+    tag = "" if args.slow == 1.0 else f"-slow{args.slow:g}"
+    path = OUT / f"full-{args.state}{tag}.mp3"
     p = subprocess.run(
         [ffmpeg, "-hide_banner", "-loglevel", "error", "-y",
          "-f", "f32le", "-ar", str(rate), "-ac", "1", "-i", "pipe:0",

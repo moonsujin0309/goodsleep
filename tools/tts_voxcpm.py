@@ -71,6 +71,10 @@ STRETCH_MIN = 0.75   # 이보다 크게 늘이지 않는다 (자음이 뭉개진
 SPREAD_WARN = 2.06   # 사용자가 "긴박하다"고 거부한 편차. 넘으면 더 쪼갠다
 MAX_SPLIT = 3        # 강제 분할 한계. 더 가면 문장별 생성에 가까워져 되레 나빠진다
 MP3_KBPS = 64
+# 모델이 말하는 속도는 명상에 쓰기엔 빠르다 (초당 6.9음절). 굽기 직전에 늘린다.
+# 1.25 배는 "너무 느리다", 1.0 은 "빠르다" 였고 1.12 로 정해졌다 (2026-08-26).
+# 늘리기는 반드시 tempo() = ffmpeg atempo 로 한다 — librosa 는 쇳소리가 난다.
+SLOW = 1.12
 
 
 def cut(wav, rate, parts):
@@ -218,9 +222,30 @@ def spread(wavs, parts, rate):
     return max(ps) / min(ps) if len(ps) >= 2 else 1.0
 
 
+def tempo(samples, rate, factor, ffmpeg):
+    """시간축만 바꾼다. factor > 1 이면 빨라진다.
+
+    librosa 의 time_stretch 는 위상 보코더라 사람 목소리에서 쇳소리가 난다
+    (2026-08-25 에 사용자가 잡아냈다). ffmpeg atempo 는 시간 영역 WSOLA 라
+    같은 배수에서도 훨씬 깨끗하다. ffmpeg 는 어차피 굽는 데 쓰고 있다.
+    """
+    p = subprocess.run(
+        [ffmpeg, "-hide_banner", "-loglevel", "error",
+         "-f", "f32le", "-ar", str(rate), "-ac", "1", "-i", "pipe:0",
+         "-filter:a", f"atempo={max(0.5, min(2.0, factor)):.6f}",
+         "-f", "f32le", "-ar", str(rate), "-ac", "1", "pipe:1"],
+        input=samples.astype("float32").tobytes(),
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if p.returncode != 0:
+        raise RuntimeError(p.stderr.decode("utf-8", "replace")[:300])
+    import numpy as np
+    return np.frombuffer(p.stdout, dtype="float32")
+
+
 def equalize(wavs, parts, rate):
     """튀는 토막만 시간축으로 당겨 이웃과 보조를 맞춘다. 반환: (파형, 고친 수)."""
-    import librosa
+    import imageio_ffmpeg
+    ffmpeg = imageio_ffmpeg.get_ffmpeg_exe()
     idx = [i for i, (t, _) in enumerate(parts) if not is_count(t)]
     if len(idx) < 3:
         return wavs, 0
@@ -236,13 +261,15 @@ def equalize(wavs, parts, rate):
         r = max(STRETCH_MIN, min(1 / STRETCH_MIN, pace[i] / want))
         if abs(r - 1) < 0.02:
             continue
-        wavs[i] = librosa.effects.time_stretch(wavs[i], rate=r)
+        wavs[i] = tempo(wavs[i], rate, r, ffmpeg)
         fixed += 1
     return wavs, fixed
 
 
 def to_mp3(ffmpeg, samples, rate, path):
     """float32 PCM 을 파이프로 넘겨 mp3 로 굽는다. 임시 파일을 만들지 않는다."""
+    if SLOW != 1.0:
+        samples = tempo(samples, rate, 1 / SLOW, ffmpeg)
     p = subprocess.run(
         [ffmpeg, "-hide_banner", "-loglevel", "error", "-y",
          "-f", "f32le", "-ar", str(rate), "-ac", "1", "-i", "pipe:0",

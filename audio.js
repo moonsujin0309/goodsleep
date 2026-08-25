@@ -528,6 +528,9 @@ export function koreanVoices() {
 export class NarrationPlayer {
   constructor({ gapSeconds = 6, sentenceGap = 4.2, volume = 0.9, voiceURI = null, rate = 0.82, pitch = 0.9 } = {}) {
     this.gapSeconds = gapSeconds;
+    // 글자를 먼저 띄우고 이만큼 뒤에 말이 나온다. 조각 사이 침묵에서 빼 오므로
+    // 전체 길이는 그대로다. 앱의 자막은 500ms 페이드로 나타나니 그보다 넉넉해야 한다.
+    this.leadSeconds = Math.min(2, gapSeconds / 2);
     this.sentenceGap = sentenceGap;
     this.volume = volume;
     this.voiceURI = voiceURI;
@@ -545,9 +548,13 @@ export class NarrationPlayer {
     for (let i = 0; i < picks.length; i++) {
       if (this.stopped) return;
       onPiece?.(picks[i], i, picks.length);
+      await this._wait(this.leadSeconds * 1000);   // 글자를 먼저 읽을 틈
+      if (this.stopped) return;
       await this._speak(picks[i]);
       if (this.stopped) return;
-      if (i < picks.length - 1) await this._wait(this.gapSeconds * 1000);
+      if (i < picks.length - 1) {
+        await this._wait(Math.max(0.5, this.gapSeconds - this.leadSeconds) * 1000);
+      }
     }
     if (!this.stopped) onEnd?.();
   }

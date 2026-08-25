@@ -66,7 +66,7 @@
       "breath": [
         {
           "id": "b1",
-          "text": "먼저 숨을 세어 보겠습니다. 천천히 들이쉽니다. 하나, 둘, 셋, 넷. 그리고 더 길게 내쉽니다. 하나, 둘, 셋, 넷, 다섯, 여섯. 내쉬는 숨이 길어지면 몸은 안전하다고 판단합니다. 한 번 더 합니다. 들이쉬고. 길게 내쉬고. 숫자를 놓쳐도 괜찮습니다. 놓치면 다시 하나부터 세면 됩니다.",
+          "text": "먼저 숨부터 고르겠습니다. 천천히 들이쉽니다. 이번에는 더 길게 내쉽니다. 내쉬는 숨이 길어지면 몸은 안전하다고 판단합니다. 한 번 더 합니다. 들이쉬고. 길게 내쉬고. 박자를 놓쳐도 괜찮습니다. 숨은 알아서 이어집니다.",
           "files": [
             "audio/narration/racing/b1-0.mp3",
             "audio/narration/racing/b1-1.mp3",
@@ -76,17 +76,7 @@
             "audio/narration/racing/b1-5.mp3",
             "audio/narration/racing/b1-6.mp3",
             "audio/narration/racing/b1-7.mp3",
-            "audio/narration/racing/b1-8.mp3",
-            "audio/narration/racing/b1-9.mp3",
-            "audio/narration/racing/b1-10.mp3",
-            "audio/narration/racing/b1-11.mp3",
-            "audio/narration/racing/b1-12.mp3",
-            "audio/narration/racing/b1-13.mp3",
-            "audio/narration/racing/b1-14.mp3",
-            "audio/narration/racing/b1-15.mp3",
-            "audio/narration/racing/b1-16.mp3",
-            "audio/narration/racing/b1-17.mp3",
-            "audio/narration/racing/b1-18.mp3"
+            "audio/narration/racing/b1-8.mp3"
           ]
         },
         {
@@ -344,7 +334,7 @@
       "breath": [
         {
           "id": "b1",
-          "text": "이제 숨을 세어 보겠습니다. 넷을 세며 들이쉽니다. 하나, 둘, 셋, 넷. 여섯을 세며 내쉽니다. 하나, 둘, 셋, 넷, 다섯, 여섯. 내쉬는 숨이 길어지면 몸은 안심합니다. 몸이 그렇게 만들어져 있습니다. 다시 들이쉽니다. 하나, 둘, 셋, 넷. 길게 내쉽니다. 하나, 둘, 셋, 넷, 다섯, 여섯. 이 리듬이 안전하다는 신호를 보냅니다. 숫자가 흐려져도 괜찮습니다. 숨은 알아서 이어집니다.",
+          "text": "이제 숨을 고르겠습니다. 짧게 들이쉽니다. 그보다 길게 내쉽니다. 내쉬는 숨이 길어지면 몸은 안심합니다. 몸이 그렇게 만들어져 있습니다. 다시 들이쉽니다. 길게 내쉽니다. 이 리듬이 안전하다는 신호를 보냅니다. 박자가 흐려져도 괜찮습니다. 숨은 알아서 이어집니다.",
           "files": [
             "audio/narration/anxious/b1-0.mp3",
             "audio/narration/anxious/b1-1.mp3",
@@ -355,27 +345,7 @@
             "audio/narration/anxious/b1-6.mp3",
             "audio/narration/anxious/b1-7.mp3",
             "audio/narration/anxious/b1-8.mp3",
-            "audio/narration/anxious/b1-9.mp3",
-            "audio/narration/anxious/b1-10.mp3",
-            "audio/narration/anxious/b1-11.mp3",
-            "audio/narration/anxious/b1-12.mp3",
-            "audio/narration/anxious/b1-13.mp3",
-            "audio/narration/anxious/b1-14.mp3",
-            "audio/narration/anxious/b1-15.mp3",
-            "audio/narration/anxious/b1-16.mp3",
-            "audio/narration/anxious/b1-17.mp3",
-            "audio/narration/anxious/b1-18.mp3",
-            "audio/narration/anxious/b1-19.mp3",
-            "audio/narration/anxious/b1-20.mp3",
-            "audio/narration/anxious/b1-21.mp3",
-            "audio/narration/anxious/b1-22.mp3",
-            "audio/narration/anxious/b1-23.mp3",
-            "audio/narration/anxious/b1-24.mp3",
-            "audio/narration/anxious/b1-25.mp3",
-            "audio/narration/anxious/b1-26.mp3",
-            "audio/narration/anxious/b1-27.mp3",
-            "audio/narration/anxious/b1-28.mp3",
-            "audio/narration/anxious/b1-29.mp3"
+            "audio/narration/anxious/b1-9.mp3"
           ]
         },
         {
@@ -635,22 +605,14 @@
         },
         {
           "id": "b2",
-          "text": "숨을 세어 보겠습니다. 들이쉬며 하나, 둘, 셋, 넷. 내쉬며 하나, 둘, 셋, 넷, 다섯, 여섯. 긴 날숨이 몸의 속도를 낮춥니다. 두어 번이면 충분합니다. 나머지는 저절로 이어집니다.",
+          "text": "숨을 고르겠습니다. 짧게 들이쉽니다. 길게 내쉽니다. 긴 날숨이 몸의 속도를 낮춥니다. 두어 번이면 충분합니다. 나머지는 저절로 이어집니다.",
           "files": [
             "audio/narration/wired/b2-0.mp3",
             "audio/narration/wired/b2-1.mp3",
             "audio/narration/wired/b2-2.mp3",
             "audio/narration/wired/b2-3.mp3",
             "audio/narration/wired/b2-4.mp3",
-            "audio/narration/wired/b2-5.mp3",
-            "audio/narration/wired/b2-6.mp3",
-            "audio/narration/wired/b2-7.mp3",
-            "audio/narration/wired/b2-8.mp3",
-            "audio/narration/wired/b2-9.mp3",
-            "audio/narration/wired/b2-10.mp3",
-            "audio/narration/wired/b2-11.mp3",
-            "audio/narration/wired/b2-12.mp3",
-            "audio/narration/wired/b2-13.mp3"
+            "audio/narration/wired/b2-5.mp3"
           ]
         },
         {
@@ -890,7 +852,7 @@
       "breath": [
         {
           "id": "b1",
-          "text": "숨을 세어 보겠습니다. 들이쉬며 하나, 둘, 셋, 넷. 내쉬며 하나, 둘, 셋, 넷, 다섯, 여섯. 날숨이 길어지면 몸은 쉴 때라고 알아듣습니다. 한 번 더 들이쉬고, 길게 내쉽니다. 숫자를 잃어버려도 괜찮습니다. 다시 하나부터 세면 됩니다. 세는 일 자체가 쉼입니다.",
+          "text": "숨을 고르겠습니다. 짧게 들이쉽니다. 길게 내쉽니다. 날숨이 길어지면 몸은 쉴 때라고 알아듣습니다. 한 번 더 들이쉬고, 길게 내쉽니다. 박자를 잃어버려도 괜찮습니다. 숨을 따라가는 것만으로 충분합니다.",
           "files": [
             "audio/narration/unknown/b1-0.mp3",
             "audio/narration/unknown/b1-1.mp3",
@@ -898,16 +860,7 @@
             "audio/narration/unknown/b1-3.mp3",
             "audio/narration/unknown/b1-4.mp3",
             "audio/narration/unknown/b1-5.mp3",
-            "audio/narration/unknown/b1-6.mp3",
-            "audio/narration/unknown/b1-7.mp3",
-            "audio/narration/unknown/b1-8.mp3",
-            "audio/narration/unknown/b1-9.mp3",
-            "audio/narration/unknown/b1-10.mp3",
-            "audio/narration/unknown/b1-11.mp3",
-            "audio/narration/unknown/b1-12.mp3",
-            "audio/narration/unknown/b1-13.mp3",
-            "audio/narration/unknown/b1-14.mp3",
-            "audio/narration/unknown/b1-15.mp3"
+            "audio/narration/unknown/b1-6.mp3"
           ]
         },
         {
@@ -1224,24 +1177,14 @@
       "breath": [
         {
           "id": "b1",
-          "text": "숨을 세어 보겠습니다. 넷을 세며 들이쉽니다. 하나, 둘, 셋, 넷. 여섯을 세며 내쉽니다. 하나, 둘, 셋, 넷, 다섯, 여섯. 긴 날숨이 몸의 속도를 늦춥니다. 세 번이면 충분합니다. 다시 들이쉬고, 길게 내쉽니다.",
+          "text": "숨을 고르겠습니다. 짧게 들이쉽니다. 그보다 길게 내쉽니다. 긴 날숨이 몸의 속도를 늦춥니다. 세 번이면 충분합니다. 다시 들이쉬고, 길게 내쉽니다.",
           "files": [
             "audio/narration/calm/b1-0.mp3",
             "audio/narration/calm/b1-1.mp3",
             "audio/narration/calm/b1-2.mp3",
             "audio/narration/calm/b1-3.mp3",
             "audio/narration/calm/b1-4.mp3",
-            "audio/narration/calm/b1-5.mp3",
-            "audio/narration/calm/b1-6.mp3",
-            "audio/narration/calm/b1-7.mp3",
-            "audio/narration/calm/b1-8.mp3",
-            "audio/narration/calm/b1-9.mp3",
-            "audio/narration/calm/b1-10.mp3",
-            "audio/narration/calm/b1-11.mp3",
-            "audio/narration/calm/b1-12.mp3",
-            "audio/narration/calm/b1-13.mp3",
-            "audio/narration/calm/b1-14.mp3",
-            "audio/narration/calm/b1-15.mp3"
+            "audio/narration/calm/b1-5.mp3"
           ]
         },
         {
