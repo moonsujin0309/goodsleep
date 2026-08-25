@@ -264,6 +264,9 @@ export class SeamlessLoop {
 export class Mixer {
   constructor() {
     this.layers = new Map(); // id -> { el, volume, available }
+    // 준비 화면의 레이어별 슬라이더가 "무엇을 얼마나 섞을지"라면,
+    // 이건 재생 중에 전체를 한 번에 올리고 내리는 손잡이다. 자다 말고 균형을 다시 잡을 수는 없다.
+    this.master = 1;
     this.ducked = false;
     this.keepAlive = null;
     this.unlocked = false;
@@ -327,7 +330,15 @@ export class Mixer {
    *  게다가 광대역 소음은 속삭임을 RMS 비율보다 훨씬 심하게 덮는다 — 말은 짧은 봉우리에
    *  에너지가 몰려 있고 소음은 끊기지 않기 때문이다. 0.22 로도 "목소리가 안 들린다"가 두 번 나왔다. */
   _target(layer) {
-    return layer.volume * layer.volume * 0.15 * (this.ducked ? 0.08 : 1);
+    return layer.volume * layer.volume * 0.15 * this.master * (this.ducked ? 0.08 : 1);
+  }
+
+  /** 재생 중 배경음 전체 크기. 레이어 사이의 균형은 그대로 두고 같이 오르내린다. */
+  setMaster(v) {
+    this.master = clamp01(v);
+    for (const l of this.layers.values()) {
+      if (l.volume > 0) fade(l.el, this._target(l), 400);
+    }
   }
 
   setVolume(id, v) {
@@ -611,11 +622,40 @@ export class NarrationPlayer {
     }
   }
 
-  _file(src) {
+  /**
+   * 목소리 볼륨도 배경음과 같은 문제를 겪는다 — 아이폰은 `el.volume` 을 무시한다.
+   * 그리고 나레이션 파일은 피크가 0.15~0.40 밖에 안 돼서 1.0 을 넘겨 키울 여지가 있는데,
+   * `el.volume` 은 1 이 천장이다. 두 경우 모두 파형에 구워야 한다.
+   * 토막 하나가 1~2초라 디코드+인코딩이 20ms 안쪽이고, 어차피 앞뒤로 침묵이 있다.
+   */
+  async _srcFor(path) {
+    // 기본값(1.0)이면 손댈 게 없다. 줄이기만 한다면 볼륨이 먹는 기기에서는 그쪽이 싸다.
+    if (this.volume === 1 || (VOLUME_SETTABLE && this.volume < 1)) return path;
+    const key = `${path}@${this.volume.toFixed(2)}`;
+    if (this._gain?.key === key) return this._gain.url;
+    try {
+      const res = await fetch(path);
+      if (!res.ok) return path;
+      const ac = new OfflineAudioContext(2, 8, 44100);
+      const buf = await ac.decodeAudioData(await res.arrayBuffer());
+      const left = buf.getChannelData(0);
+      const right = buf.numberOfChannels > 1 ? buf.getChannelData(1) : left;
+      const url = URL.createObjectURL(
+        new Blob([wavBytes({ left, right, rate: buf.sampleRate }, this.volume)], { type: 'audio/wav' }),
+      );
+      if (this._gain) URL.revokeObjectURL(this._gain.url);
+      this._gain = { key, url };
+      return url;
+    } catch { return path; }        // 디코드 실패 — 원본을 그대로 튼다
+  }
+
+  async _file(src) {
+    const url = await this._srcFor(src);
+    if (this.stopped) return;
     return new Promise((resolve) => {
       const el = this.el;
-      el.src = src;
-      el.volume = this.volume;
+      el.src = url;
+      el.volume = Math.min(1, this.volume);   // 구운 경우 여긴 1 이면 된다
       const done = () => {
         // 숫자 세기 박자 계산용 — 방금 토막이 실제로 몇 초였는지
         this._lastDur = Number.isFinite(el.duration) ? el.duration : 0;
@@ -651,6 +691,7 @@ export class NarrationPlayer {
     this.stopped = true;
     this.paused = false;
     this._resume = null;
+    if (this._gain) { URL.revokeObjectURL(this._gain.url); this._gain = null; }
     clearTimeout(this._timer);
     if (this.el._fade) clearInterval(this.el._fade);
     this.el.pause();

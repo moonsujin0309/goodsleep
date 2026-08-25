@@ -32,7 +32,7 @@ const store = {
     // rate 를 낮추면 타임스트레치라 억양이 뭉개지지만 침묵은 아무것도 망가뜨리지 않는다.
     // 말 속도는 0.69 가 바닥이다 — 그 아래는 자음이 뭉개져 혀 꼬인 소리가 난다.
     // 그래서 느림은 전부 여기서 가져온다.
-    gapSeconds: 6, sentenceGap: 4.2, narrationVolume: 1.0,
+    gapSeconds: 6, sentenceGap: 4.2, narrationVolume: 1.0, bedVolume: 1.0,
     voiceURI: null, voiceRate: 0.72, voicePitch: 0.9,
     ...load('settings', {}),
   },
@@ -471,6 +471,8 @@ async function startSession(stateId, hours, isNap) {
   if (!state) return;
 
   await mixer.unlock();
+  mixer.master = store.settings.bedVolume ?? 1;
+  syncPlayMix();
   for (const [id, v] of Object.entries(store.mixer)) if (v > 0) mixer.setVolume(id, v);
 
   const now = Date.now();
@@ -661,6 +663,37 @@ function setPaused(on) {
 }
 
 $('#pause-btn').addEventListener('click', () => setPaused(!paused));
+
+// ── 재생 중 소리 조절 ─────────────────────────────────────
+// 준비 화면의 레이어 슬라이더가 "무엇을 얼마나 섞을지"라면, 여기는 전체 크기다.
+// 누운 뒤에 다시 일어나 준비 화면으로 돌아가게 만들 수는 없다.
+
+function syncPlayMix() {
+  const bed = Math.round(store.settings.bedVolume * 100);
+  const voice = Math.round(store.settings.narrationVolume * 100);
+  $('#play-bed').value = bed;
+  $('#play-bed-v').textContent = bed;
+  $('#play-voice').value = voice;
+  $('#play-voice-v').textContent = voice;
+}
+
+$('#play-bed').addEventListener('input', () => {
+  const v = $('#play-bed').value / 100;
+  store.settings.bedVolume = v;
+  save('settings', store.settings);
+  $('#play-bed-v').textContent = $('#play-bed').value;
+  mixer.setMaster(v);
+});
+
+$('#play-voice').addEventListener('input', () => {
+  const v = $('#play-voice').value / 100;
+  store.settings.narrationVolume = v;
+  save('settings', store.settings);
+  $('#play-voice-v').textContent = $('#play-voice').value;
+  // 이미 재생 중인 토막은 그대로 끝난다 — 다음 토막부터 새 크기로 나온다.
+  // 말하는 도중에 소리가 변하는 것보다 낫고, 침묵이 4초씩 있어서 금방 넘어간다.
+  if (narration) narration.volume = v;
+});
 
 function endSession() {
   narration?.stop();
@@ -949,6 +982,7 @@ async function init() {
   // 홈 화면이 적막하고, 시작 버튼이 "소리를 켜는 버튼"처럼 느껴진다.
   // 브라우저는 제스처 없이 재생을 허용하지 않으므로 첫 터치에 한 번만 건다.
   for (const def of manifest.sounds) mixer.add(def);
+  mixer.master = store.settings.bedVolume ?? 1;
   const openBed = () => mixer.unlock().then(() => {
     for (const [id, v] of Object.entries(store.mixer)) if (v > 0) mixer.setVolume(id, v);
   });

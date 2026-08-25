@@ -567,15 +567,24 @@ input[type='range']:disabled { cursor: not-allowed; }
 .play-meta { font-size: 13px; color: var(--text-3); margin-bottom: var(--sp-5); }
 .play-controls { display: flex; gap: var(--sp-3); justify-content: center; }
 
+/* 재생 중 소리 조절. 자다 말고 준비 화면으로 돌아갈 수는 없다. */
+.play-mix {
+  max-width: 320px;
+  margin: 0 auto var(--sp-5);
+  text-align: left;
+}
+
 /* 나레이션이 끝나면 화면을 거의 끈다. 밤새 밝은 화면은 그 자체로 방해다. */
 #app.is-dim #scene { opacity: 0.42; }
 #app.is-dim .caption,
 #app.is-dim .breath { opacity: 0.22; }
 #app.is-dim .play-controls,
+#app.is-dim .play-mix,
 #app.is-dim .play-meta { opacity: 0.3; }
 #app.is-dim .caption,
 #app.is-dim .breath,
 #app.is-dim .play-controls,
+#app.is-dim .play-mix,
 #app.is-dim .play-meta { transition: opacity 3s var(--ease); }
 
 /* ── 알람 ──────────────────────────────────────────────── */

@@ -177,6 +177,18 @@ window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(argu
       </div>
       <p class="caption" id="play-caption" aria-live="polite"></p>
       <p class="play-meta num" id="play-meta"></p>
+      <div class="play-mix">
+        <div class="mix-row">
+          <span class="name" id="lb-play-bed">배경음</span>
+          <input type="range" id="play-bed" min="0" max="100" aria-labelledby="lb-play-bed">
+          <span class="val num" id="play-bed-v"></span>
+        </div>
+        <div class="mix-row">
+          <span class="name" id="lb-play-voice">목소리</span>
+          <input type="range" id="play-voice" min="0" max="150" aria-labelledby="lb-play-voice">
+          <span class="val num" id="play-voice-v"></span>
+        </div>
+      </div>
       <div class="play-controls">
         <button class="btn btn-quiet" id="pause-btn">
           <svg class="icon"><use href="#i-pause"/></svg> <span id="pause-label">일시정지</span>
