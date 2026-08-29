@@ -14,7 +14,7 @@ import argparse, json, pathlib, statistics, subprocess, sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).parent))
 from chunking import chunks as split_chunks
-from tts_voxcpm import SLOW, TOP_DB, tempo
+from tts_voxcpm import NORM_RMS, SLOW, TOP_DB, normalize, tempo
 
 ROOT = pathlib.Path(__file__).parent.parent
 MANIFEST = ROOT / "data" / "narration.json"
@@ -40,6 +40,10 @@ def pace(path, ffmpeg):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--dry-run", action="store_true")
+    # 음량 맞추기는 늘리기와 달리 여러 번 돌려도 같은 값으로 수렴한다 (목표를 향해
+    # 맞추는 것이라 누적되지 않는다). 그래서 속도 안전장치를 건너뛴다.
+    ap.add_argument("--normalize", action="store_true",
+                    help="속도는 두고 발화 음량만 NORM_RMS 로 맞춘다")
     args = ap.parse_args()
 
     import numpy as np, imageio_ffmpeg
@@ -56,24 +60,28 @@ def main():
                     if p.exists():
                         jobs.append((p, sum(1 for c in text if "가" <= c <= "힣")))
 
-    # 이미 늘려져 있는지 본다. 표본 40개면 중앙값은 충분히 안정적이다.
-    sample = [(p, h) for p, h in jobs[::max(1, len(jobs) // 40)] if h >= 4][:40]
-    paces = [v / h for p, h in sample if (v := pace(p, ffmpeg))]
-    now = statistics.median(paces)
-    print(f"파일 {len(jobs)}개 · 지금 속도 {now:.3f}초/음절 "
-          f"(늘리기 전 {FAST_PACE:.3f}, 목표 {FAST_PACE * SLOW:.3f})")
-
-    if now > FAST_PACE * (1 + (SLOW - 1) / 2):
-        sys.exit("이미 늘려져 있습니다. 한 번 더 늘리면 음질만 깎입니다 — 아무것도 안 했습니다.")
+    if args.normalize:
+        print(f"파일 {len(jobs)}개 · 발화 RMS 를 {NORM_RMS} 로 맞춥니다 (속도는 그대로)")
+    else:
+        # 이미 늘려져 있는지 본다. 표본 40개면 중앙값은 충분히 안정적이다.
+        sample = [(p, h) for p, h in jobs[::max(1, len(jobs) // 40)] if h >= 4][:40]
+        paces = [v / h for p, h in sample if (v := pace(p, ffmpeg))]
+        now = statistics.median(paces)
+        print(f"파일 {len(jobs)}개 · 지금 속도 {now:.3f}초/음절 "
+              f"(늘리기 전 {FAST_PACE:.3f}, 목표 {FAST_PACE * SLOW:.3f})")
+        if now > FAST_PACE * (1 + (SLOW - 1) / 2):
+            sys.exit("이미 늘려져 있습니다. 한 번 더 늘리면 음질만 깎입니다 — 아무것도 안 했습니다.")
     if args.dry_run:
-        print(f"{SLOW}배로 다시 구울 파일 {len(jobs)}개")
+        print(f"다시 구울 파일 {len(jobs)}개")
         return
 
     import librosa
     for n, (p, _) in enumerate(jobs, 1):
         # sr=None 으로 원본 표본율을 그대로 받는다. 잘못 넘기면 음높이가 바뀐다.
         y, sr = librosa.load(str(p), sr=None, mono=True)
-        y = tempo(y, sr, 1 / SLOW, ffmpeg)
+        if not args.normalize:
+            y = tempo(y, sr, 1 / SLOW, ffmpeg)
+        y = normalize(y, sr)
         w = subprocess.run(
             [ffmpeg, "-v", "error", "-y", "-f", "f32le", "-ar", str(sr), "-ac", "1",
              "-i", "pipe:0", "-c:a", "libmp3lame", "-b:a", f"{MP3_KBPS}k", str(p)],

@@ -75,6 +75,13 @@ MP3_KBPS = 64
 # 1.25 배는 "너무 느리다", 1.0 은 "빠르다" 였고 1.12 로 정해졌다 (2026-08-26).
 # 늘리기는 반드시 tempo() = ffmpeg atempo 로 한다 — librosa 는 쇳소리가 난다.
 SLOW = 1.12
+# 토막마다 음량이 제각각이었다 — 발화 RMS 가 파일 사이에서 16.5배까지 벌어졌고,
+# 한 조각 안에서도 3.8배가 흔들려 "목소리가 중간에 바뀐다"로 들렸다 (2026-08-26).
+# 굽기 직전에 발화 RMS 를 이 값으로 맞춘다. 피크는 PEAK_CEIL 을 넘지 않게 눌러,
+# 못 채우는 파일은 덜 키운 채로 둔다 (찌그러뜨리느니 조금 작은 게 낫다).
+# 값이 커지면 배경음 덕킹(audio.js _target)도 같이 올려야 균형이 맞는다.
+NORM_RMS = 0.11
+PEAK_CEIL = 0.95
 
 
 def cut(wav, rate, parts):
@@ -266,10 +273,30 @@ def equalize(wavs, parts, rate):
     return wavs, fixed
 
 
+def normalize(samples, rate):
+    """발화 RMS 를 NORM_RMS 로 맞춘다. 침묵은 빼고 잰다.
+
+    파일 전체로 RMS 를 재면 침묵이 많은 토막이 과하게 커진다. 사람이 크기를
+    느끼는 건 말하는 동안의 소리라, 말하는 구간만 재서 맞춘다.
+    """
+    import librosa, numpy as np
+    sp = librosa.effects.split(samples, top_db=TOP_DB,
+                               frame_length=2048, hop_length=512)
+    if not len(sp):
+        return samples
+    voiced = np.concatenate([samples[a:b] for a, b in sp])
+    rms = float(np.sqrt((voiced ** 2).mean()))
+    peak = float(np.abs(samples).max())
+    if rms <= 0 or peak <= 0:
+        return samples
+    return samples * min(NORM_RMS / rms, PEAK_CEIL / peak)
+
+
 def to_mp3(ffmpeg, samples, rate, path):
     """float32 PCM 을 파이프로 넘겨 mp3 로 굽는다. 임시 파일을 만들지 않는다."""
     if SLOW != 1.0:
         samples = tempo(samples, rate, 1 / SLOW, ffmpeg)
+    samples = normalize(samples, rate)
     p = subprocess.run(
         [ffmpeg, "-hide_banner", "-loglevel", "error", "-y",
          "-f", "f32le", "-ar", str(rate), "-ac", "1", "-i", "pipe:0",
