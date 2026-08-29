@@ -32,7 +32,10 @@ const store = {
     // rate 를 낮추면 타임스트레치라 억양이 뭉개지지만 침묵은 아무것도 망가뜨리지 않는다.
     // 말 속도는 0.69 가 바닥이다 — 그 아래는 자음이 뭉개져 혀 꼬인 소리가 난다.
     // 그래서 느림은 전부 여기서 가져온다.
-    gapSeconds: 6, sentenceGap: 4.2, narrationVolume: 1.0, bedVolume: 1.0,
+    // 볼륨 기본값은 둘 다 50 이다. 100 이면 배경음이 천장에 붙어 더 키울 수가 없다.
+    // 50/50 은 100/100 과 같은 균형이다 — 배경음은 master 에, 목소리는 el.volume 에
+    // 각각 선형으로 걸리므로 둘을 같이 반으로 줄여도 비율은 그대로다.
+    gapSeconds: 6, sentenceGap: 5.0, narrationVolume: 0.5, bedVolume: 0.5,
     voiceURI: null, voiceRate: 0.72, voicePitch: 0.9,
     ...load('settings', {}),
   },
@@ -50,10 +53,23 @@ const store = {
 // 손대지 않은 사람(값이 정확히 옛 기본값)만 옮기고, 직접 조절한 값은 존중한다 —
 // 새 기본값에서 스테퍼(0.4 단위)로는 3.6 이 나오지 않으므로 오인식 위험도 없다.
 if (store.settings.sentenceGap === 3.6) store.settings.sentenceGap = 4.2;
+// 2026-08-26 4.2 → 5.0. 말을 늦추는 것과 침묵을 늘리는 것은 다르게 들린다 —
+// 말 늦추기는 한 문장 안이 늘어지고, 침묵은 문장 사이가 벌어진다. 둘 다 올렸다.
+if (store.settings.sentenceGap === 4.2) store.settings.sentenceGap = 5.0;
 
 // 같은 이유로 나레이션 볼륨 기본값도 0.9 → 1.0. VoxCPM 파일은 피크가 0.15~0.40 밖에 안 되므로
 // 1.0 으로 올려도 클리핑 여지가 없다 — 남아 있는 헤드룸을 그냥 쓰는 것뿐이다.
 if (store.settings.narrationVolume === 0.9) store.settings.narrationVolume = 1.0;
+
+// 2026-08-26 볼륨 기본값 100 → 50. 배경음이 천장에 붙어 있어 더 키울 수가 없었다.
+// 앞의 두 이전과 달리 100 은 사용자가 일부러 고를 수 있는 값이라, 값만 보고 옮기면
+// 다음 실행에서 그 선택을 또 되돌린다. 그래서 한 번 했다는 표시를 남긴다.
+if (!store.settings.volMigrated) {
+  if (store.settings.bedVolume === 1) store.settings.bedVolume = 0.5;
+  if (store.settings.narrationVolume === 1) store.settings.narrationVolume = 0.5;
+  store.settings.volMigrated = true;
+  save('settings', store.settings);
+}
 
 // ── 런타임 ────────────────────────────────────────────────
 

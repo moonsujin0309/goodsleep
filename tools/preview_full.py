@@ -60,6 +60,9 @@ def main():
     # 0.69 아래로 내리면 자음이 뭉개진다는 게 이 프로젝트의 오래된 결론이라,
     # 배수로 치면 1.45 배가 천장이다.
     ap.add_argument("--slow", type=float, default=1.0, help="말 길이 배수. 1.25 면 25%% 느리게")
+    # 느림을 침묵에서 가져오는 쪽. 말을 늘리는 것과 달리 음질 손해가 없다.
+    ap.add_argument("--gap", type=float, default=SENTENCE_GAP,
+                    help=f"문장 사이 침묵 기준값 (기본 {SENTENCE_GAP}, app.js 설정과 같은 값)")
     args = ap.parse_args()
 
     import librosa, imageio_ffmpeg
@@ -98,7 +101,7 @@ def main():
                 if is_count(parts[i + 1][0]):
                     gap = max(0.2, COUNT_CADENCE - len(y) / sr)
                 else:
-                    gap = SENTENCE_GAP * sentence_scale(text) * lg * (1 if end else 0.45)
+                    gap = args.gap * sentence_scale(text) * lg * (1 if end else 0.45)
                 out.append(np.zeros(int(gap * rate), dtype=y.dtype))
         if li < len(state.get("sequence", DEFAULT_LAYERS)) - 1:
             out.append(np.zeros(int(GAP_SECONDS * rate), dtype=np.float32))
