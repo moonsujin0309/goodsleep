@@ -983,11 +983,19 @@ async function init() {
   // 브라우저는 제스처 없이 재생을 허용하지 않으므로 첫 터치에 한 번만 건다.
   for (const def of manifest.sounds) mixer.add(def);
   mixer.master = store.settings.bedVolume ?? 1;
-  const openBed = () => mixer.unlock().then(() => {
+  // once:true 로 걸면 그 한 번의 터치에서 unlock 이 거부됐을 때(자동재생 정책은 기기마다
+  // 조금씩 다르다) 리스너가 사라져 그 세션 내내 배경음이 없다. 성공할 때까지 다시 건다.
+  let bedOpen = false;
+  const openBed = async () => {
+    if (bedOpen) return;
+    try { await mixer.unlock(); } catch { return; }   // 다음 터치에서 다시 시도한다
+    bedOpen = true;
     for (const [id, v] of Object.entries(store.mixer)) if (v > 0) mixer.setVolume(id, v);
-  });
-  addEventListener('pointerdown', openBed, { once: true });
-  addEventListener('keydown', openBed, { once: true });
+    removeEventListener('pointerdown', openBed);
+    removeEventListener('keydown', openBed);
+  };
+  addEventListener('pointerdown', openBed);
+  addEventListener('keydown', openBed);
 
   // 볼륨이 왜 안 줄어드는지 화면에서 바로 알 수 있게 한다 —
   // 기기에서 어느 경로가 켜졌는지 눈으로 못 보면 또 추측으로 고치게 된다.
