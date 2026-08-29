@@ -5,7 +5,7 @@
 //     배포가 즉시 반영되고, 끊겼을 때만 캐시가 받친다. 버전 올리기를 잊어도 안전.
 //   나레이션 mp3 — 캐시 우선.
 //     한 번 들은 조각은 다시 받지 않는다. 내용이 바뀌는 배포에서만 VER 을 올린다.
-const VER = 'goodsleep-v10';  // 2026-08-26 배경음을 누르지 않는다 (DUCK=1) + 첫 터치 재시도
+const VER = 'goodsleep-v11';  // 2026-08-26 목소리 앵커 고정 + 전량 재생성 + 새 인트로
 const SHELL = [
   './', 'index.html', 'style.css', 'manifest.json',
   'app.js', 'audio.js', 'narration.js', 'sleep.js', 'scenes.js',

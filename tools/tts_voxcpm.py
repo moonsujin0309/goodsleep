@@ -57,6 +57,20 @@ DESIGN = ("A calm man in his early 30s, soft low voice, "
           "speaking extremely slowly, quiet and soft-spoken, warm and intimate")
 CFG, TIMESTEPS = 2.0, 10
 
+# 목소리를 파일 하나로 못 박는다 (2026-08-26).
+#
+# DESIGN 만으로는 조각마다 목소리가 달라진다. 시드를 42로 고정해도 그렇다 —
+# 조각마다 model.generate() 를 새로 부르고, 묘사에서 목소리를 새로 뽑기 때문이다.
+# 실측(racing 한 세션, 음량·속도를 맞춘 뒤 MFCC 거리): 호흡을 0으로 두면
+# 정착 67.4 · 이완 61.4 · 심상 41.3 · 소실 35.9. 사용자가 "이상하다"고 한 둘이
+# 정확히 가장 먼 둘이었다. 음량이나 속도로는 못 맞추는 차이다.
+#
+# 그래서 사용자가 고른 그 목소리(racing/breath/b1 의 한 토막)를 앵커로 두고
+# 모든 생성에 물린다. 앵커를 바꾸면 앱 전체의 목소리가 바뀐다 — 함부로 건드리지 말 것.
+# 다시 만들려면 tools/anchor/README.md 참조.
+ANCHOR_WAV = ROOT / "tools" / "anchor" / "voice.wav"
+ANCHOR_TEXT = "내쉬는 숨이 길어지면 몸은 안전하다고 판단합니다."
+
 TOP_DB = 40          # 무음 판정. 35~45 는 결과가 같았다
 PACE_LO, PACE_HI = 0.55, 1.8    # 자르기 검증: 중앙값 대비 이 밖이면 잘못 잘린 것
 # 경계로 인정할 최소 쉼. 이보다 짧은 자리는 모델이 쉰 게 아니라 에너지가 잠깐
@@ -64,8 +78,14 @@ PACE_LO, PACE_HI = 0.55, 1.8    # 자르기 검증: 중앙값 대비 이 밖이�
 MIN_GAP_SEC = 0.15
 # 조각 안에 이보다 긴 침묵이 남으면 그 조각은 문장 경계를 넘어간 것이다.
 MAX_INNER_SEC = 0.6
-# 속도 보정: 조각 안 초/글자를 중앙값의 ±PACE_BAND 안에 묶는다.
-# 1.25 면 조각 내 최대 편차가 1.56배 — 승인된 미리듣기(1.53배) 수준이다.
+# 속도 보정: 조각 안 초/글자를 **그 조각의 중앙값**의 ±PACE_BAND 안에 묶는다.
+#
+# 이 값을 조이거나 목표를 옮기는 시도를 2026-08-26 에 두 번 했고 둘 다 되돌렸다.
+#   밴드 1.15    토막의 24%(정착 조각은 14개 중 9개)를 개별로 늘리게 된다 → "뻣뻣하다"
+#   전체 공통 목표  조각 사이 편차가 1.58 → 1.03배로 줄지만 조각을 통째로 최대 1.33배까지
+#                밀게 되고, 그게 말투 자체를 바꾼다 → "어색하다"
+# 억양은 토막 사이·조각 사이의 속도 차이에서 나온다. 고르게 만들수록 사람이 아니게 된다.
+# 1.25 는 사용자가 승인한 판(clip-racing-b1-slow1.12)의 값이다. 근거 없이 건드리지 말 것.
 PACE_BAND = 1.25
 STRETCH_MIN = 0.75   # 이보다 크게 늘이지 않는다 (자음이 뭉개진다). 못 채우면 남긴다
 SPREAD_WARN = 2.06   # 사용자가 "긴박하다"고 거부한 편차. 넘으면 더 쪼갠다
@@ -80,8 +100,21 @@ SLOW = 1.12
 # 굽기 직전에 발화 RMS 를 이 값으로 맞춘다. 피크는 PEAK_CEIL 을 넘지 않게 눌러,
 # 못 채우는 파일은 덜 키운 채로 둔다 (찌그러뜨리느니 조금 작은 게 낫다).
 # 값이 커지면 배경음 덕킹(audio.js _target)도 같이 올려야 균형이 맞는다.
-NORM_RMS = 0.11
+# 토막별 음량 맞추기는 끈 채로 둔다 — 토막 사이의 강약도 표현이라 다 맞추면 평평해진다.
+NORM_RMS = 0
 PEAK_CEIL = 0.95
+
+# 대신 **조각 통째로** 한 배수를 걸어 조각 사이 음량만 맞춘다 (2026-08-26).
+# 모델은 층마다 다른 크기로 읽는다 — 실측 발화 RMS 가 호흡 0.036, 심상·소실 0.058,
+# 정착·이완 0.087~0.090 이었다. 사용자가 고른 것은 가장 작고 부드러운 호흡이고,
+# 2.4배 큰 정착·이완이 "너무 다르다"는 판정을 받았다.
+#
+# 그래서 목표를 **낮은 쪽에** 잡는다. 0.11 처럼 높게 잡으면 호흡을 3배 키우게 되고,
+# 그러면 사용자가 좋아한 그 작고 부드러운 질감이 사라진다 — 한 번 그렇게 해서
+# "평평하다"는 말을 들었다.
+# 0.045 는 호흡(0.036)과 심상·소실(0.058) 사이다. 호흡은 거의 그대로 두고
+# 정착·이완만 절반으로 내린다.
+PIECE_RMS = 0.045
 
 
 def cut(wav, rate, parts):
@@ -170,6 +203,21 @@ def split_point(parts):
     return min(ends, key=lambda i: abs(i - mid)) if ends else mid
 
 
+def speak(model, text):
+    """한 번의 생성. 앵커가 있으면 그 목소리로 못 박고, 없으면 DESIGN 묘사로 만든다.
+
+    앵커를 쓸 때는 DESIGN 을 붙이지 않는다 — 목소리는 앵커가 정하고, 묘사를 같이
+    주면 둘이 싸운다.
+    """
+    if ANCHOR_WAV.exists():
+        return model.generate(text=text,
+                              prompt_wav_path=str(ANCHOR_WAV),
+                              prompt_text=ANCHOR_TEXT,
+                              cfg_value=CFG, inference_timesteps=TIMESTEPS)
+    return model.generate(text=f"({DESIGN}){text}",
+                          cfg_value=CFG, inference_timesteps=TIMESTEPS)
+
+
 def render(model, torch, parts, rate):
     """parts 를 소리로 만든다. 반환: (parts 와 1:1 인 파형 목록, 생성 덩어리 수).
 
@@ -178,13 +226,11 @@ def render(model, torch, parts, rate):
     """
     if len(parts) == 1:
         torch.manual_seed(SEED)
-        return [model.generate(text=f"({DESIGN}){parts[0][0]}",
-                               cfg_value=CFG, inference_timesteps=TIMESTEPS)], 1
+        return [speak(model, parts[0][0])], 1
 
     torch.manual_seed(SEED)
     joined = " ".join(t for t, _ in parts)
-    wav = model.generate(text=f"({DESIGN}){joined}",
-                         cfg_value=CFG, inference_timesteps=TIMESTEPS)
+    wav = speak(model, joined)
     spans = cut(wav, rate, parts)
     if spans is not None and not check(spans, parts, rate):
         return [wav[s:e] for s, e in spans], 1
@@ -250,15 +296,31 @@ def tempo(samples, rate, factor, ffmpeg):
 
 
 def equalize(wavs, parts, rate):
-    """튀는 토막만 시간축으로 당겨 이웃과 보조를 맞춘다. 반환: (파형, 고친 수)."""
+    """조각 안에서 튀는 토막만 시간축으로 당겨 이웃과 보조를 맞춘다.
+
+    반환: (파형, 손댄 토막 수).
+
+    **손을 적게 대는 것이 요점이다.** 억양은 토막 사이의 속도 차이에서도 나오기
+    때문에, 고르게 만들수록 뻣뻣해진다. 2026-08-26 에 두 번 넘겨짚었다 —
+    밴드를 1.15 로 조여 토막의 24%를 개별로 늘렸더니 "뻣뻣하다", 조각을 통째로
+    공통 목표에 밀었더니 "어색하다"는 판정을 받았다. 둘 다 되돌렸다.
+    지금은 그 조각의 중앙값에서 ±PACE_BAND 를 벗어난 것만 건드린다.
+
+    숫자 세기 토막은 뺀다 (지금 대본엔 없지만, 늘리면 늘어지는 신음처럼 들리고
+    앱의 1초 주기와도 어긋난다 — 2026-08-26 에 겪었다).
+    """
     import imageio_ffmpeg
     ffmpeg = imageio_ffmpeg.get_ffmpeg_exe()
     idx = [i for i, (t, _) in enumerate(parts) if not is_count(t)]
-    if len(idx) < 3:
+    if not idx:
         return wavs, 0
     pace = {i: voiced(wavs[i], rate) / len(parts[i][0]) for i in idx}
-    med = statistics.median(pace.values())
-    lo, hi = med / PACE_BAND, med * PACE_BAND
+    # 목표는 **그 조각의 중앙값**이다. 전체 공통 목표(GLOBAL_PACE)로 밀어 봤다가
+    # 되돌렸다 — 조각 사이 편차는 1.58 → 1.03배로 줄었는데 "어색하다"는 판정을
+    # 받았다 (2026-08-26). 조각을 통째로 최대 1.33배까지 미는 것이 말투 자체를
+    # 바꿔 버린다. 조각 사이가 다른 것은 결함이 아니라 그 조각의 성격이다.
+    target = statistics.median(pace.values())
+    lo, hi = target / PACE_BAND, target * PACE_BAND
     fixed = 0
     for i in idx:
         want = lo if pace[i] < lo else hi if pace[i] > hi else None
@@ -279,6 +341,8 @@ def normalize(samples, rate):
     파일 전체로 RMS 를 재면 침묵이 많은 토막이 과하게 커진다. 사람이 크기를
     느끼는 건 말하는 동안의 소리라, 말하는 구간만 재서 맞춘다.
     """
+    if not NORM_RMS:
+        return samples
     import librosa, numpy as np
     sp = librosa.effects.split(samples, top_db=TOP_DB,
                                frame_length=2048, hop_length=512)
@@ -290,6 +354,39 @@ def normalize(samples, rate):
     if rms <= 0 or peak <= 0:
         return samples
     return samples * min(NORM_RMS / rms, PEAK_CEIL / peak)
+
+
+def level(wavs, parts, rate):
+    """조각 전체에 같은 배수를 걸어 조각 사이 음량을 맞춘다. 반환: (파형, 배수).
+
+    토막마다 따로 맞추면(NORM_RMS) 조각 안의 강약이 사라져 평평해진다.
+    조각 사이만 맞추고 안쪽은 그대로 둔다 — 속도 보정과 같은 원칙이다.
+    """
+    import numpy as np
+    idx = [i for i, (t, _) in enumerate(parts) if not is_count(t)]
+    if not idx or not PIECE_RMS:
+        return wavs, 1.0
+    rs = []
+    for i in idx:
+        w = wavs[i]
+        import librosa
+        sp = librosa.effects.split(w, top_db=TOP_DB, frame_length=2048, hop_length=512)
+        v = np.concatenate([w[a:b] for a, b in sp]) if len(sp) else w
+        if len(v):
+            rs.append(float(np.sqrt((v ** 2).mean())))
+    if not rs:
+        return wavs, 1.0
+    med = statistics.median(rs)
+    if med <= 0:
+        return wavs, 1.0
+    g = PIECE_RMS / med
+    # 피크가 천장을 넘지 않는 선까지만 키운다
+    peak = max(float(np.abs(w).max()) for w in wavs)
+    if peak > 0:
+        g = min(g, PEAK_CEIL / peak)
+    if abs(g - 1) < 0.02:
+        return wavs, 1.0
+    return [w * g for w in wavs], g
 
 
 def to_mp3(ffmpeg, samples, rate, path):
@@ -370,13 +467,15 @@ def main():
             a2 = spread(w2, parts, rate)
             if a2 < after:
                 wavs, blocks, fixed, after = w2, b2, f2, a2
+        wavs, gain = level(wavs, parts, rate)
         total += sum(to_mp3(ffmpeg, w, rate, p) for w, p in zip(wavs, paths))
         if blocks > 1:
             splits.append((name, blocks))
         if after > SPREAD_WARN:
             wide.append((name, after))
         print(f"  [{n}/{len(plan)}] {name:<26} 문장 {len(parts):>2} · "
-              f"덩어리 {blocks} · 편차 {before:.2f}→{after:.2f}배 · 보정 {fixed}개")
+              f"덩어리 {blocks} · 편차 {before:.2f}→{after:.2f}배 · 보정 {fixed}개 · "
+              f"음량 {gain:.2f}배")
 
     MANIFEST.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
                         encoding="utf-8")

@@ -21,7 +21,7 @@
       "settle": [
         {
           "id": "s1",
-          "text": "이제 잠들 준비를 하겠습니다. 잠시 몸을 편하게 하고, 호흡을 고른 다음, 천천히 힘을 내려놓을 겁니다. 어려운 것은 없습니다. 그냥 듣고 있으면 됩니다. 편한 자세를 찾아 보세요. 한 번 고쳐 누워도 좋습니다. 오늘 할 일은 여기서 끝입니다.",
+          "text": "이제 잠들 준비를 하겠습니다. 등이 닿아 있는 자리를 먼저 느껴 보세요. 침대가 몸을 아래에서 받치고 있습니다. 버티지 않아도 그 자리는 그대로 있습니다. 이불이 덮인 아래는 따뜻합니다. 오늘 할 일은 여기서 끝입니다. 남은 것은 내일의 몫으로 넘깁니다. 오늘 하루가 어땠든 이 시간은 그것과 상관없이 흘러갑니다. 잠시 호흡을 고른 다음, 천천히 힘을 내려놓을 겁니다. 어려운 것은 없습니다. 그냥 듣고 있으면 됩니다. 편한 자세를 찾아 보세요. 한 번 고쳐 누워도 좋습니다.",
           "files": [
             "audio/narration/racing/s1-0.mp3",
             "audio/narration/racing/s1-1.mp3",
@@ -31,12 +31,17 @@
             "audio/narration/racing/s1-5.mp3",
             "audio/narration/racing/s1-6.mp3",
             "audio/narration/racing/s1-7.mp3",
-            "audio/narration/racing/s1-8.mp3"
+            "audio/narration/racing/s1-8.mp3",
+            "audio/narration/racing/s1-9.mp3",
+            "audio/narration/racing/s1-10.mp3",
+            "audio/narration/racing/s1-11.mp3",
+            "audio/narration/racing/s1-12.mp3",
+            "audio/narration/racing/s1-13.mp3"
           ]
         },
         {
           "id": "s2",
-          "text": "지금부터 몇 분 동안 아무것도 하지 않겠습니다. 천천히 호흡을 고르고, 몸의 힘을 하나씩 내려놓을 겁니다. 따라 하지 않아도 됩니다. 듣기만 해도 충분합니다. 눈을 감아 보세요. 결정할 것도, 기억할 것도 없습니다. 잘 자야 한다는 것도 잠시 내려놓습니다.",
+          "text": "지금부터 몇 분 동안 아무것도 하지 않겠습니다. 먼저 몸이 자리에 닿은 곳을 느껴 보세요. 등이 침대에 넓게 닿아 있습니다. 머리는 베개에 놓여 있습니다. 받치고 있는 것은 침대이지 몸이 아닙니다. 오늘의 일은 오늘로 끝났습니다. 결정할 것도, 기억할 것도 없습니다. 잘 자야 한다는 것도 잠시 내려놓습니다. 천천히 호흡을 고르고, 몸의 힘을 하나씩 내려놓을 겁니다. 따라 하지 않아도 됩니다. 듣기만 해도 충분합니다. 눈을 감아 보세요.",
           "files": [
             "audio/narration/racing/s2-0.mp3",
             "audio/narration/racing/s2-1.mp3",
@@ -45,12 +50,17 @@
             "audio/narration/racing/s2-4.mp3",
             "audio/narration/racing/s2-5.mp3",
             "audio/narration/racing/s2-6.mp3",
-            "audio/narration/racing/s2-7.mp3"
+            "audio/narration/racing/s2-7.mp3",
+            "audio/narration/racing/s2-8.mp3",
+            "audio/narration/racing/s2-9.mp3",
+            "audio/narration/racing/s2-10.mp3",
+            "audio/narration/racing/s2-11.mp3",
+            "audio/narration/racing/s2-12.mp3"
           ]
         },
         {
           "id": "s3",
-          "text": "이제 하루를 내려놓겠습니다. 호흡을 고른 다음, 몸을 훑어 가면서 남은 힘을 풀 겁니다. 서두를 것은 없습니다. 오늘 하루가 어땠든 이 시간은 그것과 상관없이 흘러갑니다. 등이 닿아 있는 자리를 느껴 보세요. 침대가 몸을 받치고 있습니다. 버티지 않아도 됩니다.",
+          "text": "이제 하루를 내려놓겠습니다. 누운 자리부터 느껴 보세요. 침대는 밤새 그 자리에 있습니다. 바닥은 흔들리지 않습니다. 몸은 이미 놓여 있습니다. 오늘 하루가 어땠든 이 시간은 그것과 상관없이 흘러갑니다. 잘한 것도 못한 것도 오늘에 두고 옵니다. 여기까지 온 것으로 오늘 몫은 끝났습니다. 호흡을 고른 다음, 남은 힘을 풀어 갈 겁니다. 서두를 것은 없습니다. 버티지 않아도 됩니다.",
           "files": [
             "audio/narration/racing/s3-0.mp3",
             "audio/narration/racing/s3-1.mp3",
@@ -59,7 +69,11 @@
             "audio/narration/racing/s3-4.mp3",
             "audio/narration/racing/s3-5.mp3",
             "audio/narration/racing/s3-6.mp3",
-            "audio/narration/racing/s3-7.mp3"
+            "audio/narration/racing/s3-7.mp3",
+            "audio/narration/racing/s3-8.mp3",
+            "audio/narration/racing/s3-9.mp3",
+            "audio/narration/racing/s3-10.mp3",
+            "audio/narration/racing/s3-11.mp3"
           ]
         }
       ],
@@ -289,7 +303,7 @@
       "settle": [
         {
           "id": "s1",
-          "text": "이제 편안해질 준비를 하겠습니다. 먼저 호흡을 천천히 고르고, 그다음 몸의 긴장을 하나씩 내려놓을 겁니다. 지금 이 방은 조용하고, 당신은 안전한 자리에 누워 있습니다. 문 밖의 일은 문 밖에 있습니다. 여기서는 아무 일도 일어나지 않습니다. 편한 자세를 찾아 보세요. 오늘은 여기까지면 충분합니다.",
+          "text": "이제 편안해질 준비를 하겠습니다. 등이 닿은 자리를 먼저 느껴 보세요. 침대가 몸을 받치고 있습니다. 그 자리는 밤새 그대로 있습니다. 이불이 덮인 아래는 따뜻합니다. 지금 이 방은 조용합니다. 문 밖의 일은 문 밖에 있습니다. 오늘 할 일은 여기서 끝났습니다. 남은 일은 내일의 몫입니다. 먼저 호흡을 천천히 고르고, 그다음 긴장을 하나씩 내려놓을 겁니다. 여기서는 아무 일도 일어나지 않습니다. 편한 자세를 찾아 보세요.",
           "files": [
             "audio/narration/anxious/s1-0.mp3",
             "audio/narration/anxious/s1-1.mp3",
@@ -299,12 +313,16 @@
             "audio/narration/anxious/s1-5.mp3",
             "audio/narration/anxious/s1-6.mp3",
             "audio/narration/anxious/s1-7.mp3",
-            "audio/narration/anxious/s1-8.mp3"
+            "audio/narration/anxious/s1-8.mp3",
+            "audio/narration/anxious/s1-9.mp3",
+            "audio/narration/anxious/s1-10.mp3",
+            "audio/narration/anxious/s1-11.mp3",
+            "audio/narration/anxious/s1-12.mp3"
           ]
         },
         {
           "id": "s2",
-          "text": "지금부터 몇 분은 안전한 시간입니다. 천천히 호흡을 고르고, 몸에 남은 긴장을 풀 겁니다. 잘하려고 하지 않아도 됩니다. 듣기만 하면 됩니다. 이불의 무게를 느껴 보세요. 이불이 몸을 덮고 있습니다. 그 아래는 따뜻하고 안전합니다.",
+          "text": "지금부터 몇 분은 안전한 시간입니다. 이불의 무게를 먼저 느껴 보세요. 이불이 몸을 덮고 있습니다. 그 아래는 따뜻하고 안전합니다. 등은 침대에 놓여 있습니다. 받치는 일은 침대가 합니다. 오늘의 걱정은 오늘 자리에 둡니다. 지금 결정해야 하는 일은 없습니다. 천천히 호흡을 고르고, 몸에 남은 긴장을 풀 겁니다. 잘하려고 하지 않아도 됩니다. 듣기만 하면 됩니다.",
           "files": [
             "audio/narration/anxious/s2-0.mp3",
             "audio/narration/anxious/s2-1.mp3",
@@ -313,12 +331,16 @@
             "audio/narration/anxious/s2-4.mp3",
             "audio/narration/anxious/s2-5.mp3",
             "audio/narration/anxious/s2-6.mp3",
-            "audio/narration/anxious/s2-7.mp3"
+            "audio/narration/anxious/s2-7.mp3",
+            "audio/narration/anxious/s2-8.mp3",
+            "audio/narration/anxious/s2-9.mp3",
+            "audio/narration/anxious/s2-10.mp3",
+            "audio/narration/anxious/s2-11.mp3"
           ]
         },
         {
           "id": "s3",
-          "text": "이제 하루의 긴장을 내려놓겠습니다. 호흡을 고른 다음, 몸을 천천히 풀어 갈 겁니다. 서두를 것은 없습니다. 등이 닿은 자리를 한번 느껴 보세요. 침대는 밤새 그 자리에 있습니다. 바닥은 흔들리지 않습니다. 지금 여기는 안전합니다.",
+          "text": "이제 하루의 긴장을 내려놓겠습니다. 등이 닿은 자리를 한번 느껴 보세요. 침대는 밤새 그 자리에 있습니다. 바닥은 흔들리지 않습니다. 지금 여기는 안전합니다. 오늘 있었던 일은 오늘로 끝났습니다. 그 일들은 지금 이 방에 없습니다. 호흡을 고른 다음, 몸을 천천히 풀어 갈 겁니다. 서두를 것은 없습니다. 오늘은 여기까지면 충분합니다.",
           "files": [
             "audio/narration/anxious/s3-0.mp3",
             "audio/narration/anxious/s3-1.mp3",
@@ -327,7 +349,10 @@
             "audio/narration/anxious/s3-4.mp3",
             "audio/narration/anxious/s3-5.mp3",
             "audio/narration/anxious/s3-6.mp3",
-            "audio/narration/anxious/s3-7.mp3"
+            "audio/narration/anxious/s3-7.mp3",
+            "audio/narration/anxious/s3-8.mp3",
+            "audio/narration/anxious/s3-9.mp3",
+            "audio/narration/anxious/s3-10.mp3"
           ]
         }
       ],
@@ -550,7 +575,7 @@
       "settle": [
         {
           "id": "s1",
-          "text": "이제 몸을 재우겠습니다. 몸은 이미 하루를 다 썼습니다. 준비는 끝나 있습니다. 이제 호흡을 고르고, 몸의 스위치를 하나씩 끌 겁니다. 할 일은 없습니다. 듣고만 있으면 됩니다. 편한 자세로 누워 보세요.",
+          "text": "이제 몸을 재우겠습니다. 먼저 몸이 자리에 닿은 곳을 느껴 보세요. 등이 침대에 놓여 있습니다. 머리는 베개에 놓여 있습니다. 받치는 일은 침대가 합니다. 오늘 쓴 힘은 오늘 다 썼습니다. 남은 일은 내일의 몸이 합니다. 피곤한 몸이 길을 먼저 알고 있습니다. 이제 호흡을 고르고, 몸의 스위치를 하나씩 끌 겁니다. 어렵지 않습니다. 편한 자세로 누워 보세요.",
           "files": [
             "audio/narration/wired/s1-0.mp3",
             "audio/narration/wired/s1-1.mp3",
@@ -559,12 +584,16 @@
             "audio/narration/wired/s1-4.mp3",
             "audio/narration/wired/s1-5.mp3",
             "audio/narration/wired/s1-6.mp3",
-            "audio/narration/wired/s1-7.mp3"
+            "audio/narration/wired/s1-7.mp3",
+            "audio/narration/wired/s1-8.mp3",
+            "audio/narration/wired/s1-9.mp3",
+            "audio/narration/wired/s1-10.mp3",
+            "audio/narration/wired/s1-11.mp3"
           ]
         },
         {
           "id": "s2",
-          "text": "지금부터 몸의 힘을 하나씩 내려놓겠습니다. 먼저 호흡을 고르고, 몸을 아래에서 위로 천천히 훑을 겁니다. 피곤한 몸이 길을 먼저 알고 있습니다. 따라가기만 하면 됩니다. 자세를 한 번 고쳐 보세요. 이제 애쓰는 일은 끝입니다.",
+          "text": "지금부터 몸의 힘을 하나씩 끄겠습니다. 누운 자리를 먼저 느껴 보세요. 침대가 몸을 아래에서 받치고 있습니다. 버티고 있는 곳은 이제 없습니다. 오늘 할 일은 여기서 끝입니다. 더 처리할 것은 남아 있지 않습니다. 피곤한 몸이 길을 먼저 알고 있습니다. 먼저 호흡을 고르고, 몸을 아래에서 위로 천천히 훑을 겁니다. 따라 하지 않아도 됩니다. 그냥 누워 있으면 됩니다.",
           "files": [
             "audio/narration/wired/s2-0.mp3",
             "audio/narration/wired/s2-1.mp3",
@@ -572,12 +601,16 @@
             "audio/narration/wired/s2-3.mp3",
             "audio/narration/wired/s2-4.mp3",
             "audio/narration/wired/s2-5.mp3",
-            "audio/narration/wired/s2-6.mp3"
+            "audio/narration/wired/s2-6.mp3",
+            "audio/narration/wired/s2-7.mp3",
+            "audio/narration/wired/s2-8.mp3",
+            "audio/narration/wired/s2-9.mp3",
+            "audio/narration/wired/s2-10.mp3"
           ]
         },
         {
           "id": "s3",
-          "text": "이제 하루의 스위치를 끄겠습니다. 몸은 오늘 충분히 움직였습니다. 남은 것은 내려놓는 일뿐입니다. 호흡을 고른 다음, 몸을 한 곳씩 쉬게 할 겁니다. 침대가 모든 무게를 받칩니다. 버틸 필요가 없습니다. 이 자리에서 끝납니다.",
+          "text": "이제 하루를 끄겠습니다. 등이 닿은 자리부터 느껴 보세요. 침대는 흔들리지 않습니다. 그 자리는 아침까지 그대로 있습니다. 오늘 쓴 힘은 오늘로 끝났습니다. 내일 것은 내일 자리에 있습니다. 호흡을 고른 다음, 몸을 한 곳씩 쉬게 할 겁니다. 서두를 것은 없습니다. 눈을 감아 보세요.",
           "files": [
             "audio/narration/wired/s3-0.mp3",
             "audio/narration/wired/s3-1.mp3",
@@ -586,7 +619,9 @@
             "audio/narration/wired/s3-4.mp3",
             "audio/narration/wired/s3-5.mp3",
             "audio/narration/wired/s3-6.mp3",
-            "audio/narration/wired/s3-7.mp3"
+            "audio/narration/wired/s3-7.mp3",
+            "audio/narration/wired/s3-8.mp3",
+            "audio/narration/wired/s3-9.mp3"
           ]
         }
       ],
@@ -805,7 +840,7 @@
       "settle": [
         {
           "id": "s1",
-          "text": "이제 잠자리에 들겠습니다. 호흡을 고르고, 몸을 풀고, 천천히 낮아질 겁니다. 이유는 몰라도 됩니다. 잠은 부르면 오지 않고, 자리를 만들면 옵니다. 지금 그 자리를 만드는 중입니다. 편한 자세를 잡아 보세요. 나머지는 저절로 됩니다.",
+          "text": "이제 잠자리에 들겠습니다. 등이 닿은 자리를 먼저 느껴 보세요. 침대가 몸을 받치고 있습니다. 그 자리는 아침까지 그대로 있습니다. 오늘 할 일은 여기서 끝났습니다. 남은 것은 내일 자리에 둡니다. 잠은 부르면 오지 않고, 자리를 만들면 옵니다. 호흡을 고르고, 몸을 풀고, 천천히 낮아질 겁니다. 어려운 것은 없습니다. 편한 자세를 찾아 보세요.",
           "files": [
             "audio/narration/unknown/s1-0.mp3",
             "audio/narration/unknown/s1-1.mp3",
@@ -815,12 +850,15 @@
             "audio/narration/unknown/s1-5.mp3",
             "audio/narration/unknown/s1-6.mp3",
             "audio/narration/unknown/s1-7.mp3",
-            "audio/narration/unknown/s1-8.mp3"
+            "audio/narration/unknown/s1-8.mp3",
+            "audio/narration/unknown/s1-9.mp3",
+            "audio/narration/unknown/s1-10.mp3",
+            "audio/narration/unknown/s1-11.mp3"
           ]
         },
         {
           "id": "s2",
-          "text": "지금부터 아무것도 하지 않는 연습을 하겠습니다. 호흡을 고르고, 힘을 내려놓는 것이 전부입니다. 잘될지 따지지 않습니다. 오늘 밤은 길고, 서두를 이유가 없습니다. 몸을 침대에 맡겨 보세요. 자리가 몸에 맞아 갑니다. 그걸로 충분합니다.",
+          "text": "지금부터 몇 분 동안 아무것도 하지 않겠습니다. 먼저 몸이 놓인 자리를 느껴 보세요. 머리는 베개에, 등은 침대에 놓여 있습니다. 받치는 일은 침대가 합니다. 오늘 밤은 길고, 서두를 이유가 없습니다. 오늘의 일은 오늘로 끝났습니다. 호흡을 고르고, 힘을 내려놓는 것이 전부입니다. 잘하려고 하지 않아도 됩니다. 듣기만 하면 됩니다.",
           "files": [
             "audio/narration/unknown/s2-0.mp3",
             "audio/narration/unknown/s2-1.mp3",
@@ -830,12 +868,15 @@
             "audio/narration/unknown/s2-5.mp3",
             "audio/narration/unknown/s2-6.mp3",
             "audio/narration/unknown/s2-7.mp3",
-            "audio/narration/unknown/s2-8.mp3"
+            "audio/narration/unknown/s2-8.mp3",
+            "audio/narration/unknown/s2-9.mp3",
+            "audio/narration/unknown/s2-10.mp3",
+            "audio/narration/unknown/s2-11.mp3"
           ]
         },
         {
           "id": "s3",
-          "text": "이제 하루를 닫겠습니다. 호흡을 고른 다음, 몸의 힘을 차례로 풀 겁니다. 어렵지 않습니다. 잠들려고 애쓰는 대신, 쉬는 것부터 시작합니다. 쉬다 보면 잠은 따라옵니다. 이불을 한 번 여며 보세요. 오늘은 여기까지입니다.",
+          "text": "이제 하루를 내려놓겠습니다. 누운 자리를 먼저 느껴 보세요. 바닥은 흔들리지 않습니다. 몸은 이미 놓여 있습니다. 오늘은 여기까지입니다. 잠들려고 애쓰는 대신, 쉬는 것부터 시작합니다. 호흡을 고른 다음, 몸의 힘을 차례로 풀 겁니다. 서두를 것은 없습니다. 눈을 감아 보세요.",
           "files": [
             "audio/narration/unknown/s3-0.mp3",
             "audio/narration/unknown/s3-1.mp3",
@@ -845,7 +886,9 @@
             "audio/narration/unknown/s3-5.mp3",
             "audio/narration/unknown/s3-6.mp3",
             "audio/narration/unknown/s3-7.mp3",
-            "audio/narration/unknown/s3-8.mp3"
+            "audio/narration/unknown/s3-8.mp3",
+            "audio/narration/unknown/s3-9.mp3",
+            "audio/narration/unknown/s3-10.mp3"
           ]
         }
       ],
@@ -1056,7 +1099,7 @@
       "settle": [
         {
           "id": "s1",
-          "text": "깼어도 괜찮습니다. 몸은 아직 잠의 온기를 기억하고 있습니다. 눈을 감은 채로 그대로 있으면 됩니다. 시계는 확인하지 않아도 됩니다. 밤은 아직 많이 남아 있습니다. 돌아가는 길은 짧습니다.",
+          "text": "아직 밤입니다. 등이 닿은 자리를 느껴 보세요. 침대는 그대로 있습니다. 깨어 있어도 몸은 쉬고 있습니다. 누워 있는 것만으로 충분합니다. 시간은 아직 많이 남아 있습니다.",
           "files": [
             "audio/narration/awoken/s1-0.mp3",
             "audio/narration/awoken/s1-1.mp3",
@@ -1068,7 +1111,7 @@
         },
         {
           "id": "s2",
-          "text": "잠시 깬 것뿐입니다. 몸은 여전히 무겁고 따뜻합니다. 자세만 편하게 고칩니다. 이불을 다시 여밉니다. 아무 일도 없습니다. 밤이 계속되고 있습니다.",
+          "text": "밤은 아직 남아 있습니다. 이불의 무게를 느껴 보세요. 그 아래는 따뜻합니다. 몸은 이미 자리에 놓여 있습니다. 지금 할 일은 없습니다. 그대로 누워 있으면 됩니다.",
           "files": [
             "audio/narration/awoken/s2-0.mp3",
             "audio/narration/awoken/s2-1.mp3",
@@ -1080,7 +1123,7 @@
         },
         {
           "id": "s3",
-          "text": "한밤중입니다. 세상도 자고 있습니다. 할 일은 하나도 없습니다. 눈을 감고 어둠에 기댑니다. 몸은 이미 쉬는 법을 압니다. 그대로 두면 됩니다.",
+          "text": "지금은 밤 가운데입니다. 누운 자리를 느껴 보세요. 바닥은 흔들리지 않습니다. 아침까지 시간은 남아 있습니다. 눈을 감고 있으면 됩니다. 그것으로 충분합니다.",
           "files": [
             "audio/narration/awoken/s3-0.mp3",
             "audio/narration/awoken/s3-1.mp3",
@@ -1138,31 +1181,39 @@
       "settle": [
         {
           "id": "s1",
-          "text": "잠시 멈추겠습니다. 오래 걸리지 않습니다. 하던 일은 그 자리에 두면 됩니다. 앉은 자세를 조금 바로 합니다. 등을 받친 곳에 기댑니다. 시선을 낮추거나 눈을 감습니다.",
+          "text": "이제 잠깐 쉬어 가겠습니다. 몸이 닿은 자리를 먼저 느껴 보세요. 바닥이나 의자가 몸을 받치고 있습니다. 그 자리는 움직이지 않습니다. 지금부터 잠깐, 아무 일도 일어나지 않습니다. 하던 일은 그 자리에 그대로 있습니다. 돌아가면 그대로 이어집니다. 호흡을 고르고, 몸의 속도를 한 단계 늦출 겁니다. 어려운 것은 없습니다.",
           "files": [
             "audio/narration/calm/s1-0.mp3",
             "audio/narration/calm/s1-1.mp3",
             "audio/narration/calm/s1-2.mp3",
             "audio/narration/calm/s1-3.mp3",
             "audio/narration/calm/s1-4.mp3",
-            "audio/narration/calm/s1-5.mp3"
+            "audio/narration/calm/s1-5.mp3",
+            "audio/narration/calm/s1-6.mp3",
+            "audio/narration/calm/s1-7.mp3",
+            "audio/narration/calm/s1-8.mp3",
+            "audio/narration/calm/s1-9.mp3",
+            "audio/narration/calm/s1-10.mp3"
           ]
         },
         {
           "id": "s2",
-          "text": "여기서 잠깐 쉬어 가겠습니다. 지금 있는 자리면 충분합니다. 바닥에 닿아 있는 무게를 느낍니다. 몸이 받쳐져 있습니다. 서두르던 속도를 한 단계 낮춥니다. 이 시간은 짧지만 온전히 당신 것입니다.",
+          "text": "지금부터 몇 분은 쉬는 시간입니다. 몸이 닿은 자리를 느껴 보세요. 받치는 일은 바닥이 합니다. 잠시 힘을 내려놓아도 됩니다. 서두르던 속도를 한 단계 낮춥니다. 급한 일도 이 몇 분은 기다려 줍니다. 호흡을 고르고, 몸에 남은 힘을 풀 겁니다. 잘하려고 하지 않아도 됩니다.",
           "files": [
             "audio/narration/calm/s2-0.mp3",
             "audio/narration/calm/s2-1.mp3",
             "audio/narration/calm/s2-2.mp3",
             "audio/narration/calm/s2-3.mp3",
             "audio/narration/calm/s2-4.mp3",
-            "audio/narration/calm/s2-5.mp3"
+            "audio/narration/calm/s2-5.mp3",
+            "audio/narration/calm/s2-6.mp3",
+            "audio/narration/calm/s2-7.mp3",
+            "audio/narration/calm/s2-8.mp3"
           ]
         },
         {
           "id": "s3",
-          "text": "지금부터 잠깐, 아무 일도 일어나지 않습니다. 그게 이 시간의 전부입니다. 자세를 편하게 잡습니다. 손에 쥔 것을 내려놓습니다. 화면도, 소리도 잠시 옆에 둡니다. 지금 여기만 남습니다.",
+          "text": "잠깐 멈춰 가겠습니다. 지금 몸이 놓인 자리를 느껴 보세요. 그 자리는 움직이지 않습니다. 오전에 있었던 일은 오전에 두고 옵니다. 이 몇 분은 그것과 상관없이 흘러갑니다. 호흡을 고른 다음, 천천히 속도를 늦출 겁니다. 눈은 떠 있어도 괜찮습니다.",
           "files": [
             "audio/narration/calm/s3-0.mp3",
             "audio/narration/calm/s3-1.mp3",
@@ -1170,7 +1221,8 @@
             "audio/narration/calm/s3-3.mp3",
             "audio/narration/calm/s3-4.mp3",
             "audio/narration/calm/s3-5.mp3",
-            "audio/narration/calm/s3-6.mp3"
+            "audio/narration/calm/s3-6.mp3",
+            "audio/narration/calm/s3-7.mp3"
           ]
         }
       ],
@@ -1262,38 +1314,45 @@
       "settle": [
         {
           "id": "s1",
-          "text": "잠깐 눈을 붙이겠습니다. 알람이 깨워 줄 겁니다. 시간은 맡겨 두면 됩니다. 자세를 편하게 잡습니다. 빛이 눈에 들지 않게 합니다. 여기서부터는 쉬는 시간입니다.",
+          "text": "이제 잠깐 자겠습니다. 등이 닿은 자리를 먼저 느껴 보세요. 바닥이 몸을 받치고 있습니다. 자세를 편하게 잡습니다. 오전에 하던 일은 그 자리에 그대로 있습니다. 남은 일은 깨어난 다음의 몫입니다. 호흡을 고르고, 몸의 힘을 풀 겁니다. 짧게 자고 일어납니다.",
           "files": [
             "audio/narration/nap/s1-0.mp3",
             "audio/narration/nap/s1-1.mp3",
             "audio/narration/nap/s1-2.mp3",
             "audio/narration/nap/s1-3.mp3",
             "audio/narration/nap/s1-4.mp3",
-            "audio/narration/nap/s1-5.mp3"
+            "audio/narration/nap/s1-5.mp3",
+            "audio/narration/nap/s1-6.mp3",
+            "audio/narration/nap/s1-7.mp3"
           ]
         },
         {
           "id": "s2",
-          "text": "짧은 낮잠을 시작하겠습니다. 깊이 들어가지 않아도 몸은 회복됩니다. 눈을 감는 것만으로 절반은 됩니다. 몸을 자리에 맡깁니다. 끝나는 시간은 알람이 압니다. 지금은 내려놓기만 합니다.",
+          "text": "짧게 쉬어 가겠습니다. 몸이 놓인 자리를 느껴 보세요. 받치는 일은 자리가 합니다. 몸을 자리에 맡깁니다. 지금 처리할 일은 없습니다. 깨어나면 그때 하면 됩니다. 호흡을 고른 다음, 힘을 하나씩 풀 겁니다. 어렵지 않습니다.",
           "files": [
             "audio/narration/nap/s2-0.mp3",
             "audio/narration/nap/s2-1.mp3",
             "audio/narration/nap/s2-2.mp3",
             "audio/narration/nap/s2-3.mp3",
             "audio/narration/nap/s2-4.mp3",
-            "audio/narration/nap/s2-5.mp3"
+            "audio/narration/nap/s2-5.mp3",
+            "audio/narration/nap/s2-6.mp3",
+            "audio/narration/nap/s2-7.mp3",
+            "audio/narration/nap/s2-8.mp3"
           ]
         },
         {
           "id": "s3",
-          "text": "잠시 모든 것을 멈추겠습니다. 남은 일은 깨어난 다음의 몫입니다. 지금은 눈을 감습니다. 소리가 배경으로 물러납니다. 몸이 자리에 놓입니다. 쉬는 데는 연습이 필요 없습니다.",
+          "text": "잠깐 눈을 붙이겠습니다. 누운 자리를 먼저 느껴 보세요. 그 자리는 움직이지 않습니다. 지금은 눈을 감습니다. 오전의 일은 오전에 두고 옵니다. 남은 일은 깨어난 다음의 몫입니다. 호흡을 고르고, 몸을 천천히 풀 겁니다. 짧게 쉬고 일어납니다.",
           "files": [
             "audio/narration/nap/s3-0.mp3",
             "audio/narration/nap/s3-1.mp3",
             "audio/narration/nap/s3-2.mp3",
             "audio/narration/nap/s3-3.mp3",
             "audio/narration/nap/s3-4.mp3",
-            "audio/narration/nap/s3-5.mp3"
+            "audio/narration/nap/s3-5.mp3",
+            "audio/narration/nap/s3-6.mp3",
+            "audio/narration/nap/s3-7.mp3"
           ]
         }
       ],
