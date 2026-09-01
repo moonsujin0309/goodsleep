@@ -25,6 +25,10 @@ const load = (k, fallback) => {
 };
 const save = (k, v) => localStorage.setItem(`${KEY}.${k}`, JSON.stringify(v));
 
+// 이전(migration)에서 "저장된 값이 있었는가"를 봐야 할 때가 있다 — 새로 설치한 사람과
+// 예전 값을 그대로 들고 있는 사람은 다르게 다뤄야 한다. 그래서 따로 들고 있는다.
+const savedSettings = load('settings', {});
+
 const store = {
   settings: {
     ...DEFAULTS,
@@ -37,7 +41,7 @@ const store = {
     // 각각 선형으로 걸리므로 둘을 같이 반으로 줄여도 비율은 그대로다.
     gapSeconds: 6, sentenceGap: 5.0, narrationVolume: 0.5, bedVolume: 0.5,
     voiceURI: null, voiceRate: 0.72, voicePitch: 0.9,
-    ...load('settings', {}),
+    ...savedSettings,
   },
   nights: load('nights', []),
   naps: load('naps', []),
@@ -75,6 +79,15 @@ if (!store.settings.volMigrated) {
 // 범위가 다르면 "둘 다 50" 인데 손잡이 자리가 달라 보인다. 저장된 100 초과 값은 100 으로 내린다.
 if (store.settings.narrationVolume > 1) {
   store.settings.narrationVolume = 1;
+  save('settings', store.settings);
+}
+
+// 2026-09-02 배경음 배율 0.24 → 0.48. 폰에서 직접 맞춘 "배경음 100" 을 슬라이더 50 자리로
+// 옮긴 것이라 실제로 들리는 크기는 그대로다. 다만 저장된 값을 그냥 두면 두 배가 되므로
+// 한 번만 반으로 줄인다. 새로 설치한 사람은 이미 새 기본값(0.5)이라 옮길 게 없다.
+if (!store.settings.bedScale2) {
+  if ('bedVolume' in savedSettings) store.settings.bedVolume = savedSettings.bedVolume / 2;
+  store.settings.bedScale2 = true;
   save('settings', store.settings);
 }
 

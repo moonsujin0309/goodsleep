@@ -509,7 +509,13 @@ input[type='range']:disabled { cursor: not-allowed; }
 
 /* ── 재생 화면 ─────────────────────────────────────────── */
 
-#s-play { justify-content: center; text-align: center; }
+#s-play { text-align: center; }
+
+/* 문장은 남는 자리를 다 쓰고 가운데에 선다. 손잡이는 아래 한 덩어리(.play-console).
+   문장 길이가 조각마다 달라서, 자막 자리를 고정하지 않으면 아래 것들이 따라 움직인다. */
+/* min-height:0 이 없으면 긴 조각에서 자막이 화면을 밀어내 아래 버튼이 잘린다 —
+   flex 아이템의 기본 최소 높이는 내용 크기라 flex:1 만으로는 안 줄어든다. */
+.play-body { flex: 1; min-height: 0; display: grid; place-items: center; padding: var(--sp-4) 0; }
 
 /* 호흡 게이지 (호흡 화면 전용 — 재생 화면에서는 2026-08-29 에 뺐다).
    링은 단계 진행(선형), 원판은 들숨에 부풀고 날숨에 잦아든다.
@@ -556,22 +562,40 @@ input[type='range']:disabled { cursor: not-allowed; }
   transition: opacity 500ms var(--ease);
 }
 
+/* 배경 사진이 밝으면(파도 마루·모닥불) 흰 글씨가 그대로 묻힌다 — 씬 스크림만으로는
+   모자라서 문장 뒤에 어두운 판을 깐다. 사진이 어두운 씬에서는 이 판이 거의 안 보인다. */
 .caption {
   font-family: var(--font-serif);
   font-size: 19px; line-height: 1.9; color: var(--text);
   min-height: 6em;
-  margin: 0 0 var(--sp-6);
+  margin: 0;
+  max-width: 26em;
+  /* 조각이 길면 판 안에서 넘긴다. 스크롤 막대는 어둠 속에서 밝은 줄 하나가 되므로 감춘다 */
+  max-height: 100%;
+  overflow-y: auto;
+  scrollbar-width: none;
+  padding: var(--sp-5);
+  border-radius: var(--r-lg);
+  background: rgba(6, 5, 12, 0.62);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
   transition: opacity 900ms var(--ease);
 }
+/* 배경음만 흐르는 첫 3초에는 문장이 없다 — 빈 검은 판만 떠 있으면 안 된다 */
+.caption:empty { background: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+.caption::-webkit-scrollbar { width: 0; }
 .caption.is-fading { opacity: 0; }
 
-.play-meta { font-size: 13px; color: var(--text-3); margin-bottom: var(--sp-5); }
+/* 손잡이 묶음 — 알람 시각 · 소리 조절 · 버튼. 간격을 하나로 통일한다. */
+.play-console { display: grid; gap: var(--sp-4); justify-items: center; }
+.play-meta { font-size: 13px; color: var(--text-3); margin: 0; }
 .play-controls { display: flex; gap: var(--sp-3); justify-content: center; }
 
 /* 재생 중 소리 조절. 자다 말고 준비 화면으로 돌아갈 수는 없다. */
 .play-mix {
+  width: 100%;
   max-width: 320px;
-  margin: 0 auto var(--sp-5);
+  margin: 0;
   text-align: left;
 }
 
@@ -595,7 +619,6 @@ input[type='range']:disabled { cursor: not-allowed; }
 #s-breathe .breath .disc { inset: 20px; }
 #s-breathe .breath .count { font-size: 52px; }
 #s-breathe .breath .phase { font-size: 14px; }
-#s-breathe .play-meta { margin-bottom: 0; }
 
 /* ── 알람 ──────────────────────────────────────────────── */
 

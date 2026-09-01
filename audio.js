@@ -37,7 +37,7 @@ const clamp01 = (v) => Math.min(1, Math.max(0, v));
 // 합성 DSP 는 전부 synth.js 에 있다 (순수 모듈 — node 로도 렌더돼 검수용 파일을 뽑는다).
 // 여기서는 브라우저 Blob URL 로 감싸기만 한다.
 
-import { renderBed, wavBytes, loopify } from './synth.js';
+import { renderBed, wavBytes, loopify, fadeEdges } from './synth.js';
 
 /**
  * **아이폰에서는 볼륨이 안 먹는다.**
@@ -77,10 +77,24 @@ export const VOLUME_SETTABLE = (() => {
 // 볼륨을 바꿀 때는 이 PCM 을 다시 인코딩만 한다 — 그쪽이 훨씬 싸다.
 const pcmCache = new Map();
 
+/**
+ * 볼륨을 못 쓰는 기기(아이폰)에서는 겹치기 페이드를 **파형에 미리 굽는다**.
+ * 그래야 재생 중 볼륨을 만지지 않고도 루프 교대가 된다 (`_tick` 참조).
+ * 볼륨이 먹는 기기는 실시간 크로스페이드를 쓰므로 그대로 둔다 — 둘 다 걸면 가운데가 파인다.
+ */
+const loopCache = new Map();
+function forHandoff(key, pcm) {
+  if (VOLUME_SETTABLE) return pcm;
+  let w = loopCache.get(key);
+  if (!w) { w = fadeEdges(pcm, HANDOFF); loopCache.set(key, w); }
+  return w;
+}
+
 export function bedUrl(kind, gain = 1) {
   let pcm = pcmCache.get(kind);
   if (!pcm) { pcm = renderBed(kind); pcmCache.set(kind, pcm); }
-  return URL.createObjectURL(new Blob([wavBytes(pcm, gain)], { type: 'audio/wav' }));
+  return URL.createObjectURL(
+    new Blob([wavBytes(forHandoff(kind, pcm), gain)], { type: 'audio/wav' }));
 }
 
 /**
@@ -103,8 +117,8 @@ async function filePcm(src) {
   return pcm;
 }
 
-const pcmUrl = (pcm, gain = 1) =>
-  URL.createObjectURL(new Blob([wavBytes(pcm, gain)], { type: 'audio/wav' }));
+const pcmUrl = (key, pcm, gain = 1) =>
+  URL.createObjectURL(new Blob([wavBytes(forHandoff(key, pcm), gain)], { type: 'audio/wav' }));
 
 /** 무음 루프. 사운드를 하나도 안 켜도 탭이 살아 있어야 알람이 운다. */
 function silentUrl(seconds = 5, rate = 8000) {
@@ -143,11 +157,14 @@ export class SeamlessLoop {
     this.i = 0;
     this._volume = 0;
     this._src = '';
-    this._x = null;
+    this._x = null;                   // 실시간 크로스페이드 인터벌
+    this._xt = null;                  // 파형에 구운 페이드로 넘기는 중(볼륨 안 먹는 기기)
     for (const el of this.els) {
       el.preload = 'none';
       el.volume = 0;
-      el.loop = true;                 // 넘기기를 놓쳐도 무음으로 떨어지지 않게 하는 안전망
+      // 넘기기를 놓쳐도 무음으로 떨어지지 않게 하는 안전망.
+      // 페이드가 구워진 소스에서는 여기 걸리면 틈이 아니라 잠깐 잦아드는 것으로 들린다.
+      el.loop = true;
       el.addEventListener('timeupdate', () => this._tick());
     }
   }
@@ -221,26 +238,40 @@ export class SeamlessLoop {
 
   pause() {
     if (this._x) { clearInterval(this._x); this._x = null; }
+    if (this._xt) { clearTimeout(this._xt); this._xt = null; }
     clearTimeout(this._bt);
     for (const el of this.els) { el.pause(); el.volume = 0; }
   }
 
-  /** 끝이 다가오면 다음 엘리먼트를 띄우고 겹치는 동안 넘긴다. */
+  /**
+   * 끝이 다가오면 다음 엘리먼트를 띄우고 겹치는 동안 넘긴다.
+   *
+   * 볼륨이 안 먹는 기기(아이폰)에서는 이 교대가 통째로 꺼져 있었다 — 둘 다 최대치로 나와
+   * 겹치는 1.2초 동안 소리가 두 배가 됐기 때문이다. 그래서 `el.loop` 안전망에 맡겼는데,
+   * 되감기 틈이 그대로 들렸다("배경음이 루프될 때 잠시 끊긴다", 파도 44초마다).
+   * 이제는 소스 양 끝에 페이드를 구워 두므로(`forHandoff`) 겹쳐 두기만 하면 합이 일정하다.
+   */
   _tick() {
-    // 볼륨이 안 먹는 기기에서는 겹치기가 오히려 해가 된다 —
-    // 둘 다 최대치로 나와서 넘기는 1.2초 동안 소리가 두 배가 된다.
-    // 그런 기기는 el.loop 안전망에 맡긴다 (되감기 틈은 남지만 두 배보다 낫다).
-    if (!VOLUME_SETTABLE) return;
-    if (this._x) return;
+    if (this._x || this._xt) return;
     const cur = this.els[this.i];
     if (cur.paused || !Number.isFinite(cur.duration)) return;
     if (cur.duration - cur.currentTime > HANDOFF) return;
 
     const next = this.els[1 - this.i];
     next.currentTime = 0;
-    next.volume = 0;
+    next.volume = VOLUME_SETTABLE ? 0 : this._volume;
     next.play().catch(() => {});
     this.i = 1 - this.i;
+
+    // 페이드가 파형에 있는 기기 — 볼륨을 만질 게 없고, 겹치기가 끝나면 앞엣것만 재운다.
+    if (!VOLUME_SETTABLE) {
+      this._xt = setTimeout(() => {
+        this._xt = null;
+        cur.pause();
+        cur.currentTime = 0;
+      }, HANDOFF * 1000);
+      return;
+    }
 
     // 등파워(√) 로 넘긴다 — 무상관 노이즈를 선형으로 겹치면 가운데가 파인다.
     const t0 = Date.now();
@@ -307,7 +338,7 @@ export class Mixer {
       if (d.file) {
         try {
           const pcm = await filePcm(d.file);
-          layer.el.open((g) => pcmUrl(pcm, g));
+          layer.el.open((g) => pcmUrl(d.file, pcm, g));
           return true;
         } catch { /* 오프라인 첫 방문 등 — 합성이 받친다 */ }
       }
@@ -324,8 +355,9 @@ export class Mixer {
 
   /** 슬라이더값 → 실제 엘리먼트 볼륨. 제곱 커브 — 귀는 로그로 듣는다.
    *  선형이면 슬라이더 초입부터 너무 크다 ("기본 배경음이 너무 커"의 원인).
-   *  전체 마스터는 0.30 → 0.15("지금의 절반") → 0.24(2026-08-29, 배경 80/목소리 50
-   *  판정을 50/50 으로 옮김) 순으로 귀 판정을 따라왔다.
+   *  전체 마스터는 0.30 → 0.15("지금의 절반") → 0.24(2026-08-29) → 0.48(2026-09-02)
+   *  순으로 귀 판정을 따라왔다. 마지막은 폰에서 실제로 듣고 맞춘 배경음 100 을
+   *  슬라이더 50 자리로 옮긴 것이다 — 100 에 붙어 있으면 더 키울 수가 없다.
    *  수면 배경음은 "들리는 듯 마는 듯"이 맞고, 크게 듣고 싶으면 기기 볼륨이 있다.
    *
    *  덕킹 0.20 (2026-08-26). 오래 0.08 이었다 — VoxCPM 목소리가 속삭임이라 mp3 자체가
@@ -353,9 +385,9 @@ export class Mixer {
 
   _target(layer) {
     const duck = this.ducked ? Mixer.DUCK : 1;
-    // 0.24 = 옛 마스터 0.15 × 1.6. "배경음 80 / 목소리 50 이 맞는 밸런스"라는 판정을
-    // 슬라이더 50/50 에 옮긴 것 (2026-08-29). 최대치여도 0.24 라 클리핑 여지는 없다.
-    return layer.volume * layer.volume * 0.24 * this.master * duck;
+    // 0.48 — 폰에서 맞춰 둔 배경음 100 이 슬라이더 50 에서 나오게 한 값 (2026-09-02).
+    // 소스 피크가 0.58 이라 레이어·마스터를 다 올려도 0.28 이라 클리핑 여지는 없다.
+    return layer.volume * layer.volume * 0.48 * this.master * duck;
   }
 
   /** 재생 중 배경음 전체 크기. 레이어 사이의 균형은 그대로 두고 같이 오르내린다. */

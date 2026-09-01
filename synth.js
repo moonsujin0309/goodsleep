@@ -609,6 +609,31 @@ export function loopify(srcL, srcR, rate) {
   return { left: chans[0], right: chans[1], rate };
 }
 
+/**
+ * 양 끝에 등파워(√) 페이드를 **파형에 구워** 둔다.
+ *
+ * 아이폰은 `el.volume` 이 읽기 전용이라 재생 중에 크로스페이드를 걸 수가 없다.
+ * 그래서 그 기기에서는 루프 교대(SeamlessLoop._tick)가 통째로 꺼져 있었고,
+ * `<audio loop>` 되감기 틈이 그대로 들렸다 — 파도 44초마다 "뚝".
+ *
+ * 대신 소스 자체의 머리와 꼬리를 미리 깎아 두면, 두 벌을 `seconds` 만큼 겹쳐 트는 것만으로
+ * 합이 일정해진다(무상관 노이즈라 √ 램프끼리 더하면 파워가 보존된다).
+ * 재생 중에 볼륨을 한 번도 만지지 않아도 되는 것이 요점이다.
+ */
+export function fadeEdges({ left, right, rate }, seconds) {
+  const f = Math.min(Math.floor(rate * seconds), Math.floor(left.length / 3));
+  const out = [Float32Array.from(left), Float32Array.from(right)];
+  for (const ch of out) {
+    const n = ch.length;
+    for (let i = 0; i < f; i++) {
+      const t = Math.sqrt((i + 0.5) / f);
+      ch[i] *= t;
+      ch[n - 1 - i] *= t;
+    }
+  }
+  return { left: out[0], right: out[1], rate };
+}
+
 /** 스테레오 16비트 WAV 바이트. 브라우저는 Blob 으로, node 는 파일로 감싼다. */
 /**
  * gain 은 iOS 때문에 있다. iOS Safari 는 `HTMLMediaElement.volume` 이 읽기 전용이라

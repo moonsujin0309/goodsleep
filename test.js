@@ -4,6 +4,7 @@
 import assert from 'node:assert/strict';
 import { sleepDebt, nightHours, dailySeries, nightDateKey, upsertNight, HOUR, DAY } from './sleep.js';
 import { pickWithHistory, pushHistory, buildSequence } from './narration.js';
+import { fadeEdges } from './synth.js';
 
 const NOW = new Date('2026-08-12T09:00:00').getTime();
 const ONSET = 15; // 분
@@ -240,6 +241,39 @@ test('연속 재생해도 같은 조합이 바로 반복되지 않는다', () =>
     prev = key;
   }
   assert.ok(combos.size > 20, `조합 다양성이 부족하다 (${combos.size}종)`);
+});
+
+// ── 루프 겹치기 페이드 ────────────────────────────────────
+// 아이폰은 재생 중 볼륨을 못 바꿔서, 크로스페이드를 소스 양 끝에 미리 구워 둔다.
+// 두 벌을 겹쳐 트는 것만으로 소리 크기가 일정해야 한다 — 안 그러면 루프마다 부풀거나 파인다.
+
+test('페이드를 구운 두 벌을 겹치면 파워가 일정하다', () => {
+  const rate = 100;
+  const n = rate * 5;
+  const flat = { left: new Float32Array(n).fill(1), right: new Float32Array(n).fill(1), rate };
+  const sec = 1.2;
+  const w = fadeEdges(flat, sec);
+  const f = Math.floor(rate * sec);
+
+  // 겹치는 구간: 새 벌의 머리 i 번째와 옛 벌의 꼬리가 같은 순간에 만난다.
+  // 무상관 노이즈라 파워(제곱)가 더해진다 — 합이 1 이어야 크기가 안 변한다.
+  for (let i = 0; i < f; i++) {
+    const head = w.left[i];
+    const tail = w.left[n - f + i];
+    approx(head * head + tail * tail, 1, `겹침 ${i}번째 파워`);
+  }
+  // 가운데는 손대지 않는다
+  approx(w.left[Math.floor(n / 2)], 1, '가운데 이득');
+  approx(flat.left[0], 1, '원본이 그대로 남아 있어야 한다');
+});
+
+test('페이드 구간이 소스보다 길면 잘려서 들어간다', () => {
+  const rate = 100;
+  const n = 90;                       // 0.9초짜리 — 1.2초 페이드는 못 넣는다
+  const flat = { left: new Float32Array(n).fill(1), right: new Float32Array(n).fill(1), rate };
+  const w = fadeEdges(flat, 1.2);
+  assert.ok(w.left[Math.floor(n / 2)] === 1, '가운데는 온전해야 한다');
+  assert.ok(w.left[0] < 1 && w.left[n - 1] < 1, '양 끝은 깎여 있어야 한다');
 });
 
 console.log(`\n  ${passed}개 통과${process.exitCode ? ' — 실패 있음' : ''}\n`);

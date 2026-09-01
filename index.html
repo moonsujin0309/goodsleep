@@ -168,27 +168,33 @@ window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(argu
 
     <!-- ── 재생 ───────────────────────────────────────── -->
     <section id="s-play" class="screen" aria-labelledby="play-caption">
-      <p class="caption" id="play-caption" aria-live="polite"></p>
-      <p class="play-meta num" id="play-meta"></p>
-      <div class="play-mix">
-        <div class="mix-row">
-          <span class="name" id="lb-play-bed">배경음</span>
-          <input type="range" id="play-bed" min="0" max="100" aria-labelledby="lb-play-bed">
-          <span class="val num" id="play-bed-v"></span>
-        </div>
-        <div class="mix-row">
-          <span class="name" id="lb-play-voice">목소리</span>
-          <input type="range" id="play-voice" min="0" max="100" aria-labelledby="lb-play-voice">
-          <span class="val num" id="play-voice-v"></span>
-        </div>
+      <!-- 문장은 가운데, 손잡이는 아래 한 덩어리로 — 밝은 배경 사진 위에서도 읽히도록
+           자막에는 어두운 판을 깐다 (style.css '재생 화면') -->
+      <div class="play-body">
+        <p class="caption" id="play-caption" aria-live="polite"></p>
       </div>
-      <div class="play-controls">
-        <button class="btn btn-quiet" id="pause-btn">
-          <svg class="icon"><use href="#i-pause"/></svg> <span id="pause-label">일시정지</span>
-        </button>
-        <button class="btn btn-quiet" id="stop-btn">
-          <svg class="icon"><use href="#i-stop"/></svg> 그만두기
-        </button>
+      <div class="play-console">
+        <p class="play-meta num" id="play-meta"></p>
+        <div class="play-mix">
+          <div class="mix-row">
+            <span class="name" id="lb-play-bed">배경음</span>
+            <input type="range" id="play-bed" min="0" max="100" aria-labelledby="lb-play-bed">
+            <span class="val num" id="play-bed-v"></span>
+          </div>
+          <div class="mix-row">
+            <span class="name" id="lb-play-voice">목소리</span>
+            <input type="range" id="play-voice" min="0" max="100" aria-labelledby="lb-play-voice">
+            <span class="val num" id="play-voice-v"></span>
+          </div>
+        </div>
+        <div class="play-controls">
+          <button class="btn btn-quiet" id="pause-btn">
+            <svg class="icon"><use href="#i-pause"/></svg> <span id="pause-label">일시정지</span>
+          </button>
+          <button class="btn btn-quiet" id="stop-btn">
+            <svg class="icon"><use href="#i-stop"/></svg> 그만두기
+          </button>
+        </div>
       </div>
     </section>
 
