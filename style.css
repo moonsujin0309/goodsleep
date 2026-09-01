@@ -582,10 +582,15 @@ input[type='range']:disabled { cursor: not-allowed; }
   margin: 0;
   max-width: 24em;
   /* 조각이 길면 판 안에서 넘긴다. 스크롤 막대는 어둠 속에서 밝은 줄 하나가 되므로 감춘다 */
-  max-height: 46vh;                    /* svh 를 모르는 브라우저용 */
-  max-height: 46svh;
+  /* 9줄(9 × 1.85em) + 위아래 여백. 9줄이면 작은 폰(667px)에서도 손잡이가 다 들어온다.
+     줄 높이의 정수배로 맞춰도 **다음 줄 글자의 위쪽 획이 줄 상자를 넘어 삐져나온다**
+     (한글 명조는 글자가 줄 상자보다 크다). 그래서 아래를 흐려서 끝낸다 —
+     잘린 게 아니라 이어진다는 표시가 되고, 반토막 난 글자도 안 보인다. */
+  max-height: calc(16.65em + 2 * var(--sp-4));
   overflow-y: auto;
   scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(#000 calc(100% - 2.2em), transparent 100%);
+  mask-image: linear-gradient(#000 calc(100% - 2.2em), transparent 100%);
   padding: var(--sp-4) var(--sp-5);
   border-radius: var(--r-lg);
   background: rgba(8, 7, 14, 0.72);
