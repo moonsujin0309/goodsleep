@@ -71,6 +71,13 @@ if (!store.settings.volMigrated) {
   save('settings', store.settings);
 }
 
+// 2026-08-29 목소리 슬라이더 상한 150 → 100. 두 슬라이더의 50 이 같은 위치에 오게 한다 —
+// 범위가 다르면 "둘 다 50" 인데 손잡이 자리가 달라 보인다. 저장된 100 초과 값은 100 으로 내린다.
+if (store.settings.narrationVolume > 1) {
+  store.settings.narrationVolume = 1;
+  save('settings', store.settings);
+}
+
 // ── 런타임 ────────────────────────────────────────────────
 
 const mixer = new Mixer();
@@ -94,7 +101,19 @@ let breathTick = null;
 function go(name) {
   $$('.screen').forEach((s) => s.classList.toggle('is-active', s.id === `s-${name}`));
   if (name === 'report') renderReport();
+  // 홈은 적막하면 안 된다 — 멈추기·알람 뒤에 돌아와도 고른 배경음이 다시 흐른다.
+  // 첫 진입은 openBed(첫 터치)가 연다. unlock 전이면 여기서는 할 게 없다.
+  if (name === 'home' && !session) startHomeBed();
+  // 호흡 게이지는 그 화면에 있을 때만 돈다
+  if (name === 'breathe') startBreathe(); else stopBreathe();
   window.scrollTo(0, 0);
+}
+
+function startHomeBed() {
+  if (!mixer.unlocked) return;
+  mixer.unlock().catch(() => {});   // stopAll 로 멎은 keepAlive 되살리기
+  mixer.master = store.settings.bedVolume ?? 1;
+  for (const [id, v] of Object.entries(store.mixer)) if (v > 0) mixer.setVolume(id, v);
 }
 
 $$('[data-go]').forEach((b) => b.addEventListener('click', () => go(b.dataset.go)));
@@ -379,7 +398,7 @@ function applyPreset(p) {
 
   mixer.unlock().then(() => {
     for (const l of mixer.layers.values()) mixer.setVolume(l.def.id, store.mixer[l.def.id] || 0);
-  });
+  }).catch(() => {});
   syncMixerUI();
   markPreset();
 }
@@ -454,7 +473,7 @@ function renderMixer() {
       store.preset = null;
       save('preset', null);
       markPreset();
-      mixer.unlock().then(() => mixer.setVolume(def.id, v));
+      mixer.unlock().then(() => mixer.setVolume(def.id, v)).catch(() => {});
     });
 
     row.classList.toggle('is-on', saved > 0);
@@ -486,7 +505,7 @@ async function startSession(stateId, hours, isNap) {
   const state = manifest.states[stateId];
   if (!state) return;
 
-  await mixer.unlock();
+  await mixer.unlock().catch(() => {});   // 클릭 안이라 사실상 성공한다. 실패해도 세션은 연다
   mixer.master = store.settings.bedVolume ?? 1;
   syncPlayMix();
   for (const [id, v] of Object.entries(store.mixer)) if (v > 0) mixer.setVolume(id, v);
@@ -525,22 +544,8 @@ async function startSession(stateId, hours, isNap) {
 const BED_LEAD_MS = 3000;
 
 function startIntro(state) {
-  hideBreathing();                          // 배경음만 나오는 동안은 게이지도 비운다
   introState = state;                       // 아직 안 시작한 나레이션 — 일시정지가 붙잡을 대상
   introTimer = setTimeout(() => playNarration(state), BED_LEAD_MS);
-}
-
-// 호흡 정리는 게이지 혼자 하는 게 아니라 나레이션의 breath 층이 이끈다
-// ("넷을 세며 들이쉽니다 · 하나, 둘, 셋, 넷"). 게이지는 그 층이 시작될 때 같이 뜬다.
-function hideBreathing() {
-  $('.breath').style.opacity = '0';
-}
-
-function showBreathing() {
-  const breath = $('.breath');
-  if (breath.style.opacity !== '0') return;   // 이미 돌고 있다
-  breath.style.opacity = '';
-  startBreathing();
 }
 
 function playNarration(state) {
@@ -553,28 +558,9 @@ function playNarration(state) {
   narration = new NarrationPlayer(voiceOpts());
   mixer.duck(true);
 
-  // 나레이션이 "하나"를 말하는 순간 게이지를 같은 위상으로 되감는다.
-  // 직전 토막(또는 같은 토막)의 동사가 들숨인지 날숨인지 알려 준다 —
-  // 뒤에 나온 동사가 세기와 더 가깝다.
-  let prevChunk = '';
-  narration.onChunk = (text) => {
-    if (/하나[.,!?]?$/.test(text.trim())) {
-      const src = prevChunk + ' ' + text;
-      const inAt = src.lastIndexOf('들이쉬');
-      const outAt = Math.max(src.lastIndexOf('내쉬'), src.lastIndexOf('내쉽'));
-      if (inAt > outAt && breathAlignFn) breathAlignFn(0);        // 들이쉬기
-      else if (outAt > inAt && breathAlignFn) breathAlignFn(2);   // 내쉬기
-    }
-    prevChunk = text;
-  };
-
-  // breath 층이 없는 상태(자다가 깼어요·낮잠)는 게이지를 첫 조각부터 띄운다
-  const hasBreath = picks.some((p) => p.layer === 'breath');
-
   const caption = $('#play-caption');
   narration.play(picks, {
     onPiece: (p) => {
-      if (p.layer === 'breath' || !hasBreath) showBreathing();
       caption.classList.add('is-fading');
       setTimeout(() => {
         caption.textContent = p.text || '';
@@ -590,28 +576,43 @@ function playNarration(state) {
   });
 }
 
-// 4-2-6 — 나레이션 breath 층("넷을 세며 들이쉽니다 · 여섯을 세며 내쉽니다")과 같은 박자다.
-// 숫자도 나레이션처럼 올려 센다.
-const BREATH_PHASES = [
-  { label: '들이쉬기', secs: 4, cls: 'is-in' },
-  { label: '멈추기', secs: 2, cls: 'is-hold' },
-  { label: '내쉬기', secs: 6, cls: 'is-out' },
+// ── 호흡 모드 ─────────────────────────────────────────────
+// 나레이션 명상에서 게이지를 뺐다 (2026-08-29). 대본에서 숫자 세기가 빠진 뒤로
+// 말과 게이지를 이어줄 고리가 없고, 화면을 보게 만드는 것 자체가 수면에 역행한다.
+// 호흡 훈련은 이 별도 화면에서 한다 — 말 없이 링과 초읽기만.
+const BREATH_PATTERNS = [
+  { id: 'sleep', label: '잠들기 전', note: '들이쉬기 4 · 멈추기 7 · 내쉬기 8. 긴 날숨이 몸을 가라앉힙니다.',
+    phases: [
+      { label: '들이쉬기', secs: 4, cls: 'is-in' },
+      { label: '멈추기', secs: 7, cls: 'is-hold' },
+      { label: '내쉬기', secs: 8, cls: 'is-out' },
+    ] },
+  { id: 'anxious', label: '불안할 때', note: '4 · 4 · 4 · 4 상자 호흡. 네 박자를 같은 길이로 지킵니다.',
+    phases: [
+      { label: '들이쉬기', secs: 4, cls: 'is-in' },
+      { label: '멈추기', secs: 4, cls: 'is-hold' },
+      { label: '내쉬기', secs: 4, cls: 'is-out' },
+      { label: '멈추기', secs: 4, cls: 'is-hold' },
+    ] },
+  { id: 'tense', label: '긴장 풀 때', note: '들이쉬기 4 · 내쉬기 6. 날숨을 조금 더 길게 둡니다.',
+    phases: [
+      { label: '들이쉬기', secs: 4, cls: 'is-in' },
+      { label: '내쉬기', secs: 6, cls: 'is-out' },
+    ] },
 ];
 const RING_C = 540.4;   // 2πr (r=86) — style.css 의 stroke-dasharray 와 같아야 한다
+let elapsedTick = null;
 
-let breathAlignFn = null;   // 나레이션이 숫자를 세기 시작하면 게이지를 그 위상으로 맞춘다
-
-// 명상은 자극이 적어야 한다. 처음엔 위상마다 링을 되감고 숫자를 1로 돌렸는데,
-// 12초에 세 번씩 화면이 "새로 시작"해서 정신없다는 피드백 —
-// 링은 사이클(12초)에 한 바퀴만 돌고, 라벨은 크로스페이드, 멈추기엔 숫자 대신 점 하나.
-const BREATH_CYCLE = BREATH_PHASES.reduce((s, p) => s + p.secs, 0);
-const BREATH_OFFSETS = BREATH_PHASES.map((_, k) =>
-  BREATH_PHASES.slice(0, k).reduce((s, p) => s + p.secs, 0));
-
-function startBreathing() {
+// 명상은 자극이 적어야 한다 — 링은 사이클에 한 바퀴만 돌고(위상 경계에서 아무 일도
+// 일어나지 않는다), 라벨은 크로스페이드. 숫자는 남은 초를 센다: "4, 3, 2, 1" 이
+// 한 칸에 정확히 1초씩 머물러서, 올려 세기("1"이 0초에 뜨던 방식)처럼 빠르게 느껴지지 않는다.
+function runBreath(pattern) {
   clearTimeout(breathTimer);
   clearInterval(breathTick);
-  const root = $('.breath');
+  const phases = pattern.phases;
+  const cycle = phases.reduce((s, p) => s + p.secs, 0);
+  const offsets = phases.map((_, k) => phases.slice(0, k).reduce((s, p) => s + p.secs, 0));
+  const root = $('#s-breathe .breath');
   const prog = root.querySelector('.prog');
   const label = $('#breath-label');
   const count = $('#breath-count');
@@ -623,35 +624,64 @@ function startBreathing() {
   };
   const run = () => {
     clearInterval(breathTick);
-    const p = BREATH_PHASES[i];
-    for (const q of BREATH_PHASES) root.classList.toggle(q.cls, q === p);
+    const p = phases[i];
+    root.classList.remove('is-in', 'is-hold', 'is-out');
+    root.classList.add(p.cls);
     root.style.setProperty('--dur', `${p.secs}s`);
     setLabel(p.label);
-    // 링은 위상이 아니라 사이클 기준 — 지금 위치에 그대로 이어서 채운다.
-    // 위상 경계에서 아무 일도 일어나지 않는 것이 요점이다.
-    const done = BREATH_OFFSETS[i] / BREATH_CYCLE;
+    const done = offsets[i] / cycle;
     prog.style.transition = 'none';
     prog.style.strokeDashoffset = String(RING_C * (1 - done));
     void prog.getBoundingClientRect();
-    prog.style.transition = `stroke-dashoffset ${BREATH_CYCLE - BREATH_OFFSETS[i]}s linear, stroke 600ms ease-out`;
+    prog.style.transition = `stroke-dashoffset ${cycle - offsets[i]}s linear, stroke 600ms ease-out`;
     prog.style.strokeDashoffset = '0';
-    if (p.cls === 'is-hold') {
-      count.textContent = '·';                    // 2초 멈춤에 1, 2 를 세는 건 소음이다
-    } else {
-      const t0 = Date.now();                      // 초는 벽시계로 — 누적 오차 방지
-      count.textContent = 1;
-      breathTick = setInterval(() => {
-        count.textContent = Math.min(p.secs, 1 + Math.floor((Date.now() - t0) / 1000));
-      }, 250);
-    }
-    breathTimer = setTimeout(() => { i = (i + 1) % BREATH_PHASES.length; run(); }, p.secs * 1000);
-  };
-  breathAlignFn = (idx) => {
-    clearTimeout(breathTimer);
-    i = idx;
-    run();
+    const t0 = Date.now();                        // 초는 벽시계로 — 누적 오차 방지
+    count.textContent = p.secs;
+    breathTick = setInterval(() => {
+      count.textContent = Math.max(1, p.secs - Math.floor((Date.now() - t0) / 1000));
+    }, 250);
+    breathTimer = setTimeout(() => { i = (i + 1) % phases.length; run(); }, p.secs * 1000);
   };
   run();
+}
+
+function renderBreathChips(activeId) {
+  const box = $('#breathe-patterns');
+  box.innerHTML = '';
+  for (const p of BREATH_PATTERNS) {
+    const b = document.createElement('button');
+    b.className = 'chip';
+    b.textContent = p.label;
+    b.setAttribute('aria-pressed', String(p.id === activeId));
+    b.addEventListener('click', () => {
+      store.settings.breathPattern = p.id;
+      save('settings', store.settings);
+      startBreathe();
+    });
+    box.appendChild(b);
+  }
+}
+
+function startBreathe() {
+  const pattern = BREATH_PATTERNS.find((p) => p.id === store.settings.breathPattern)
+    || BREATH_PATTERNS[0];
+  renderBreathChips(pattern.id);
+  $('#breathe-note').textContent = pattern.note;
+  const el = $('#breathe-elapsed');
+  el.textContent = '0:00';
+  const t0 = Date.now();
+  clearInterval(elapsedTick);
+  elapsedTick = setInterval(() => {
+    const s = Math.floor((Date.now() - t0) / 1000);
+    el.textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+  }, 1000);
+  runBreath(pattern);
+}
+
+function stopBreathe() {
+  clearTimeout(breathTimer);
+  clearInterval(breathTick);
+  clearInterval(elapsedTick);
 }
 
 // 일시정지 — 그만두기와 다르다. 알람도 취침 기록도 그대로 두고 소리만 멈춘다.
@@ -667,12 +697,9 @@ function setPaused(on) {
     narration?.pause();
     mixer.fadeAllOut(800);                  // keepAlive 는 안 건드린다 — 알람이 울어야 한다
     scenes.stop();
-    clearTimeout(breathTimer);
-    clearInterval(breathTick);
   } else {
     for (const [id, v] of Object.entries(store.mixer)) if (v > 0) mixer.setVolume(id, v);
     scenes.start();
-    if ($('.breath').style.opacity !== '0') startBreathing();
     if (introState) introTimer = setTimeout(() => playNarration(introState), BED_LEAD_MS);
     else narration?.resume();
   }
@@ -719,9 +746,6 @@ function endSession() {
   $('#pause-btn').querySelector('use').setAttribute('href', '#i-pause');
   clearTimeout(dimTimer);
   clearTimeout(introTimer);
-  $('.breath').style.opacity = '';
-  clearTimeout(breathTimer);
-  clearInterval(breathTick);
   mixer.duck(false);
   scenes.stop();
   $('#app').classList.remove('is-dim');
@@ -729,7 +753,7 @@ function endSession() {
 
 $('#stop-btn').addEventListener('click', () => {
   endSession();
-  mixer.fadeAllOut(1500);
+  // 배경음은 끄지 않는다 — 홈으로 돌아가도 계속 흘러야 한다 (go('home') 이 볼륨을 다시 잡는다)
   watcher.cancel();
   store.pending = null;
   save('pending', null);
@@ -954,7 +978,7 @@ $('#alarm-test').addEventListener('click', async () => {
     btn.textContent = '알람 들어보기';
     return;
   }
-  await mixer.unlock();
+  await mixer.unlock().catch(() => {});
   alarm.start(12000);
   btn.textContent = '멈추기';
   alarmTest = setTimeout(() => {
@@ -1039,6 +1063,9 @@ async function init() {
     }
   }
 }
+
+// 콘솔 실측용 핸들. 오디오 엘리먼트가 DOM 밖이라 이게 없으면 볼륨을 잴 방법이 없다.
+window.__dbg = { mixer, store, narration: () => narration };
 
 init().catch((e) => {
   console.error(e);

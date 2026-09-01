@@ -511,8 +511,9 @@ input[type='range']:disabled { cursor: not-allowed; }
 
 #s-play { justify-content: center; text-align: center; }
 
-/* 호흡 게이지 — 링은 단계 진행(선형), 원판은 들숨에 부풀고 날숨에 잦아든다.
-   위상 전환은 전부 JS(startBreathing)가 클래스로 지휘한다 —
+/* 호흡 게이지 (호흡 화면 전용 — 재생 화면에서는 2026-08-29 에 뺐다).
+   링은 단계 진행(선형), 원판은 들숨에 부풀고 날숨에 잦아든다.
+   위상 전환은 전부 JS(runBreath)가 클래스로 지휘한다 —
    CSS 키프레임으로 돌리면 JS 카운터와 몇 분 만에 어긋난다. */
 .breath {
   position: relative;
@@ -576,16 +577,25 @@ input[type='range']:disabled { cursor: not-allowed; }
 
 /* 나레이션이 끝나면 화면을 거의 끈다. 밤새 밝은 화면은 그 자체로 방해다. */
 #app.is-dim #scene { opacity: 0.42; }
-#app.is-dim .caption,
-#app.is-dim .breath { opacity: 0.22; }
+#app.is-dim .caption { opacity: 0.22; }
 #app.is-dim .play-controls,
 #app.is-dim .play-mix,
 #app.is-dim .play-meta { opacity: 0.3; }
 #app.is-dim .caption,
-#app.is-dim .breath,
 #app.is-dim .play-controls,
 #app.is-dim .play-mix,
 #app.is-dim .play-meta { transition: opacity 3s var(--ease); }
+
+/* ── 호흡 모드 ─────────────────────────────────────────── */
+/* 재생 화면의 작은 게이지와 달리 시간이 주인공이다 — 링도 숫자도 크게. */
+
+#s-breathe { text-align: center; }
+#s-breathe .chips { justify-content: center; }
+#s-breathe .breath { width: 264px; height: 264px; margin-bottom: var(--sp-4); }
+#s-breathe .breath .disc { inset: 20px; }
+#s-breathe .breath .count { font-size: 52px; }
+#s-breathe .breath .phase { font-size: 14px; }
+#s-breathe .play-meta { margin-bottom: 0; }
 
 /* ── 알람 ──────────────────────────────────────────────── */
 

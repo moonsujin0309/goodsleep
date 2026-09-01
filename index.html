@@ -49,6 +49,7 @@ window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(argu
   <symbol id="i-pause" viewBox="0 0 24 24"><path d="M9 6v12M15 6v12"/></symbol>
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5l10 6.5-10 6.5z"/></symbol>
   <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 019.5 4a8.5 8.5 0 1010.5 10.5z"/></symbol>
+  <symbol id="i-breath" viewBox="0 0 24 24"><path d="M3 8h9a3 3 0 10-3-3M3 12h13M3 16h7a3 3 0 11-3 3"/></symbol>
 </svg>
 
 <div id="app">
@@ -96,6 +97,9 @@ window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(argu
       <div class="spacer"></div>
 
       <div class="foot">
+        <button class="btn btn-quiet" data-go="breathe">
+          <svg class="icon"><use href="#i-breath"/></svg> 호흡
+        </button>
         <button class="btn btn-quiet" data-go="day">
           <svg class="icon"><use href="#i-sun"/></svg> 낮에 잠깐
         </button>
@@ -164,17 +168,6 @@ window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(argu
 
     <!-- ── 재생 ───────────────────────────────────────── -->
     <section id="s-play" class="screen" aria-labelledby="play-caption">
-      <div class="breath" aria-hidden="true">
-        <svg class="ring" viewBox="0 0 184 184">
-          <circle class="track" cx="92" cy="92" r="86"/>
-          <circle class="prog" cx="92" cy="92" r="86"/>
-        </svg>
-        <div class="disc"></div>
-        <div class="txt">
-          <span class="count num" id="breath-count">1</span>
-          <span class="phase" id="breath-label">들이쉬기</span>
-        </div>
-      </div>
       <p class="caption" id="play-caption" aria-live="polite"></p>
       <p class="play-meta num" id="play-meta"></p>
       <div class="play-mix">
@@ -185,7 +178,7 @@ window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(argu
         </div>
         <div class="mix-row">
           <span class="name" id="lb-play-voice">목소리</span>
-          <input type="range" id="play-voice" min="0" max="150" aria-labelledby="lb-play-voice">
+          <input type="range" id="play-voice" min="0" max="100" aria-labelledby="lb-play-voice">
           <span class="val num" id="play-voice-v"></span>
         </div>
       </div>
@@ -197,6 +190,38 @@ window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(argu
           <svg class="icon"><use href="#i-stop"/></svg> 그만두기
         </button>
       </div>
+    </section>
+
+    <!-- ── 호흡 ───────────────────────────────────────── -->
+    <!-- 나레이션 명상과 분리된 호흡 훈련. 말 없이 링과 초읽기만 쓴다 (app.js '호흡 모드' 참조). -->
+    <section id="s-breathe" class="screen" aria-labelledby="breathe-h">
+      <header class="top">
+        <button class="iconbtn" data-back="home" aria-label="뒤로">
+          <svg class="icon"><use href="#i-back"/></svg>
+        </button>
+        <span class="brand">호흡</span>
+      </header>
+
+      <div class="stagger">
+        <h2 class="lede" id="breathe-h">숨을 고릅니다</h2>
+        <p class="sub" id="breathe-note"></p>
+        <div class="chips" id="breathe-patterns" role="group" aria-label="호흡 패턴"></div>
+      </div>
+
+      <div class="spacer"></div>
+      <div class="breath">
+        <svg class="ring" viewBox="0 0 184 184">
+          <circle class="track" cx="92" cy="92" r="86"/>
+          <circle class="prog" cx="92" cy="92" r="86"/>
+        </svg>
+        <div class="disc"></div>
+        <div class="txt">
+          <span class="count num" id="breath-count"></span>
+          <span class="phase" id="breath-label"></span>
+        </div>
+      </div>
+      <p class="play-meta num" id="breathe-elapsed"></p>
+      <div class="spacer"></div>
     </section>
 
     <!-- ── 알람 ───────────────────────────────────────── -->

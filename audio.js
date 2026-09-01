@@ -272,17 +272,20 @@ export class Mixer {
     this.unlocked = false;
   }
 
-  /** 첫 사용자 제스처에서 호출. 이후 프로그램 재생이 허용된다. */
+  /** 첫 사용자 제스처에서 호출. 이후 프로그램 재생이 허용된다.
+   *  재생 거부를 여기서 삼키면 안 된다 — unlocked 로 남으면 호출자(openBed)가 성공으로 알고
+   *  재시도 리스너를 떼어 그 세션 내내 배경음이 없다. 거부는 그대로 던진다.
+   *  stopAll 뒤에 다시 부르면 멎은 keepAlive 도 되살린다. */
   async unlock() {
-    if (this.unlocked) return;
-    this.unlocked = true;
     if (!this.keepAlive) {
       const el = new Audio(silentUrl());
       el.loop = true;
       el.volume = 0.001;
       this.keepAlive = el;
     }
-    try { await this.keepAlive.play(); } catch { /* 무시 — 소리는 나머지가 낸다 */ }
+    if (this.unlocked && !this.keepAlive.paused) return;
+    await this.keepAlive.play();
+    this.unlocked = true;
   }
 
   /** 매니페스트의 레이어를 등록한다. 파일이 없으면 available=false 로 남는다. */
@@ -321,7 +324,8 @@ export class Mixer {
 
   /** 슬라이더값 → 실제 엘리먼트 볼륨. 제곱 커브 — 귀는 로그로 듣는다.
    *  선형이면 슬라이더 초입부터 너무 크다 ("기본 배경음이 너무 커"의 원인).
-   *  0.15 는 전체 마스터. "지금의 절반이면 되겠다"는 요청으로 0.30 에서 반으로 내렸다.
+   *  전체 마스터는 0.30 → 0.15("지금의 절반") → 0.24(2026-08-29, 배경 80/목소리 50
+   *  판정을 50/50 으로 옮김) 순으로 귀 판정을 따라왔다.
    *  수면 배경음은 "들리는 듯 마는 듯"이 맞고, 크게 듣고 싶으면 기기 볼륨이 있다.
    *
    *  덕킹 0.20 (2026-08-26). 오래 0.08 이었다 — VoxCPM 목소리가 속삭임이라 mp3 자체가
@@ -349,7 +353,9 @@ export class Mixer {
 
   _target(layer) {
     const duck = this.ducked ? Mixer.DUCK : 1;
-    return layer.volume * layer.volume * 0.15 * this.master * duck;
+    // 0.24 = 옛 마스터 0.15 × 1.6. "배경음 80 / 목소리 50 이 맞는 밸런스"라는 판정을
+    // 슬라이더 50/50 에 옮긴 것 (2026-08-29). 최대치여도 0.24 라 클리핑 여지는 없다.
+    return layer.volume * layer.volume * 0.24 * this.master * duck;
   }
 
   /** 재생 중 배경음 전체 크기. 레이어 사이의 균형은 그대로 두고 같이 오르내린다. */
