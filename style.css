@@ -194,8 +194,9 @@ main {
   font-size: 56px; font-weight: 200;
   letter-spacing: -0.02em; line-height: 1.1;
   color: var(--text);
+  text-shadow: 0 0 32px rgba(234, 223, 198, 0.16);   /* 달빛이 스민 숫자 */
 }
-.hero-date { margin: var(--sp-1) 0 0; font-size: 14px; color: var(--text-2); }
+.hero-date { margin: var(--sp-1) 0 0; font-size: 14px; letter-spacing: 0.02em; color: var(--text-2); }
 
 #s-home .lede, #s-home .sub { text-align: center; }
 #s-home .sub { margin-bottom: var(--sp-5); }
@@ -215,7 +216,14 @@ main {
 
 /* ── 타이포 ────────────────────────────────────────────── */
 
-.lede { font-size: 26px; line-height: 1.42; font-weight: 500; margin: 0 0 var(--sp-2); }
+/* 화면 제목은 나레이션과 같은 명조 — 앱의 목소리(고운바탕)가 곧 화면의 목소리다.
+   명조는 같은 크기에서 가늘어 보여 2px 키운다. */
+.lede {
+  font-family: var(--font-serif);
+  font-size: 28px; line-height: 1.42; font-weight: 400;
+  letter-spacing: -0.005em;
+  margin: 0 0 var(--sp-2);
+}
 .sub  { font-size: 15px; color: var(--text-2); margin: 0 0 var(--sp-6); }
 .eyebrow {
   font-size: 12px; font-weight: 600; letter-spacing: 0.1em;
@@ -237,9 +245,11 @@ main {
   text-align: left;
   font-size: 17px;
   color: var(--text);
-  background: var(--surface);
+  /* 위가 살짝 밝은 면 + 윗변 하이라이트 — 달빛이 위에서 온다 */
+  background: linear-gradient(180deg, #1A1625, var(--surface));
   border-radius: var(--r-lg);
   box-shadow:
+    inset 0 1px 0 rgba(233, 227, 220, 0.06),
     inset 0 0 0 1px var(--line),
     0 1px 2px rgba(0, 0, 0, 0.4),
     0 8px 24px -12px rgba(0, 0, 0, 0.7);
@@ -251,7 +261,9 @@ main {
 .state .dot {
   width: 8px; height: 8px; border-radius: 50%; flex: none;
   background: var(--dot, var(--violet));
-  box-shadow: 0 0 0 5px var(--dot-soft, var(--violet-soft));
+  /* 무리(halo) + 빛번짐 — 어둠 속 작은 불빛처럼 */
+  box-shadow: 0 0 0 5px var(--dot-soft, var(--violet-soft)),
+              0 0 14px 1px var(--dot, var(--violet));
 }
 .state .arrow { margin-left: auto; color: var(--text-3); width: 16px; height: 16px; }
 
@@ -390,6 +402,9 @@ main {
   height: 92px;
   background: linear-gradient(160deg, var(--from), var(--to));
   overflow: hidden;
+  /* 사진 톤이 제각각이라 가장자리에 옅은 흰 윤곽을 둘러 카드 면과 분리한다 */
+  outline: 1px solid rgba(255, 255, 255, 0.08);
+  outline-offset: -1px;
 }
 .preset .art::before,
 .preset .art::after { content: ''; position: absolute; inset: 0; }
@@ -609,8 +624,17 @@ input[type='range']:disabled { cursor: not-allowed; }
 .caption::-webkit-scrollbar { width: 0; }
 .caption.is-fading { opacity: 0; }
 
-/* 손잡이 묶음 — 알람 시각 · 소리 조절 · 버튼. 간격을 하나로 통일한다. */
-.play-console { display: grid; gap: var(--sp-4); justify-items: center; }
+/* 손잡이 묶음 — 알람 시각 · 소리 조절 · 버튼. 간격을 하나로 통일하고,
+   자막 판과 같은 어두운 면 위에 올린다 — 파도 마루 같은 밝은 영상 위에서
+   슬라이더가 흩어져 보이던 것을 한 덩어리로 모은다. */
+.play-console {
+  display: grid; gap: var(--sp-4); justify-items: center;
+  width: 100%;
+  padding: var(--sp-4);
+  border-radius: var(--r-xl);
+  background: rgba(8, 7, 14, 0.55);
+  box-shadow: inset 0 1px 0 rgba(233, 227, 220, 0.04), inset 0 0 0 1px var(--line-soft);
+}
 .play-meta { font-size: 13px; color: var(--text-3); margin: 0; }
 .play-controls { display: flex; gap: var(--sp-3); justify-content: center; }
 
@@ -628,13 +652,9 @@ input[type='range']:disabled { cursor: not-allowed; }
    투명해져서, 파도 마루처럼 밝은 씬 위에서는 대비가 사라져 글씨가 통째로 지워진다.
    판이 남아 있으면 화면은 오히려 더 어두워지므로 "밤새 밝은 화면은 방해다"와도 맞는다. */
 #app.is-dim .caption { color: rgba(233, 227, 220, 0.38); }
-#app.is-dim .play-controls,
-#app.is-dim .play-mix,
-#app.is-dim .play-meta { opacity: 0.3; }
+#app.is-dim .play-console { opacity: 0.3; }
 #app.is-dim .caption { transition: color 3s var(--ease); }
-#app.is-dim .play-controls,
-#app.is-dim .play-mix,
-#app.is-dim .play-meta { transition: opacity 3s var(--ease); }
+#app.is-dim .play-console { transition: opacity 3s var(--ease); }
 
 /* ── 호흡 모드 ─────────────────────────────────────────── */
 /* 재생 화면의 작은 게이지와 달리 시간이 주인공이다 — 링도 숫자도 크게. */
