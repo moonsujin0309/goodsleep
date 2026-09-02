@@ -535,16 +535,22 @@ input[type='range']:disabled { cursor: not-allowed; }
   position: absolute; inset: 0;
   transform: rotate(-90deg);           /* 12시부터 차오르게 */
 }
-.breath .ring circle { fill: none; stroke-width: 2; }
+/* 두께 4 (2026-09-03, "링이 너무 얇다"). r=86 에 획 절반 2가 더해져도
+   뷰박스(중심 92)를 안 벗어난다 — 12까지는 안 잘린다. */
+.breath .ring circle { fill: none; stroke-width: 4; }
 .breath .ring .track { stroke: var(--line); }
 .breath .ring .prog {
-  stroke: var(--violet);
+  stroke: url(#ring-grad);             /* 그라데이션은 SVG defs (index.html) */
   stroke-linecap: round;
   stroke-dasharray: 540.4;             /* 2πr (r=86) — app.js RING_C 와 같아야 한다 */
   stroke-dashoffset: 540.4;
-  opacity: 0.75;
+  opacity: 0.9;
+  filter: drop-shadow(0 0 7px rgba(138, 120, 196, 0.45));   /* 은은한 발광 */
 }
-.breath.is-hold .ring .prog { stroke: var(--accent); }   /* 멈춤은 등불색 */
+.breath.is-hold .ring .prog {
+  stroke: url(#ring-grad-hold);        /* 멈춤은 등불색 */
+  filter: drop-shadow(0 0 7px rgba(224, 177, 92, 0.4));
+}
 .breath .disc {
   position: absolute; inset: 14px;
   border-radius: 50%;
@@ -639,6 +645,16 @@ input[type='range']:disabled { cursor: not-allowed; }
 #s-breathe .breath .disc { inset: 20px; }
 #s-breathe .breath .count { font-size: 52px; }
 #s-breathe .breath .phase { font-size: 14px; }
+
+/* 작은 폰(SE·미니류, 세로 720px 미만)에서는 크기를 한 단계 줄인다 —
+   크게 보이는 것보다 스크롤 없이 다 보이는 쪽이 "잘 보이는" 것이다. */
+@media (max-height: 720px) {
+  .hero { margin: 0 0 var(--sp-5); }
+  .hero .moon { width: 60px; height: 60px; }
+  .hero-clock { font-size: 44px; }
+  #s-breathe .breath { width: 224px; height: 224px; }
+  #s-breathe .breath .count { font-size: 44px; }
+}
 
 /* ── 알람 ──────────────────────────────────────────────── */
 

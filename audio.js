@@ -671,10 +671,24 @@ export class NarrationPlayer {
     const useFiles = !!(piece.files?.length || piece.file);
     // 침묵은 원문 토막으로 계산한다 — 파일 경로 길이는 아무 뜻이 없다.
     // 생성기(tools/tts.py)도 같은 규칙으로 쪼개므로 파일과 토막이 1:1 로 맞는다.
-    const chunks = splitChunks(piece.text);
-    const parts = piece.files?.length ? piece.files
+    let chunks = splitChunks(piece.text);
+    let parts = piece.files?.length ? piece.files
       : piece.file ? [piece.file]
       : chunks.map((c) => c.text);
+
+    // 인지 섞기 조각(shuffle: N) — N번째 토막부터 순서를 무작위로 튼다.
+    // "생각이 안 멈춰요"의 무작위 단어 심상용: 서로 무관한 단어를 하나씩 떠올리는
+    // 기법이라 순서 자체가 무의미하고, 덕분에 같은 조각도 밤마다 다르게 들린다.
+    // 토막과 파일은 1:1 이므로 같은 순열로 함께 섞는다.
+    if (Number.isInteger(piece.shuffle) && parts.length === chunks.length) {
+      const order = chunks.map((_, k) => k);
+      for (let k = order.length - 1; k > piece.shuffle; k--) {
+        const j = piece.shuffle + Math.floor(Math.random() * (k - piece.shuffle + 1));
+        [order[k], order[j]] = [order[j], order[k]];
+      }
+      chunks = order.map((k) => chunks[k]);
+      parts = order.map((k) => parts[k]);
+    }
     const layerGap = (LAYER_GAP[piece.layer] ?? 1) * this.gapScale;
 
     for (let i = 0; i < parts.length; i++) {

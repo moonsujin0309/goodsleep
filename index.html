@@ -217,6 +217,19 @@ window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(argu
       <div class="spacer"></div>
       <div class="breath">
         <svg class="ring" viewBox="0 0 184 184">
+          <defs>
+            <!-- 진행 호 그라데이션 — 밤하늘 보라에서 달빛 라벤더로.
+                 멈추기 위상은 등불색 그라데이션으로 바뀐다 (style.css .is-hold) -->
+            <linearGradient id="ring-grad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#C7BCEA"/>
+              <stop offset="0.55" stop-color="#8A78C4"/>
+              <stop offset="1" stop-color="#5F6FA8"/>
+            </linearGradient>
+            <linearGradient id="ring-grad-hold" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#F2D9A6"/>
+              <stop offset="1" stop-color="#D99C3F"/>
+            </linearGradient>
+          </defs>
           <circle class="track" cx="92" cy="92" r="86"/>
           <circle class="prog" cx="92" cy="92" r="86"/>
         </svg>

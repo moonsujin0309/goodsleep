@@ -234,6 +234,69 @@
             "audio/narration/racing/d3-10.mp3",
             "audio/narration/racing/d3-11.mp3"
           ]
+        },
+        {
+          "id": "ds1",
+          "shuffle": 2,
+          "text": "이제 아무 뜻 없는 단어를 하나씩 드리겠습니다. 단어마다 떠오르는 그림을 잠깐 보고 놓아 보세요. 우산. 모래성. 주전자. 단풍잎. 자전거. 등대. 스웨터. 조약돌. 종이배. 눈사람. 대나무. 원두막.",
+          "files": [
+            "audio/narration/racing/ds1-0.mp3",
+            "audio/narration/racing/ds1-1.mp3",
+            "audio/narration/racing/ds1-2.mp3",
+            "audio/narration/racing/ds1-3.mp3",
+            "audio/narration/racing/ds1-4.mp3",
+            "audio/narration/racing/ds1-5.mp3",
+            "audio/narration/racing/ds1-6.mp3",
+            "audio/narration/racing/ds1-7.mp3",
+            "audio/narration/racing/ds1-8.mp3",
+            "audio/narration/racing/ds1-9.mp3",
+            "audio/narration/racing/ds1-10.mp3",
+            "audio/narration/racing/ds1-11.mp3",
+            "audio/narration/racing/ds1-12.mp3",
+            "audio/narration/racing/ds1-13.mp3"
+          ]
+        },
+        {
+          "id": "ds2",
+          "shuffle": 2,
+          "text": "뜻 없는 단어들을 이어가겠습니다. 그림이 안 떠오르면 그냥 다음으로 넘어가면 됩니다. 기차표. 소라. 담요. 연필. 초승달. 장화. 풍선. 옥수수. 시계탑. 은행잎. 돛단배. 다리미.",
+          "files": [
+            "audio/narration/racing/ds2-0.mp3",
+            "audio/narration/racing/ds2-1.mp3",
+            "audio/narration/racing/ds2-2.mp3",
+            "audio/narration/racing/ds2-3.mp3",
+            "audio/narration/racing/ds2-4.mp3",
+            "audio/narration/racing/ds2-5.mp3",
+            "audio/narration/racing/ds2-6.mp3",
+            "audio/narration/racing/ds2-7.mp3",
+            "audio/narration/racing/ds2-8.mp3",
+            "audio/narration/racing/ds2-9.mp3",
+            "audio/narration/racing/ds2-10.mp3",
+            "audio/narration/racing/ds2-11.mp3",
+            "audio/narration/racing/ds2-12.mp3",
+            "audio/narration/racing/ds2-13.mp3"
+          ]
+        },
+        {
+          "id": "ds3",
+          "shuffle": 2,
+          "text": "단어를 하나씩 떠올리다 보면 생각이 끼어들 자리가 없어집니다. 맞고 틀리고가 없으니 편하게 보세요. 책갈피. 고구마. 우체통. 목도리. 물레방아. 솔방울. 저울. 골목길. 항아리. 두루미. 냄비. 나룻배.",
+          "files": [
+            "audio/narration/racing/ds3-0.mp3",
+            "audio/narration/racing/ds3-1.mp3",
+            "audio/narration/racing/ds3-2.mp3",
+            "audio/narration/racing/ds3-3.mp3",
+            "audio/narration/racing/ds3-4.mp3",
+            "audio/narration/racing/ds3-5.mp3",
+            "audio/narration/racing/ds3-6.mp3",
+            "audio/narration/racing/ds3-7.mp3",
+            "audio/narration/racing/ds3-8.mp3",
+            "audio/narration/racing/ds3-9.mp3",
+            "audio/narration/racing/ds3-10.mp3",
+            "audio/narration/racing/ds3-11.mp3",
+            "audio/narration/racing/ds3-12.mp3",
+            "audio/narration/racing/ds3-13.mp3"
+          ]
         }
       ],
       "fade": [
@@ -913,6 +976,63 @@
             "audio/narration/wired/rl3-10.mp3",
             "audio/narration/wired/rl3-11.mp3"
           ]
+        },
+        {
+          "id": "pl1",
+          "text": "이번에는 힘을 줬다 빼면서 풀겠습니다. 힘은 아프지 않을 만큼만 줍니다. 두 발끝을 몸 쪽으로 당기고 잠깐 버텼다가, 이제 툭 놓습니다. 힘이 빠져나간 발을 느껴 보세요. 이번에는 종아리와 허벅지입니다. 다리 전체에 힘을 주고 잠깐 버텼다가, 한 번에 놓습니다. 다리가 아까보다 무겁습니다. 엉덩이에 힘을 주고 잠깐 버텼다가, 스르르 놓습니다. 긴장했다가 놓으면 더 깊이 풀립니다. 아래쪽 전체가 풀려 있습니다. 다리는 이제 일을 마쳤습니다.",
+          "files": [
+            "audio/narration/wired/pl1-0.mp3",
+            "audio/narration/wired/pl1-1.mp3",
+            "audio/narration/wired/pl1-2.mp3",
+            "audio/narration/wired/pl1-3.mp3",
+            "audio/narration/wired/pl1-4.mp3",
+            "audio/narration/wired/pl1-5.mp3",
+            "audio/narration/wired/pl1-6.mp3",
+            "audio/narration/wired/pl1-7.mp3",
+            "audio/narration/wired/pl1-8.mp3",
+            "audio/narration/wired/pl1-9.mp3",
+            "audio/narration/wired/pl1-10.mp3",
+            "audio/narration/wired/pl1-11.mp3",
+            "audio/narration/wired/pl1-12.mp3",
+            "audio/narration/wired/pl1-13.mp3"
+          ]
+        },
+        {
+          "id": "pl2",
+          "text": "힘을 줬다 놓는 것을 이어가겠습니다. 버티는 동안만 힘을 쓰고 나머지는 전부 쉽니다. 두 발바닥을 아래로 쭉 뻗고 잠깐 버텼다가, 힘을 다 놓습니다. 발이 제자리로 돌아옵니다. 무릎 아래 전체에 힘을 주고 버텼다가, 천천히 놓습니다. 종아리가 물처럼 풀립니다. 허벅지와 엉덩이를 조였다가, 한꺼번에 놓습니다. 놓은 자리가 넓게 퍼집니다. 다리에 남은 긴장이 없습니다. 침대가 다리를 대신 듭니다.",
+          "files": [
+            "audio/narration/wired/pl2-0.mp3",
+            "audio/narration/wired/pl2-1.mp3",
+            "audio/narration/wired/pl2-2.mp3",
+            "audio/narration/wired/pl2-3.mp3",
+            "audio/narration/wired/pl2-4.mp3",
+            "audio/narration/wired/pl2-5.mp3",
+            "audio/narration/wired/pl2-6.mp3",
+            "audio/narration/wired/pl2-7.mp3",
+            "audio/narration/wired/pl2-8.mp3",
+            "audio/narration/wired/pl2-9.mp3",
+            "audio/narration/wired/pl2-10.mp3",
+            "audio/narration/wired/pl2-11.mp3",
+            "audio/narration/wired/pl2-12.mp3"
+          ]
+        },
+        {
+          "id": "pl3",
+          "text": "다리에 남은 긴장을 짜내겠습니다. 발가락을 오므려 쥐고 잠깐 버텼다가, 활짝 펴서 놓습니다. 펴진 발가락 사이로 힘이 빠집니다. 발등을 몸 쪽으로 당겨 버텼다가, 편하게 놓습니다. 발목이 제자리를 찾습니다. 다리 전체를 한 번 조였다가, 전부 내려놓습니다. 이제 줄 힘이 남아 있지 않습니다. 긴장을 짜낸 다리는 처음보다 깊이 쉽니다. 그대로 두면 됩니다.",
+          "files": [
+            "audio/narration/wired/pl3-0.mp3",
+            "audio/narration/wired/pl3-1.mp3",
+            "audio/narration/wired/pl3-2.mp3",
+            "audio/narration/wired/pl3-3.mp3",
+            "audio/narration/wired/pl3-4.mp3",
+            "audio/narration/wired/pl3-5.mp3",
+            "audio/narration/wired/pl3-6.mp3",
+            "audio/narration/wired/pl3-7.mp3",
+            "audio/narration/wired/pl3-8.mp3",
+            "audio/narration/wired/pl3-9.mp3",
+            "audio/narration/wired/pl3-10.mp3",
+            "audio/narration/wired/pl3-11.mp3"
+          ]
         }
       ],
       "release2": [
@@ -973,6 +1093,57 @@
             "audio/narration/wired/ru3-10.mp3",
             "audio/narration/wired/ru3-11.mp3",
             "audio/narration/wired/ru3-12.mp3"
+          ]
+        },
+        {
+          "id": "pu1",
+          "text": "위쪽도 힘을 줬다 빼면서 풀겠습니다. 두 주먹을 가볍게 쥐고 잠깐 버텼다가, 손가락을 폅니다. 손바닥에 남은 힘이 빠져나갑니다. 팔 전체에 힘을 주고 잠깐 버텼다가, 한 번에 놓습니다. 팔이 침대에 깊이 놓입니다. 어깨를 귀 쪽으로 올려 버텼다가, 툭 떨어뜨립니다. 어깨가 제자리보다 낮게 내려갑니다. 팔과 어깨가 무거워집니다. 들고 있던 것을 다 내려놓았습니다.",
+          "files": [
+            "audio/narration/wired/pu1-0.mp3",
+            "audio/narration/wired/pu1-1.mp3",
+            "audio/narration/wired/pu1-2.mp3",
+            "audio/narration/wired/pu1-3.mp3",
+            "audio/narration/wired/pu1-4.mp3",
+            "audio/narration/wired/pu1-5.mp3",
+            "audio/narration/wired/pu1-6.mp3",
+            "audio/narration/wired/pu1-7.mp3",
+            "audio/narration/wired/pu1-8.mp3",
+            "audio/narration/wired/pu1-9.mp3",
+            "audio/narration/wired/pu1-10.mp3",
+            "audio/narration/wired/pu1-11.mp3"
+          ]
+        },
+        {
+          "id": "pu2",
+          "text": "얼굴까지 올라가며 짜내겠습니다. 눈을 꼭 감고 얼굴 가운데로 힘을 모았다가, 전부 놓습니다. 이마와 눈가가 펴집니다. 이를 살짝 물고 턱에 힘을 줬다가, 스르르 놓습니다. 턱이 낮게 떨어집니다. 입안의 혀도 내려놓습니다. 얼굴에 표정이 남아 있지 않습니다. 찡그렸던 자리가 부드럽습니다. 머리까지 조용해집니다.",
+          "files": [
+            "audio/narration/wired/pu2-0.mp3",
+            "audio/narration/wired/pu2-1.mp3",
+            "audio/narration/wired/pu2-2.mp3",
+            "audio/narration/wired/pu2-3.mp3",
+            "audio/narration/wired/pu2-4.mp3",
+            "audio/narration/wired/pu2-5.mp3",
+            "audio/narration/wired/pu2-6.mp3",
+            "audio/narration/wired/pu2-7.mp3",
+            "audio/narration/wired/pu2-8.mp3",
+            "audio/narration/wired/pu2-9.mp3",
+            "audio/narration/wired/pu2-10.mp3"
+          ]
+        },
+        {
+          "id": "pu3",
+          "text": "마지막으로 한 번에 하겠습니다. 손과 팔과 어깨에 같이 힘을 주고 버텼다가, 한꺼번에 놓습니다. 몸이 침대에 깊이 내려앉습니다. 배와 가슴은 조이지 않고 그대로 둡니다. 등이 넓게 펴집니다. 온몸에서 힘이 한 번에 빠져나갑니다. 이제 조일 곳이 없습니다. 몸 전체가 무거워집니다. 오늘의 긴장은 여기서 끝납니다.",
+          "files": [
+            "audio/narration/wired/pu3-0.mp3",
+            "audio/narration/wired/pu3-1.mp3",
+            "audio/narration/wired/pu3-2.mp3",
+            "audio/narration/wired/pu3-3.mp3",
+            "audio/narration/wired/pu3-4.mp3",
+            "audio/narration/wired/pu3-5.mp3",
+            "audio/narration/wired/pu3-6.mp3",
+            "audio/narration/wired/pu3-7.mp3",
+            "audio/narration/wired/pu3-8.mp3",
+            "audio/narration/wired/pu3-9.mp3"
           ]
         }
       ],
