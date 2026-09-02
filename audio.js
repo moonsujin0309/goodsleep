@@ -572,6 +572,9 @@ export function sentenceScale(text = '') {
  */
 export const LAYER_GAP = {
   settle: 1.2, breath: 1.8, release: 3.6, drift: 3.0, fade: 3.2,
+  // 2단계(2026-09-02): 이완이 하체(release)·상체(release2)로 갈라졌고,
+  // 여운(tail)이 생겼다 — 짧은 문장 사이를 아주 길게 벌려, 말이 뜸해지다 사라진다.
+  release2: 3.6, tail: 4.6,
   intro: 1.0, body: 1.2, outro: 1.45,      // 아직 3층인 상태들
 };
 

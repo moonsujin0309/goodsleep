@@ -325,6 +325,8 @@ main {
   box-shadow: inset 0 0 0 1px var(--line);
   font-size: 15px; color: var(--text-2);
 }
+/* 라벨("일어날 시각")이 스테퍼에 밀려 세로로 꺾이면 안 된다 — 375px 실측으로 걸렸다 */
+.custom-row > span:first-child { white-space: nowrap; }
 
 /* 네이티브 시간 선택기를 그대로 쓴다 — 모바일에서 OS 휠이 뜬다 */
 .custom-row input[type='time'],
@@ -718,6 +720,14 @@ input[type='range']:disabled { cursor: not-allowed; }
 
 .spacer { flex: 1; min-height: var(--sp-6); }
 .foot { display: flex; gap: var(--sp-2); margin-top: var(--sp-5); }
+/* 버튼 3개가 375px 에 나란히 서야 한다. 3등분(width:100%)이면 "낮에 잠깐"이 두 줄로
+   꺾인다 — 내용 크기대로 잡고 남는 폭만 나눠 갖는다. */
+.foot .btn {
+  width: auto; flex: 1 1 auto;
+  white-space: nowrap;
+  padding: 0 var(--sp-3);
+  font-size: 15px;
+}
 
 .note {
   font-size: 13px; line-height: 1.65; color: var(--text-3);
