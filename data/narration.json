@@ -1092,6 +1092,8 @@
     "awoken": {
       "label": "자다가 깼어요",
       "night": true,
+      "_gapScale": "밤중에 깬 사람은 다시 재우는 게 목적이라 90초 안에 끝나야 한다. 공통 침묵 배수(LAYER_GAP)가 올라도 여기는 짧게 유지한다.",
+      "gapScale": 0.7,
       "sequence": [
         "settle",
         "fade"

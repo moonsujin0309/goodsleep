@@ -564,10 +564,14 @@ export function sentenceScale(text = '') {
 /**
  * 층마다 침묵이 길어진다. 이게 "점점 느려진다"는 감각을 만드는 진짜 장치다.
  * 말의 속도를 늦추면 타임스트레치라 음질이 망가지지만 침묵은 아무것도 망가뜨리지 않는다.
- * 정착 1.0 에서 소실 2.5 까지 2.5배로 벌어지는 동안 듣는 사람은 자기가 느려진다고 느낀다.
+ *
+ * 2026-09-02 전체 상향 (시나리오 분석 문서 1단계). 밤 세션이 평균 6분 53초로,
+ * 잠드는 데 걸리는 시간(10~20분)보다 먼저 끝났다. 특히 이완(release)은 부위를
+ * 14곳이나 짚으면서 부위당 12초밖에 안 머물렀다 — 표준 바디스캔은 20~60초다.
+ * 이 값들로 밤 세션이 약 10~12분, 이완 부위당 약 30초가 된다. mp3 재생성은 없다.
  */
 export const LAYER_GAP = {
-  settle: 1.0, breath: 1.2, release: 1.45, drift: 1.75, fade: 2.1,
+  settle: 1.2, breath: 1.8, release: 3.6, drift: 3.0, fade: 3.2,
   intro: 1.0, body: 1.2, outro: 1.45,      // 아직 3층인 상태들
 };
 
@@ -583,8 +587,11 @@ export function koreanVoices() {
  * TTS 는 오디오 파일이 채워지기 전까지의 임시 경로다 — 백그라운드 재생은 안 된다.
  */
 export class NarrationPlayer {
-  constructor({ gapSeconds = 6, sentenceGap = 4.2, volume = 0.9, voiceURI = null, rate = 0.82, pitch = 0.9 } = {}) {
+  constructor({ gapSeconds = 6, sentenceGap = 4.2, volume = 0.9, voiceURI = null, rate = 0.82, pitch = 0.9, gapScale = 1 } = {}) {
     this.gapSeconds = gapSeconds;
+    // 상태별 침묵 배수 (매니페스트의 gapScale). LAYER_GAP 은 상태 공통이라, 이게 없으면
+    // "자다가 깼어요"(90초 상한 — 다시 깨우면 안 된다)까지 밤 세션과 같이 길어진다.
+    this.gapScale = gapScale;
     // 글자를 먼저 띄우고 이만큼 뒤에 말이 나온다. 조각 사이 침묵에서 빼 오므로
     // 전체 길이는 그대로다. 앱의 자막은 500ms 페이드로 나타나니 그보다 넉넉해야 한다.
     this.leadSeconds = Math.min(2, gapSeconds / 2);
@@ -665,7 +672,7 @@ export class NarrationPlayer {
     const parts = piece.files?.length ? piece.files
       : piece.file ? [piece.file]
       : chunks.map((c) => c.text);
-    const layerGap = LAYER_GAP[piece.layer] ?? 1;
+    const layerGap = (LAYER_GAP[piece.layer] ?? 1) * this.gapScale;
 
     for (let i = 0; i < parts.length; i++) {
       if (this.stopped) return;

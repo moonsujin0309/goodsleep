@@ -568,18 +568,23 @@ function playNarration(state) {
   save('history', nextHistory);
 
   narration?.stop();
-  narration = new NarrationPlayer(voiceOpts());
+  narration = new NarrationPlayer({ ...voiceOpts(), gapScale: state.gapScale ?? 1 });
   mixer.duck(true);
 
+  // 자막은 조각 통째가 아니라 **지금 말하는 문장 하나만** 띄운다 (2026-09-02).
+  // 조각은 평균 168자라 판이 꽉 차고 스크롤까지 생겼는데, 읽는 행위 자체가 각성이다 —
+  // 잠들라고 만든 화면이 읽을거리를 주면 안 된다. 시나리오 분석 문서 진단 (4).
   const caption = $('#play-caption');
+  const setCaption = (text) => {
+    caption.classList.add('is-fading');
+    setTimeout(() => {
+      caption.textContent = text;
+      caption.classList.remove('is-fading');
+    }, 300);
+  };
+  narration.onChunk = setCaption;
   narration.play(picks, {
-    onPiece: (p) => {
-      caption.classList.add('is-fading');
-      setTimeout(() => {
-        caption.textContent = p.text || '';
-        caption.classList.remove('is-fading');
-      }, 500);
-    },
+    onPiece: () => setCaption(''),   // 조각 사이 침묵에는 판도 비운다 (:empty 가 판을 지운다)
     onEnd: () => {
       mixer.duck(false);
       caption.classList.add('is-fading');
