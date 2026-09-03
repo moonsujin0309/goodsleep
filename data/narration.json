@@ -82,7 +82,7 @@
       "breath": [
         {
           "id": "b1",
-          "text": "먼저 숨부터 고르겠습니다. 천천히 들이쉽니다. 이번에는 더 길게 내쉽니다. 내쉬는 숨이 길어지면 몸은 안전하다고 판단합니다. 한 번 더 합니다. 들이쉬고. 길게 내쉬고. 박자를 놓쳐도 괜찮습니다. 숨은 알아서 이어집니다.",
+          "text": "천천히 들이쉽니다. 이번에는 더 길게 내쉽니다. 내쉬는 숨이 길어지면 몸은 안전하다고 판단합니다. 한 번 더 합니다. 들이쉬고. 길게 내쉬고. 박자를 놓쳐도 괜찮습니다. 숨은 알아서 이어집니다.",
           "files": [
             "audio/narration/racing/b1-0.mp3",
             "audio/narration/racing/b1-1.mp3",
@@ -91,8 +91,7 @@
             "audio/narration/racing/b1-4.mp3",
             "audio/narration/racing/b1-5.mp3",
             "audio/narration/racing/b1-6.mp3",
-            "audio/narration/racing/b1-7.mp3",
-            "audio/narration/racing/b1-8.mp3"
+            "audio/narration/racing/b1-7.mp3"
           ]
         },
         {
@@ -127,7 +126,7 @@
       "release": [
         {
           "id": "rl1",
-          "text": "이제 몸의 아래부터 풀겠습니다. 발가락 끝을 느껴 보세요. 발가락에서 힘이 빠집니다. 발바닥이 넓게 펴집니다. 발등이 느슨해집니다. 발목이 풀립니다. 종아리가 부드러워집니다. 무릎 뒤가 느슨해집니다. 허벅지가 무거워집니다. 그 무게가 침대로 내려갑니다. 골반이 넓게 놓입니다. 다리 전체에 힘이 남지 않습니다.",
+          "text": "발가락 끝을 느껴 보세요. 발가락에서 힘이 빠집니다. 발바닥이 넓게 펴집니다. 발등이 느슨해집니다. 발목이 풀립니다. 종아리가 부드러워집니다. 무릎 뒤가 느슨해집니다. 허벅지가 무거워집니다. 그 무게가 침대로 내려갑니다. 골반이 넓게 놓입니다. 다리 전체에 힘이 남지 않습니다.",
           "files": [
             "audio/narration/racing/rl1-0.mp3",
             "audio/narration/racing/rl1-1.mp3",
@@ -139,13 +138,12 @@
             "audio/narration/racing/rl1-7.mp3",
             "audio/narration/racing/rl1-8.mp3",
             "audio/narration/racing/rl1-9.mp3",
-            "audio/narration/racing/rl1-10.mp3",
-            "audio/narration/racing/rl1-11.mp3"
+            "audio/narration/racing/rl1-10.mp3"
           ]
         },
         {
           "id": "rl2",
-          "text": "발부터 다시 짚어 가겠습니다. 두 발이 이불 아래 놓여 있습니다. 발가락 사이가 벌어집니다. 발바닥의 긴장이 풀립니다. 발뒤꿈치가 자리를 잡습니다. 발목이 헐거워집니다. 종아리에서 힘이 나갑니다. 무릎이 살짝 벌어집니다. 허벅지가 침대에 잠깁니다. 골반이 느슨해집니다. 다리가 점점 무거워집니다. 이제 들 수 없을 만큼 무겁습니다.",
+          "text": "두 발이 이불 아래 놓여 있습니다. 발가락 사이가 벌어집니다. 발바닥의 긴장이 풀립니다. 발뒤꿈치가 자리를 잡습니다. 발목이 헐거워집니다. 종아리에서 힘이 나갑니다. 무릎이 살짝 벌어집니다. 허벅지가 침대에 잠깁니다. 골반이 느슨해집니다. 다리가 점점 무거워집니다. 이제 들 수 없을 만큼 무겁습니다.",
           "files": [
             "audio/narration/racing/rl2-0.mp3",
             "audio/narration/racing/rl2-1.mp3",
@@ -157,13 +155,12 @@
             "audio/narration/racing/rl2-7.mp3",
             "audio/narration/racing/rl2-8.mp3",
             "audio/narration/racing/rl2-9.mp3",
-            "audio/narration/racing/rl2-10.mp3",
-            "audio/narration/racing/rl2-11.mp3"
+            "audio/narration/racing/rl2-10.mp3"
           ]
         },
         {
           "id": "rl3",
-          "text": "다리에 남은 힘을 찾아보겠습니다. 발끝에 힘이 있는지 봅니다. 있다면 그냥 놓습니다. 발바닥을 살펴봅니다. 남은 힘을 놓습니다. 종아리를 살펴봅니다. 힘이 있으면 놓습니다. 무릎은 그대로 둡니다. 허벅지를 살펴봅니다. 마지막 힘이 빠져나갑니다. 골반까지 내려놓습니다. 아래쪽이 전부 고요합니다.",
+          "text": "발끝에 힘이 있는지 봅니다. 있다면 그냥 놓습니다. 발바닥을 살펴봅니다. 남은 힘을 놓습니다. 종아리를 살펴봅니다. 힘이 있으면 놓습니다. 무릎은 그대로 둡니다. 허벅지를 살펴봅니다. 마지막 힘이 빠져나갑니다. 골반까지 내려놓습니다. 아래쪽이 전부 고요합니다.",
           "files": [
             "audio/narration/racing/rl3-0.mp3",
             "audio/narration/racing/rl3-1.mp3",
@@ -175,8 +172,7 @@
             "audio/narration/racing/rl3-7.mp3",
             "audio/narration/racing/rl3-8.mp3",
             "audio/narration/racing/rl3-9.mp3",
-            "audio/narration/racing/rl3-10.mp3",
-            "audio/narration/racing/rl3-11.mp3"
+            "audio/narration/racing/rl3-10.mp3"
           ]
         }
       ],
@@ -345,7 +341,7 @@
       "release2": [
         {
           "id": "ru1",
-          "text": "이제 위쪽으로 올라오겠습니다. 배가 부드러워집니다. 배가 오르내리는 대로 둡니다. 가슴이 열립니다. 등이 침대에 넓게 닿습니다. 손가락 끝에서 힘이 빠집니다. 손바닥이 펴집니다. 팔이 무거워집니다. 어깨가 아래로 내려갑니다. 목이 길어집니다. 턱이 느슨해집니다. 눈 주위가 부드러워집니다. 이마가 펴집니다. 얼굴에 아무 표정도 남지 않습니다.",
+          "text": "배가 부드러워집니다. 배가 오르내리는 대로 둡니다. 가슴이 열립니다. 등이 침대에 넓게 닿습니다. 손가락 끝에서 힘이 빠집니다. 손바닥이 펴집니다. 팔이 무거워집니다. 어깨가 아래로 내려갑니다. 목이 길어집니다. 턱이 느슨해집니다. 눈 주위가 부드러워집니다. 이마가 펴집니다. 얼굴에 아무 표정도 남지 않습니다.",
           "files": [
             "audio/narration/racing/ru1-0.mp3",
             "audio/narration/racing/ru1-1.mp3",
@@ -359,13 +355,12 @@
             "audio/narration/racing/ru1-9.mp3",
             "audio/narration/racing/ru1-10.mp3",
             "audio/narration/racing/ru1-11.mp3",
-            "audio/narration/racing/ru1-12.mp3",
-            "audio/narration/racing/ru1-13.mp3"
+            "audio/narration/racing/ru1-12.mp3"
           ]
         },
         {
           "id": "ru2",
-          "text": "배에서부터 이어가겠습니다. 배의 긴장이 풀립니다. 옆구리가 느슨해집니다. 가슴이 편안하게 내려갑니다. 등 전체를 침대에 맡깁니다. 두 손이 제자리에 놓입니다. 손가락이 하나씩 펴집니다. 팔꿈치가 헐거워집니다. 팔의 무게를 침대에 줍니다. 어깨가 아래로 떨어집니다. 목덜미가 부드러워집니다. 혀가 입천장에서 떨어집니다. 눈꺼풀이 무거워집니다.",
+          "text": "배의 긴장이 풀립니다. 옆구리가 느슨해집니다. 가슴이 편안하게 내려갑니다. 등 전체를 침대에 맡깁니다. 두 손이 제자리에 놓입니다. 손가락이 하나씩 펴집니다. 팔꿈치가 헐거워집니다. 팔의 무게를 침대에 줍니다. 어깨가 아래로 떨어집니다. 목덜미가 부드러워집니다. 혀가 입천장에서 떨어집니다. 눈꺼풀이 무거워집니다.",
           "files": [
             "audio/narration/racing/ru2-0.mp3",
             "audio/narration/racing/ru2-1.mp3",
@@ -378,13 +373,12 @@
             "audio/narration/racing/ru2-8.mp3",
             "audio/narration/racing/ru2-9.mp3",
             "audio/narration/racing/ru2-10.mp3",
-            "audio/narration/racing/ru2-11.mp3",
-            "audio/narration/racing/ru2-12.mp3"
+            "audio/narration/racing/ru2-11.mp3"
           ]
         },
         {
           "id": "ru3",
-          "text": "위쪽에 남은 힘을 살펴보겠습니다. 배에 힘이 있으면 놓습니다. 가슴은 그대로 둡니다. 손을 한 번 가볍게 쥡니다. 그리고 놓습니다. 쥐었다 놓으면 더 깊이 풀립니다. 어깨를 살짝 올립니다. 그리고 툭 떨어뜨립니다. 이마의 힘을 놓습니다. 눈썹 사이가 벌어집니다. 턱이 저절로 벌어집니다. 위쪽까지 전부 고요합니다. 몸 어디에도 힘이 없습니다.",
+          "text": "배에 힘이 있으면 놓습니다. 가슴은 그대로 둡니다. 손을 한 번 가볍게 쥡니다. 그리고 놓습니다. 쥐었다 놓으면 더 깊이 풀립니다. 어깨를 살짝 올립니다. 그리고 툭 떨어뜨립니다. 이마의 힘을 놓습니다. 눈썹 사이가 벌어집니다. 턱이 저절로 벌어집니다. 위쪽까지 전부 고요합니다. 몸 어디에도 힘이 없습니다.",
           "files": [
             "audio/narration/racing/ru3-0.mp3",
             "audio/narration/racing/ru3-1.mp3",
@@ -397,8 +391,7 @@
             "audio/narration/racing/ru3-8.mp3",
             "audio/narration/racing/ru3-9.mp3",
             "audio/narration/racing/ru3-10.mp3",
-            "audio/narration/racing/ru3-11.mp3",
-            "audio/narration/racing/ru3-12.mp3"
+            "audio/narration/racing/ru3-11.mp3"
           ]
         }
       ],
@@ -431,15 +424,13 @@
         },
         {
           "id": "t3",
-          "text": "이제 말을 줄이겠습니다. 들을 것도 없어집니다. 남는 것은 편안함뿐입니다. 지켜야 할 것이 없습니다. 놓친 것도 없습니다. 이대로 충분합니다. 그대로 둡니다.",
+          "text": "남는 것은 편안함뿐입니다. 지켜야 할 것이 없습니다. 놓친 것도 없습니다. 이대로 충분합니다. 그대로 둡니다.",
           "files": [
             "audio/narration/racing/t3-0.mp3",
             "audio/narration/racing/t3-1.mp3",
             "audio/narration/racing/t3-2.mp3",
             "audio/narration/racing/t3-3.mp3",
-            "audio/narration/racing/t3-4.mp3",
-            "audio/narration/racing/t3-5.mp3",
-            "audio/narration/racing/t3-6.mp3"
+            "audio/narration/racing/t3-4.mp3"
           ]
         }
       ]
@@ -515,7 +506,7 @@
       "breath": [
         {
           "id": "b1",
-          "text": "이제 숨을 고르겠습니다. 짧게 들이쉽니다. 그보다 길게 내쉽니다. 내쉬는 숨이 길어지면 몸은 안심합니다. 몸이 그렇게 만들어져 있습니다. 다시 들이쉽니다. 길게 내쉽니다. 이 리듬이 안전하다는 신호를 보냅니다. 박자가 흐려져도 괜찮습니다. 숨은 알아서 이어집니다.",
+          "text": "짧게 들이쉽니다. 그보다 길게 내쉽니다. 내쉬는 숨이 길어지면 몸은 안심합니다. 몸이 그렇게 만들어져 있습니다. 다시 들이쉽니다. 길게 내쉽니다. 이 리듬이 안전하다는 신호를 보냅니다. 박자가 흐려져도 괜찮습니다. 숨은 알아서 이어집니다.",
           "files": [
             "audio/narration/anxious/b1-0.mp3",
             "audio/narration/anxious/b1-1.mp3",
@@ -525,8 +516,7 @@
             "audio/narration/anxious/b1-5.mp3",
             "audio/narration/anxious/b1-6.mp3",
             "audio/narration/anxious/b1-7.mp3",
-            "audio/narration/anxious/b1-8.mp3",
-            "audio/narration/anxious/b1-9.mp3"
+            "audio/narration/anxious/b1-8.mp3"
           ]
         },
         {
@@ -566,7 +556,7 @@
       "release": [
         {
           "id": "rl1",
-          "text": "이제 아래쪽부터 맡기겠습니다. 두 발이 이불 안에 있습니다. 발은 안전한 곳에 있습니다. 발가락의 힘을 놓습니다. 발바닥이 부드러워집니다. 발목을 침대에 맡깁니다. 종아리가 놓입니다. 무릎이 놓입니다. 허벅지를 받치는 것은 침대입니다. 골반도 침대가 받칩니다. 다리에 할 일이 없습니다. 다리가 무거워집니다.",
+          "text": "두 발이 이불 안에 있습니다. 발은 안전한 곳에 있습니다. 발가락의 힘을 놓습니다. 발바닥이 부드러워집니다. 발목을 침대에 맡깁니다. 종아리가 놓입니다. 무릎이 놓입니다. 허벅지를 받치는 것은 침대입니다. 골반도 침대가 받칩니다. 다리에 할 일이 없습니다. 다리가 무거워집니다.",
           "files": [
             "audio/narration/anxious/rl1-0.mp3",
             "audio/narration/anxious/rl1-1.mp3",
@@ -578,13 +568,12 @@
             "audio/narration/anxious/rl1-7.mp3",
             "audio/narration/anxious/rl1-8.mp3",
             "audio/narration/anxious/rl1-9.mp3",
-            "audio/narration/anxious/rl1-10.mp3",
-            "audio/narration/anxious/rl1-11.mp3"
+            "audio/narration/anxious/rl1-10.mp3"
           ]
         },
         {
           "id": "rl2",
-          "text": "발끝에서 시작하겠습니다. 발가락 하나하나가 풀립니다. 발바닥의 긴장을 놓습니다. 발뒤꿈치가 자리에 놓입니다. 발목이 느슨해집니다. 종아리를 침대에 맡깁니다. 무릎 뒤가 부드러워집니다. 허벅지의 무게를 침대에 줍니다. 골반이 편안하게 놓입니다. 다리 전체가 받쳐져 있습니다. 지킬 것이 없습니다. 그대로 두면 됩니다.",
+          "text": "발가락 하나하나가 풀립니다. 발바닥의 긴장을 놓습니다. 발뒤꿈치가 자리에 놓입니다. 발목이 느슨해집니다. 종아리를 침대에 맡깁니다. 무릎 뒤가 부드러워집니다. 허벅지의 무게를 침대에 줍니다. 골반이 편안하게 놓입니다. 다리 전체가 받쳐져 있습니다. 지킬 것이 없습니다. 그대로 두면 됩니다.",
           "files": [
             "audio/narration/anxious/rl2-0.mp3",
             "audio/narration/anxious/rl2-1.mp3",
@@ -596,13 +585,12 @@
             "audio/narration/anxious/rl2-7.mp3",
             "audio/narration/anxious/rl2-8.mp3",
             "audio/narration/anxious/rl2-9.mp3",
-            "audio/narration/anxious/rl2-10.mp3",
-            "audio/narration/anxious/rl2-11.mp3"
+            "audio/narration/anxious/rl2-10.mp3"
           ]
         },
         {
           "id": "rl3",
-          "text": "다리를 한 곳씩 확인하겠습니다. 발끝은 이불 안에 있습니다. 괜찮습니다. 발목은 놓여 있습니다. 괜찮습니다. 종아리에 힘이 있으면 놓습니다. 무릎은 그대로 둡니다. 허벅지가 침대에 잠깁니다. 골반까지 내려놓습니다. 아래쪽은 전부 안전합니다. 확인이 끝났습니다. 더 볼 것이 없습니다.",
+          "text": "발끝은 이불 안에 있습니다. 괜찮습니다. 발목은 놓여 있습니다. 괜찮습니다. 종아리에 힘이 있으면 놓습니다. 무릎은 그대로 둡니다. 허벅지가 침대에 잠깁니다. 골반까지 내려놓습니다. 아래쪽은 전부 안전합니다. 확인이 끝났습니다. 더 볼 것이 없습니다.",
           "files": [
             "audio/narration/anxious/rl3-0.mp3",
             "audio/narration/anxious/rl3-1.mp3",
@@ -614,15 +602,14 @@
             "audio/narration/anxious/rl3-7.mp3",
             "audio/narration/anxious/rl3-8.mp3",
             "audio/narration/anxious/rl3-9.mp3",
-            "audio/narration/anxious/rl3-10.mp3",
-            "audio/narration/anxious/rl3-11.mp3"
+            "audio/narration/anxious/rl3-10.mp3"
           ]
         }
       ],
       "release2": [
         {
           "id": "ru1",
-          "text": "이제 위쪽을 맡기겠습니다. 배가 부드러워집니다. 배 위의 이불이 따뜻합니다. 가슴이 편안해집니다. 등 전체를 침대에 맡깁니다. 받치는 일은 침대가 합니다. 두 손이 놓입니다. 팔의 힘을 놓습니다. 어깨가 아래로 내려갑니다. 목이 베개에 놓입니다. 턱이 느슨해집니다. 눈가가 부드러워집니다. 이마가 펴집니다. 얼굴이 편안해집니다.",
+          "text": "배가 부드러워집니다. 배 위의 이불이 따뜻합니다. 가슴이 편안해집니다. 등 전체를 침대에 맡깁니다. 받치는 일은 침대가 합니다. 두 손이 놓입니다. 팔의 힘을 놓습니다. 어깨가 아래로 내려갑니다. 목이 베개에 놓입니다. 턱이 느슨해집니다. 눈가가 부드러워집니다. 이마가 펴집니다. 얼굴이 편안해집니다.",
           "files": [
             "audio/narration/anxious/ru1-0.mp3",
             "audio/narration/anxious/ru1-1.mp3",
@@ -636,13 +623,12 @@
             "audio/narration/anxious/ru1-9.mp3",
             "audio/narration/anxious/ru1-10.mp3",
             "audio/narration/anxious/ru1-11.mp3",
-            "audio/narration/anxious/ru1-12.mp3",
-            "audio/narration/anxious/ru1-13.mp3"
+            "audio/narration/anxious/ru1-12.mp3"
           ]
         },
         {
           "id": "ru2",
-          "text": "배에서부터 올라가겠습니다. 배의 긴장을 놓습니다. 옆구리가 느슨해집니다. 가슴을 조이던 것이 풀립니다. 등이 넓게 받쳐집니다. 손바닥이 펴집니다. 손가락의 힘을 놓습니다. 팔을 침대에 맡깁니다. 어깨가 제자리로 내려갑니다. 목덜미가 부드러워집니다. 턱을 놓습니다. 눈꺼풀이 무거워집니다. 지킬 것이 없습니다. 전부 받쳐져 있습니다.",
+          "text": "배의 긴장을 놓습니다. 옆구리가 느슨해집니다. 가슴을 조이던 것이 풀립니다. 등이 넓게 받쳐집니다. 손바닥이 펴집니다. 손가락의 힘을 놓습니다. 팔을 침대에 맡깁니다. 어깨가 제자리로 내려갑니다. 목덜미가 부드러워집니다. 턱을 놓습니다. 눈꺼풀이 무거워집니다. 지킬 것이 없습니다. 전부 받쳐져 있습니다.",
           "files": [
             "audio/narration/anxious/ru2-0.mp3",
             "audio/narration/anxious/ru2-1.mp3",
@@ -656,13 +642,12 @@
             "audio/narration/anxious/ru2-9.mp3",
             "audio/narration/anxious/ru2-10.mp3",
             "audio/narration/anxious/ru2-11.mp3",
-            "audio/narration/anxious/ru2-12.mp3",
-            "audio/narration/anxious/ru2-13.mp3"
+            "audio/narration/anxious/ru2-12.mp3"
           ]
         },
         {
           "id": "ru3",
-          "text": "위쪽을 한 곳씩 확인하겠습니다. 배는 부드럽습니다. 괜찮습니다. 가슴은 편안합니다. 괜찮습니다. 손에 힘이 있으면 놓습니다. 팔은 놓여 있습니다. 어깨에 남은 긴장을 놓습니다. 목은 베개가 받칩니다. 얼굴의 힘을 놓습니다. 확인이 끝났습니다. 몸 전체가 안전합니다. 아무 일도 일어나지 않습니다.",
+          "text": "배는 부드럽습니다. 괜찮습니다. 가슴은 편안합니다. 괜찮습니다. 손에 힘이 있으면 놓습니다. 팔은 놓여 있습니다. 어깨에 남은 긴장을 놓습니다. 목은 베개가 받칩니다. 얼굴의 힘을 놓습니다. 확인이 끝났습니다. 몸 전체가 안전합니다. 아무 일도 일어나지 않습니다.",
           "files": [
             "audio/narration/anxious/ru3-0.mp3",
             "audio/narration/anxious/ru3-1.mp3",
@@ -675,8 +660,7 @@
             "audio/narration/anxious/ru3-8.mp3",
             "audio/narration/anxious/ru3-9.mp3",
             "audio/narration/anxious/ru3-10.mp3",
-            "audio/narration/anxious/ru3-11.mp3",
-            "audio/narration/anxious/ru3-12.mp3"
+            "audio/narration/anxious/ru3-11.mp3"
           ]
         }
       ],
@@ -899,14 +883,13 @@
         },
         {
           "id": "b2",
-          "text": "숨을 고르겠습니다. 짧게 들이쉽니다. 길게 내쉽니다. 긴 날숨이 몸의 속도를 낮춥니다. 두어 번이면 충분합니다. 나머지는 저절로 이어집니다.",
+          "text": "짧게 들이쉽니다. 길게 내쉽니다. 긴 날숨이 몸의 속도를 낮춥니다. 두어 번이면 충분합니다. 나머지는 저절로 이어집니다.",
           "files": [
             "audio/narration/wired/b2-0.mp3",
             "audio/narration/wired/b2-1.mp3",
             "audio/narration/wired/b2-2.mp3",
             "audio/narration/wired/b2-3.mp3",
-            "audio/narration/wired/b2-4.mp3",
-            "audio/narration/wired/b2-5.mp3"
+            "audio/narration/wired/b2-4.mp3"
           ]
         },
         {
@@ -925,7 +908,7 @@
       "release": [
         {
           "id": "rl1",
-          "text": "이제 아래쪽 스위치를 끄겠습니다. 발가락이 일을 마칩니다. 발바닥이 쉽니다. 발등의 불이 꺼집니다. 발목이 쉽니다. 종아리가 느슨해집니다. 하루 종일 걸은 다리입니다. 무릎이 일을 마칩니다. 허벅지에서 힘이 빠집니다. 골반이 내려앉습니다. 다리 전체가 꺼집니다. 이제 아래쪽은 쉽니다.",
+          "text": "발가락이 일을 마칩니다. 발바닥이 쉽니다. 발등의 불이 꺼집니다. 발목이 쉽니다. 종아리가 느슨해집니다. 하루 종일 걸은 다리입니다. 무릎이 일을 마칩니다. 허벅지에서 힘이 빠집니다. 골반이 내려앉습니다. 다리 전체가 꺼집니다. 이제 아래쪽은 쉽니다.",
           "files": [
             "audio/narration/wired/rl1-0.mp3",
             "audio/narration/wired/rl1-1.mp3",
@@ -937,13 +920,12 @@
             "audio/narration/wired/rl1-7.mp3",
             "audio/narration/wired/rl1-8.mp3",
             "audio/narration/wired/rl1-9.mp3",
-            "audio/narration/wired/rl1-10.mp3",
-            "audio/narration/wired/rl1-11.mp3"
+            "audio/narration/wired/rl1-10.mp3"
           ]
         },
         {
           "id": "rl2",
-          "text": "발끝부터 따뜻해지겠습니다. 발가락에 온기가 돕니다. 발바닥이 따뜻해집니다. 온기가 발목을 지나갑니다. 종아리가 녹듯 풀립니다. 무릎이 풀립니다. 허벅지가 따뜻해집니다. 온기가 골반까지 올라옵니다. 데워진 곳은 힘이 빠집니다. 다리가 무거워집니다. 침대에 깊이 잠깁니다. 아래쪽이 전부 데워졌습니다.",
+          "text": "발가락에 온기가 돕니다. 발바닥이 따뜻해집니다. 온기가 발목을 지나갑니다. 종아리가 녹듯 풀립니다. 무릎이 풀립니다. 허벅지가 따뜻해집니다. 온기가 골반까지 올라옵니다. 데워진 곳은 힘이 빠집니다. 다리가 무거워집니다. 침대에 깊이 잠깁니다. 아래쪽이 전부 데워졌습니다.",
           "files": [
             "audio/narration/wired/rl2-0.mp3",
             "audio/narration/wired/rl2-1.mp3",
@@ -955,13 +937,12 @@
             "audio/narration/wired/rl2-7.mp3",
             "audio/narration/wired/rl2-8.mp3",
             "audio/narration/wired/rl2-9.mp3",
-            "audio/narration/wired/rl2-10.mp3",
-            "audio/narration/wired/rl2-11.mp3"
+            "audio/narration/wired/rl2-10.mp3"
           ]
         },
         {
           "id": "rl3",
-          "text": "다리의 남은 일을 끝내겠습니다. 발끝을 살짝 당깁니다. 그리고 놓습니다. 발이 일을 마칩니다. 종아리에 남은 힘을 찾습니다. 있으면 놓습니다. 무릎은 벌써 쉬고 있습니다. 허벅지의 힘을 놓습니다. 골반이 자리를 잡습니다. 다리에 켜진 곳이 없습니다. 전부 꺼졌습니다. 잘했습니다.",
+          "text": "발끝을 살짝 당깁니다. 그리고 놓습니다. 발이 일을 마칩니다. 종아리에 남은 힘을 찾습니다. 있으면 놓습니다. 무릎은 벌써 쉬고 있습니다. 허벅지의 힘을 놓습니다. 골반이 자리를 잡습니다. 다리에 켜진 곳이 없습니다. 전부 꺼졌습니다. 잘했습니다.",
           "files": [
             "audio/narration/wired/rl3-0.mp3",
             "audio/narration/wired/rl3-1.mp3",
@@ -973,8 +954,7 @@
             "audio/narration/wired/rl3-7.mp3",
             "audio/narration/wired/rl3-8.mp3",
             "audio/narration/wired/rl3-9.mp3",
-            "audio/narration/wired/rl3-10.mp3",
-            "audio/narration/wired/rl3-11.mp3"
+            "audio/narration/wired/rl3-10.mp3"
           ]
         },
         {
@@ -1018,7 +998,7 @@
         },
         {
           "id": "pl3",
-          "text": "다리에 남은 긴장을 짜내겠습니다. 발가락을 오므려 쥐고 잠깐 버텼다가, 활짝 펴서 놓습니다. 펴진 발가락 사이로 힘이 빠집니다. 발등을 몸 쪽으로 당겨 버텼다가, 편하게 놓습니다. 발목이 제자리를 찾습니다. 다리 전체를 한 번 조였다가, 전부 내려놓습니다. 이제 줄 힘이 남아 있지 않습니다. 긴장을 짜낸 다리는 처음보다 깊이 쉽니다. 그대로 두면 됩니다.",
+          "text": "발가락을 오므려 쥐고 잠깐 버텼다가, 활짝 펴서 놓습니다. 펴진 발가락 사이로 힘이 빠집니다. 발등을 몸 쪽으로 당겨 버텼다가, 편하게 놓습니다. 발목이 제자리를 찾습니다. 다리 전체를 한 번 조였다가, 전부 내려놓습니다. 이제 줄 힘이 남아 있지 않습니다. 긴장을 짜낸 다리는 처음보다 깊이 쉽니다. 그대로 두면 됩니다.",
           "files": [
             "audio/narration/wired/pl3-0.mp3",
             "audio/narration/wired/pl3-1.mp3",
@@ -1030,15 +1010,14 @@
             "audio/narration/wired/pl3-7.mp3",
             "audio/narration/wired/pl3-8.mp3",
             "audio/narration/wired/pl3-9.mp3",
-            "audio/narration/wired/pl3-10.mp3",
-            "audio/narration/wired/pl3-11.mp3"
+            "audio/narration/wired/pl3-10.mp3"
           ]
         }
       ],
       "release2": [
         {
           "id": "ru1",
-          "text": "이제 위쪽 스위치를 끄겠습니다. 배가 부드러워집니다. 배의 불이 꺼집니다. 가슴이 편해집니다. 등이 넓게 내려앉습니다. 손가락이 일을 마칩니다. 손바닥이 쉽니다. 팔이 무거워집니다. 어깨가 녹아 내려갑니다. 목이 쉽니다. 턱이 느슨해집니다. 눈가가 풀립니다. 이마의 불이 꺼집니다. 얼굴 전체가 쉽니다.",
+          "text": "배가 부드러워집니다. 배의 불이 꺼집니다. 가슴이 편해집니다. 등이 넓게 내려앉습니다. 손가락이 일을 마칩니다. 손바닥이 쉽니다. 팔이 무거워집니다. 어깨가 녹아 내려갑니다. 목이 쉽니다. 턱이 느슨해집니다. 눈가가 풀립니다. 이마의 불이 꺼집니다. 얼굴 전체가 쉽니다.",
           "files": [
             "audio/narration/wired/ru1-0.mp3",
             "audio/narration/wired/ru1-1.mp3",
@@ -1052,13 +1031,12 @@
             "audio/narration/wired/ru1-9.mp3",
             "audio/narration/wired/ru1-10.mp3",
             "audio/narration/wired/ru1-11.mp3",
-            "audio/narration/wired/ru1-12.mp3",
-            "audio/narration/wired/ru1-13.mp3"
+            "audio/narration/wired/ru1-12.mp3"
           ]
         },
         {
           "id": "ru2",
-          "text": "배부터 위로 데우겠습니다. 배가 따뜻해집니다. 온기가 가슴으로 퍼집니다. 등이 넓게 데워집니다. 손끝이 따뜻해집니다. 손바닥에 온기가 고입니다. 팔이 느슨해집니다. 온기가 어깨에 닿습니다. 어깨가 녹습니다. 목덜미가 부드러워집니다. 턱이 풀립니다. 눈꺼풀이 무거워집니다. 온몸이 고르게 따뜻합니다. 위쪽도 전부 데워졌습니다.",
+          "text": "배가 따뜻해집니다. 온기가 가슴으로 퍼집니다. 등이 넓게 데워집니다. 손끝이 따뜻해집니다. 손바닥에 온기가 고입니다. 팔이 느슨해집니다. 온기가 어깨에 닿습니다. 어깨가 녹습니다. 목덜미가 부드러워집니다. 턱이 풀립니다. 눈꺼풀이 무거워집니다. 온몸이 고르게 따뜻합니다. 위쪽도 전부 데워졌습니다.",
           "files": [
             "audio/narration/wired/ru2-0.mp3",
             "audio/narration/wired/ru2-1.mp3",
@@ -1072,13 +1050,12 @@
             "audio/narration/wired/ru2-9.mp3",
             "audio/narration/wired/ru2-10.mp3",
             "audio/narration/wired/ru2-11.mp3",
-            "audio/narration/wired/ru2-12.mp3",
-            "audio/narration/wired/ru2-13.mp3"
+            "audio/narration/wired/ru2-12.mp3"
           ]
         },
         {
           "id": "ru3",
-          "text": "위쪽의 남은 일을 끝내겠습니다. 손을 가볍게 쥡니다. 그리고 놓습니다. 손이 일을 마칩니다. 어깨를 살짝 올립니다. 그리고 떨어뜨립니다. 어깨가 일을 마칩니다. 얼굴에 힘을 살짝 줍니다. 그리고 놓습니다. 얼굴이 꺼집니다. 몸에 켜진 곳이 없습니다. 오늘 일은 전부 끝났습니다. 이제 쉬기만 하면 됩니다.",
+          "text": "손을 가볍게 쥡니다. 그리고 놓습니다. 손이 일을 마칩니다. 어깨를 살짝 올립니다. 그리고 떨어뜨립니다. 어깨가 일을 마칩니다. 얼굴에 힘을 살짝 줍니다. 그리고 놓습니다. 얼굴이 꺼집니다. 몸에 켜진 곳이 없습니다. 오늘 일은 전부 끝났습니다. 이제 쉬기만 하면 됩니다.",
           "files": [
             "audio/narration/wired/ru3-0.mp3",
             "audio/narration/wired/ru3-1.mp3",
@@ -1091,8 +1068,7 @@
             "audio/narration/wired/ru3-8.mp3",
             "audio/narration/wired/ru3-9.mp3",
             "audio/narration/wired/ru3-10.mp3",
-            "audio/narration/wired/ru3-11.mp3",
-            "audio/narration/wired/ru3-12.mp3"
+            "audio/narration/wired/ru3-11.mp3"
           ]
         },
         {
@@ -1115,7 +1091,7 @@
         },
         {
           "id": "pu2",
-          "text": "얼굴까지 올라가며 짜내겠습니다. 눈을 꼭 감고 얼굴 가운데로 힘을 모았다가, 전부 놓습니다. 이마와 눈가가 펴집니다. 이를 살짝 물고 턱에 힘을 줬다가, 스르르 놓습니다. 턱이 낮게 떨어집니다. 입안의 혀도 내려놓습니다. 얼굴에 표정이 남아 있지 않습니다. 찡그렸던 자리가 부드럽습니다. 머리까지 조용해집니다.",
+          "text": "눈을 꼭 감고 얼굴 가운데로 힘을 모았다가, 전부 놓습니다. 이마와 눈가가 펴집니다. 이를 살짝 물고 턱에 힘을 줬다가, 스르르 놓습니다. 턱이 낮게 떨어집니다. 입안의 혀도 내려놓습니다. 얼굴에 표정이 남아 있지 않습니다. 찡그렸던 자리가 부드럽습니다. 머리까지 조용해집니다.",
           "files": [
             "audio/narration/wired/pu2-0.mp3",
             "audio/narration/wired/pu2-1.mp3",
@@ -1126,13 +1102,12 @@
             "audio/narration/wired/pu2-6.mp3",
             "audio/narration/wired/pu2-7.mp3",
             "audio/narration/wired/pu2-8.mp3",
-            "audio/narration/wired/pu2-9.mp3",
-            "audio/narration/wired/pu2-10.mp3"
+            "audio/narration/wired/pu2-9.mp3"
           ]
         },
         {
           "id": "pu3",
-          "text": "마지막으로 한 번에 하겠습니다. 손과 팔과 어깨에 같이 힘을 주고 버텼다가, 한꺼번에 놓습니다. 몸이 침대에 깊이 내려앉습니다. 배와 가슴은 조이지 않고 그대로 둡니다. 등이 넓게 펴집니다. 온몸에서 힘이 한 번에 빠져나갑니다. 이제 조일 곳이 없습니다. 몸 전체가 무거워집니다. 오늘의 긴장은 여기서 끝납니다.",
+          "text": "손과 팔과 어깨에 같이 힘을 주고 버텼다가, 한꺼번에 놓습니다. 몸이 침대에 깊이 내려앉습니다. 배와 가슴은 조이지 않고 그대로 둡니다. 등이 넓게 펴집니다. 온몸에서 힘이 한 번에 빠져나갑니다. 이제 조일 곳이 없습니다. 몸 전체가 무거워집니다. 오늘의 긴장은 여기서 끝납니다.",
           "files": [
             "audio/narration/wired/pu3-0.mp3",
             "audio/narration/wired/pu3-1.mp3",
@@ -1142,8 +1117,7 @@
             "audio/narration/wired/pu3-5.mp3",
             "audio/narration/wired/pu3-6.mp3",
             "audio/narration/wired/pu3-7.mp3",
-            "audio/narration/wired/pu3-8.mp3",
-            "audio/narration/wired/pu3-9.mp3"
+            "audio/narration/wired/pu3-8.mp3"
           ]
         }
       ],
@@ -1273,15 +1247,14 @@
         },
         {
           "id": "t3",
-          "text": "이제 말을 줄이겠습니다. 하루가 저물었습니다. 집 안이 조용해집니다. 남는 것은 온기뿐입니다. 애쓸 일이 없습니다. 쉬면 됩니다. 그대로 둡니다.",
+          "text": "하루가 저물었습니다. 집 안이 조용해집니다. 남는 것은 온기뿐입니다. 애쓸 일이 없습니다. 쉬면 됩니다. 그대로 둡니다.",
           "files": [
             "audio/narration/wired/t3-0.mp3",
             "audio/narration/wired/t3-1.mp3",
             "audio/narration/wired/t3-2.mp3",
             "audio/narration/wired/t3-3.mp3",
             "audio/narration/wired/t3-4.mp3",
-            "audio/narration/wired/t3-5.mp3",
-            "audio/narration/wired/t3-6.mp3"
+            "audio/narration/wired/t3-5.mp3"
           ]
         }
       ]
@@ -1356,15 +1329,14 @@
       "breath": [
         {
           "id": "b1",
-          "text": "숨을 고르겠습니다. 짧게 들이쉽니다. 길게 내쉽니다. 날숨이 길어지면 몸은 쉴 때라고 알아듣습니다. 한 번 더 들이쉬고, 길게 내쉽니다. 박자를 잃어버려도 괜찮습니다. 숨을 따라가는 것만으로 충분합니다.",
+          "text": "짧게 들이쉽니다. 길게 내쉽니다. 날숨이 길어지면 몸은 쉴 때라고 알아듣습니다. 한 번 더 들이쉬고, 길게 내쉽니다. 박자를 잃어버려도 괜찮습니다. 숨을 따라가는 것만으로 충분합니다.",
           "files": [
             "audio/narration/unknown/b1-0.mp3",
             "audio/narration/unknown/b1-1.mp3",
             "audio/narration/unknown/b1-2.mp3",
             "audio/narration/unknown/b1-3.mp3",
             "audio/narration/unknown/b1-4.mp3",
-            "audio/narration/unknown/b1-5.mp3",
-            "audio/narration/unknown/b1-6.mp3"
+            "audio/narration/unknown/b1-5.mp3"
           ]
         },
         {
@@ -1399,7 +1371,7 @@
       "release": [
         {
           "id": "rl1",
-          "text": "이제 아래쪽부터 조용해지겠습니다. 발가락의 힘이 빠집니다. 발바닥이 펴집니다. 발목이 느슨해집니다. 종아리가 부드러워집니다. 무릎이 놓입니다. 허벅지가 무거워집니다. 골반이 넓게 놓입니다. 다리의 하루가 끝납니다. 다리가 조용해집니다. 움직일 일이 없습니다. 그대로 둡니다.",
+          "text": "발가락의 힘이 빠집니다. 발바닥이 펴집니다. 발목이 느슨해집니다. 종아리가 부드러워집니다. 무릎이 놓입니다. 허벅지가 무거워집니다. 골반이 넓게 놓입니다. 다리의 하루가 끝납니다. 다리가 조용해집니다. 움직일 일이 없습니다. 그대로 둡니다.",
           "files": [
             "audio/narration/unknown/rl1-0.mp3",
             "audio/narration/unknown/rl1-1.mp3",
@@ -1411,13 +1383,12 @@
             "audio/narration/unknown/rl1-7.mp3",
             "audio/narration/unknown/rl1-8.mp3",
             "audio/narration/unknown/rl1-9.mp3",
-            "audio/narration/unknown/rl1-10.mp3",
-            "audio/narration/unknown/rl1-11.mp3"
+            "audio/narration/unknown/rl1-10.mp3"
           ]
         },
         {
           "id": "rl2",
-          "text": "발끝에서 천천히 올라오겠습니다. 발가락 사이가 벌어집니다. 발바닥의 긴장이 풀립니다. 발뒤꿈치가 놓입니다. 발목이 헐거워집니다. 종아리에서 힘이 나갑니다. 무릎 뒤가 부드러워집니다. 허벅지가 침대에 잠깁니다. 골반이 느슨해집니다. 다리가 점점 느려집니다. 무게만 남습니다. 그 무게도 곧 잊힙니다.",
+          "text": "발가락 사이가 벌어집니다. 발바닥의 긴장이 풀립니다. 발뒤꿈치가 놓입니다. 발목이 헐거워집니다. 종아리에서 힘이 나갑니다. 무릎 뒤가 부드러워집니다. 허벅지가 침대에 잠깁니다. 골반이 느슨해집니다. 다리가 점점 느려집니다. 무게만 남습니다. 그 무게도 곧 잊힙니다.",
           "files": [
             "audio/narration/unknown/rl2-0.mp3",
             "audio/narration/unknown/rl2-1.mp3",
@@ -1429,13 +1400,12 @@
             "audio/narration/unknown/rl2-7.mp3",
             "audio/narration/unknown/rl2-8.mp3",
             "audio/narration/unknown/rl2-9.mp3",
-            "audio/narration/unknown/rl2-10.mp3",
-            "audio/narration/unknown/rl2-11.mp3"
+            "audio/narration/unknown/rl2-10.mp3"
           ]
         },
         {
           "id": "rl3",
-          "text": "다리를 한 번만 둘러보겠습니다. 발끝은 편안합니다. 발목도 편안합니다. 종아리에 힘이 있으면 놓습니다. 무릎은 그대로 둡니다. 허벅지의 힘을 놓습니다. 골반까지 내려놓습니다. 아래쪽이 다 조용합니다. 더 할 일이 없습니다. 둘러보기가 끝났습니다. 그대로 둡니다.",
+          "text": "발끝은 편안합니다. 발목도 편안합니다. 종아리에 힘이 있으면 놓습니다. 무릎은 그대로 둡니다. 허벅지의 힘을 놓습니다. 골반까지 내려놓습니다. 아래쪽이 다 조용합니다. 더 할 일이 없습니다. 둘러보기가 끝났습니다. 그대로 둡니다.",
           "files": [
             "audio/narration/unknown/rl3-0.mp3",
             "audio/narration/unknown/rl3-1.mp3",
@@ -1446,15 +1416,14 @@
             "audio/narration/unknown/rl3-6.mp3",
             "audio/narration/unknown/rl3-7.mp3",
             "audio/narration/unknown/rl3-8.mp3",
-            "audio/narration/unknown/rl3-9.mp3",
-            "audio/narration/unknown/rl3-10.mp3"
+            "audio/narration/unknown/rl3-9.mp3"
           ]
         }
       ],
       "release2": [
         {
           "id": "ru1",
-          "text": "이제 위쪽이 조용해지겠습니다. 배가 부드러워집니다. 가슴이 편안해집니다. 등이 침대에 넓게 닿습니다. 손가락의 힘이 빠집니다. 손바닥이 펴집니다. 팔이 무거워집니다. 어깨가 내려갑니다. 목이 놓입니다. 턱이 느슨해집니다. 눈 주위가 부드러워집니다. 이마가 펴집니다. 얼굴이 조용해집니다. 위쪽도 하루를 마칩니다.",
+          "text": "배가 부드러워집니다. 가슴이 편안해집니다. 등이 침대에 넓게 닿습니다. 손가락의 힘이 빠집니다. 손바닥이 펴집니다. 팔이 무거워집니다. 어깨가 내려갑니다. 목이 놓입니다. 턱이 느슨해집니다. 눈 주위가 부드러워집니다. 이마가 펴집니다. 얼굴이 조용해집니다. 위쪽도 하루를 마칩니다.",
           "files": [
             "audio/narration/unknown/ru1-0.mp3",
             "audio/narration/unknown/ru1-1.mp3",
@@ -1468,13 +1437,12 @@
             "audio/narration/unknown/ru1-9.mp3",
             "audio/narration/unknown/ru1-10.mp3",
             "audio/narration/unknown/ru1-11.mp3",
-            "audio/narration/unknown/ru1-12.mp3",
-            "audio/narration/unknown/ru1-13.mp3"
+            "audio/narration/unknown/ru1-12.mp3"
           ]
         },
         {
           "id": "ru2",
-          "text": "배에서부터 이어가겠습니다. 배의 긴장이 풀립니다. 옆구리가 느슨해집니다. 가슴이 넓어집니다. 등의 무게를 침대에 줍니다. 두 손이 제자리에 놓입니다. 손가락이 펴집니다. 팔꿈치가 헐거워집니다. 어깨가 아래로 떨어집니다. 목덜미가 부드러워집니다. 혀가 입천장에서 떨어집니다. 눈꺼풀이 무거워집니다. 생각의 속도가 느려집니다. 몸을 따라 느려집니다.",
+          "text": "배의 긴장이 풀립니다. 옆구리가 느슨해집니다. 가슴이 넓어집니다. 등의 무게를 침대에 줍니다. 두 손이 제자리에 놓입니다. 손가락이 펴집니다. 팔꿈치가 헐거워집니다. 어깨가 아래로 떨어집니다. 목덜미가 부드러워집니다. 혀가 입천장에서 떨어집니다. 눈꺼풀이 무거워집니다. 생각의 속도가 느려집니다. 몸을 따라 느려집니다.",
           "files": [
             "audio/narration/unknown/ru2-0.mp3",
             "audio/narration/unknown/ru2-1.mp3",
@@ -1488,13 +1456,12 @@
             "audio/narration/unknown/ru2-9.mp3",
             "audio/narration/unknown/ru2-10.mp3",
             "audio/narration/unknown/ru2-11.mp3",
-            "audio/narration/unknown/ru2-12.mp3",
-            "audio/narration/unknown/ru2-13.mp3"
+            "audio/narration/unknown/ru2-12.mp3"
           ]
         },
         {
           "id": "ru3",
-          "text": "위쪽을 한 번만 둘러보겠습니다. 배는 부드럽습니다. 가슴은 편안합니다. 손에 힘이 있으면 놓습니다. 팔은 놓여 있습니다. 어깨의 긴장을 놓습니다. 목은 베개가 받칩니다. 턱을 놓습니다. 이마의 힘을 놓습니다. 몸 어디에도 급한 곳이 없습니다. 둘러보기가 끝났습니다. 전부 조용합니다.",
+          "text": "배는 부드럽습니다. 가슴은 편안합니다. 손에 힘이 있으면 놓습니다. 팔은 놓여 있습니다. 어깨의 긴장을 놓습니다. 목은 베개가 받칩니다. 턱을 놓습니다. 이마의 힘을 놓습니다. 몸 어디에도 급한 곳이 없습니다. 둘러보기가 끝났습니다. 전부 조용합니다.",
           "files": [
             "audio/narration/unknown/ru3-0.mp3",
             "audio/narration/unknown/ru3-1.mp3",
@@ -1506,8 +1473,7 @@
             "audio/narration/unknown/ru3-7.mp3",
             "audio/narration/unknown/ru3-8.mp3",
             "audio/narration/unknown/ru3-9.mp3",
-            "audio/narration/unknown/ru3-10.mp3",
-            "audio/narration/unknown/ru3-11.mp3"
+            "audio/narration/unknown/ru3-10.mp3"
           ]
         }
       ],
@@ -1791,14 +1757,13 @@
       "breath": [
         {
           "id": "b1",
-          "text": "숨을 고르겠습니다. 짧게 들이쉽니다. 그보다 길게 내쉽니다. 긴 날숨이 몸의 속도를 늦춥니다. 세 번이면 충분합니다. 다시 들이쉬고, 길게 내쉽니다.",
+          "text": "짧게 들이쉽니다. 그보다 길게 내쉽니다. 긴 날숨이 몸의 속도를 늦춥니다. 세 번이면 충분합니다. 다시 들이쉬고, 길게 내쉽니다.",
           "files": [
             "audio/narration/calm/b1-0.mp3",
             "audio/narration/calm/b1-1.mp3",
             "audio/narration/calm/b1-2.mp3",
             "audio/narration/calm/b1-3.mp3",
-            "audio/narration/calm/b1-4.mp3",
-            "audio/narration/calm/b1-5.mp3"
+            "audio/narration/calm/b1-4.mp3"
           ]
         },
         {
@@ -1921,7 +1886,7 @@
       "release": [
         {
           "id": "r1",
-          "text": "몸을 가볍게 훑겠습니다. 이마가 펴집니다. 눈가가 풀립니다. 턱이 느슨해집니다. 어깨가 내려갑니다. 팔이 놓입니다. 등이 닿습니다. 다리가 무거워집니다. 발끝의 힘이 빠집니다. 몸 전체가 느슨합니다.",
+          "text": "이마가 펴집니다. 눈가가 풀립니다. 턱이 느슨해집니다. 어깨가 내려갑니다. 팔이 놓입니다. 등이 닿습니다. 다리가 무거워집니다. 발끝의 힘이 빠집니다. 몸 전체가 느슨합니다.",
           "files": [
             "audio/narration/nap/r1-0.mp3",
             "audio/narration/nap/r1-1.mp3",
@@ -1931,13 +1896,12 @@
             "audio/narration/nap/r1-5.mp3",
             "audio/narration/nap/r1-6.mp3",
             "audio/narration/nap/r1-7.mp3",
-            "audio/narration/nap/r1-8.mp3",
-            "audio/narration/nap/r1-9.mp3"
+            "audio/narration/nap/r1-8.mp3"
           ]
         },
         {
           "id": "r2",
-          "text": "발끝에서 올라오겠습니다. 발이 쉽니다. 종아리가 풀립니다. 무릎이 놓입니다. 허벅지가 느슨해집니다. 배가 부드러워집니다. 가슴이 편해집니다. 어깨가 내려갑니다. 손이 열립니다. 얼굴이 풀립니다.",
+          "text": "발이 쉽니다. 종아리가 풀립니다. 무릎이 놓입니다. 허벅지가 느슨해집니다. 배가 부드러워집니다. 가슴이 편해집니다. 어깨가 내려갑니다. 손이 열립니다. 얼굴이 풀립니다.",
           "files": [
             "audio/narration/nap/r2-0.mp3",
             "audio/narration/nap/r2-1.mp3",
@@ -1947,8 +1911,7 @@
             "audio/narration/nap/r2-5.mp3",
             "audio/narration/nap/r2-6.mp3",
             "audio/narration/nap/r2-7.mp3",
-            "audio/narration/nap/r2-8.mp3",
-            "audio/narration/nap/r2-9.mp3"
+            "audio/narration/nap/r2-8.mp3"
           ]
         },
         {

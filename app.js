@@ -119,6 +119,10 @@ function go(name) {
   // 홈은 적막하면 안 된다 — 멈추기·알람 뒤에 돌아와도 고른 배경음이 다시 흐른다.
   // 첫 진입은 openBed(첫 터치)가 연다. unlock 전이면 여기서는 할 게 없다.
   if (name === 'home' && !session) startHomeBed();
+  // 씬 캔버스는 어느 화면에서든 돈다 (idempotent). 눈·오로라·달과 구름은 캔버스가
+  // 그림의 전부라, 멈춰 있으면 빈 그라데이션만 남는다 — "배경이 안 나와"의 정체.
+  // 일시정지 중에는 go() 가 불리지 않으므로 그때의 멈춤은 유지된다.
+  scenes.start();
   // 호흡 게이지는 그 화면에 있을 때만 돈다
   if (name === 'breathe') startBreathe(); else stopBreathe();
   window.scrollTo(0, 0);
@@ -1067,6 +1071,7 @@ async function init() {
   setMoonPhase();
   setInterval(tickClock, 20000);
   scenes.set(store.scene);
+  scenes.start();   // 홈에서도 씬이 살아 있어야 한다 — 캔버스 전용 씬은 이게 그림의 전부다
 
   // 음성 목록은 비동기로 채워진다 — 처음엔 빈 배열이 돌아온다
   if ('speechSynthesis' in window) {
@@ -1084,7 +1089,7 @@ async function init() {
 }
 
 // 콘솔 실측용 핸들. 오디오 엘리먼트가 DOM 밖이라 이게 없으면 볼륨을 잴 방법이 없다.
-window.__dbg = { mixer, store, narration: () => narration };
+window.__dbg = { mixer, store, scenes, narration: () => narration };
 
 init().catch((e) => {
   console.error(e);
