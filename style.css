@@ -205,7 +205,7 @@ main {
 
 .lede-xl { font-size: 38px; line-height: 1.32; margin-bottom: var(--sp-3); }
 
-#s-home .sub { margin-bottom: var(--sp-6); max-width: 32ch; }
+#s-home .sub { margin-bottom: var(--sp-6); }
 
 .iconbtn {
   width: var(--tap);
@@ -230,7 +230,9 @@ main {
   letter-spacing: -0.005em;
   margin: 0 0 var(--sp-2);
 }
-.sub  { font-size: 15px; color: var(--text-2); margin: 0 0 var(--sp-6); }
+/* 본문 줄은 화면 끝까지 닿지 않는다 — 34자 언저리에서 접어야 폰에서 갑갑하지 않다 */
+.sub  { font-size: 15px; line-height: 1.75; color: var(--text-2); max-width: 34ch; margin: 0 0 var(--sp-6); }
+#s-alarm .sub { margin-inline: auto; }   /* 알람 화면만 중앙 정렬이라 가운데로 */
 .eyebrow {
   font-size: 12px; font-weight: 600; letter-spacing: 0.1em;
   color: var(--text-3); text-transform: uppercase;
@@ -672,14 +674,16 @@ input[type='range']:disabled { cursor: not-allowed; }
 #app.is-dim .play-console { transition: opacity 3s var(--ease); }
 
 /* ── 호흡 모드 ─────────────────────────────────────────── */
-/* 재생 화면의 작은 게이지와 달리 시간이 주인공이다 — 링도 숫자도 크게. */
+/* 홈과 같은 에디토리얼 문법 — 머리는 좌정렬 명조 2줄, 링만 중앙의 집중 오브젝트다. */
 
-#s-breathe { text-align: center; }
-#s-breathe .chips { justify-content: center; }
 #s-breathe .breath { width: 264px; height: 264px; margin-bottom: var(--sp-4); }
 #s-breathe .breath .disc { inset: 20px; }
-#s-breathe .breath .count { font-size: 52px; }
-#s-breathe .breath .phase { font-size: 14px; }
+#s-breathe .breath .count {
+  font-family: var(--font-serif);   /* 초읽기도 앱의 명조 목소리로 */
+  font-size: 52px;
+}
+#s-breathe .breath .phase { font-size: 14px; letter-spacing: 0.06em; }
+#s-breathe .play-meta { text-align: center; }
 
 /* 작은 폰(SE·미니류, 세로 720px 미만)에서는 크기를 한 단계 줄인다 —
    크게 보이는 것보다 스크롤 없이 다 보이는 쪽이 "잘 보이는" 것이다. */
