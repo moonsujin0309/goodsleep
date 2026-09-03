@@ -676,7 +676,14 @@ input[type='range']:disabled { cursor: not-allowed; }
 /* ── 호흡 모드 ─────────────────────────────────────────── */
 /* 홈과 같은 에디토리얼 문법 — 머리는 좌정렬 명조 2줄, 링만 중앙의 집중 오브젝트다. */
 
+/* 위 여백은 짧게 못 박고 남는 공간은 아래로 — 칩과 링 사이가 뻥 뚫린 채
+   링만 바닥에 동떨어져 보이던 것을 잡는다. 폰 앱의 세로 리듬은 위가 촘촘해야 한다. */
+#s-breathe .stagger + .spacer { flex: 0 0 auto; min-height: 0; height: clamp(12px, 5vh, 48px); }
 #s-breathe .breath { width: 264px; height: 264px; margin-bottom: var(--sp-4); }
+/* 큰 폰에서는 링이 남는 높이를 먹는다 — 여백 대신 오브젝트가 커져야 허전하지 않다 */
+@media (min-height: 780px) {
+  #s-breathe .breath { width: 292px; height: 292px; }
+}
 #s-breathe .breath .disc { inset: 20px; }
 #s-breathe .breath .count {
   font-family: var(--font-serif);   /* 초읽기도 앱의 명조 목소리로 */
