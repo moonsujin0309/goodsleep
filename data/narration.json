@@ -433,6 +433,15 @@
             "audio/narration/racing/t3-4.mp3"
           ]
         }
+      ],
+      "anchor": [
+        {
+          "id": "an",
+          "text": "붙잡지 않아도 됩니다.",
+          "files": [
+            "audio/narration/racing/an-0.mp3"
+          ]
+        }
       ]
     },
     "anxious": {
@@ -799,6 +808,15 @@
             "audio/narration/anxious/t3-4.mp3",
             "audio/narration/anxious/t3-5.mp3",
             "audio/narration/anxious/t3-6.mp3"
+          ]
+        }
+      ],
+      "anchor": [
+        {
+          "id": "an",
+          "text": "여기서는 괜찮습니다.",
+          "files": [
+            "audio/narration/anxious/an-0.mp3"
           ]
         }
       ]
@@ -1257,6 +1275,15 @@
             "audio/narration/wired/t3-5.mp3"
           ]
         }
+      ],
+      "anchor": [
+        {
+          "id": "an",
+          "text": "몸은 쉬어도 됩니다.",
+          "files": [
+            "audio/narration/wired/an-0.mp3"
+          ]
+        }
       ]
     },
     "unknown": {
@@ -1614,6 +1641,15 @@
             "audio/narration/unknown/t3-6.mp3"
           ]
         }
+      ],
+      "anchor": [
+        {
+          "id": "an",
+          "text": "여기 있으면 됩니다.",
+          "files": [
+            "audio/narration/unknown/an-0.mp3"
+          ]
+        }
       ]
     },
     "awoken": {
@@ -1829,6 +1865,15 @@
             "audio/narration/calm/f3-4.mp3"
           ]
         }
+      ],
+      "anchor": [
+        {
+          "id": "an",
+          "text": "잠깐이면 됩니다.",
+          "files": [
+            "audio/narration/calm/an-0.mp3"
+          ]
+        }
       ]
     },
     "nap": {
@@ -1928,6 +1973,15 @@
             "audio/narration/nap/r3-7.mp3",
             "audio/narration/nap/r3-8.mp3",
             "audio/narration/nap/r3-9.mp3"
+          ]
+        }
+      ],
+      "anchor": [
+        {
+          "id": "an",
+          "text": "짧게 쉬면 됩니다.",
+          "files": [
+            "audio/narration/nap/an-0.mp3"
           ]
         }
       ]

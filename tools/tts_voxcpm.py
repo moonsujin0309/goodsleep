@@ -431,7 +431,11 @@ def main():
     for sid in targets:
         (OUT_DIR / sid).mkdir(parents=True, exist_ok=True)
         state = states[sid]
-        for layer in state.get("sequence", DEFAULT_LAYERS):
+        # anchor(후렴)는 sequence 에 없지만 조각 풀이라 똑같이 뽑아야 한다
+        layers = list(state.get("sequence", DEFAULT_LAYERS))
+        if state.get("anchor"):
+            layers.append("anchor")
+        for layer in layers:
             for piece in state.get(layer, []):
                 parts = split_chunks(piece.get("text", ""))
                 if not parts:

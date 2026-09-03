@@ -32,6 +32,10 @@ STATES = {
     "label": "마음이 불안해요",
     "night": True,
     "sequence": ["settle", "breath", "release", "release2", "drift", "fade", "tail"],
+    # 후렴 — 층이 바뀔 때마다 이 한 문장이 돌아온다 (정의 4.3.2).
+    # 층끼리 이어지는 말을 못 갖는 조립식 구조에서, 매번 같은 말이 돌아오는 것이
+    # 7개 조각을 하나로 묶는 유일한 끈이다.
+    "anchor": [{"id": "an", "text": "여기서는 괜찮습니다."}],
 
     "settle": [
         {"id": "s1", "text":
@@ -293,6 +297,10 @@ STATES = {
     "label": "몸은 피곤한데 못 자요",
     "night": True,
     "sequence": ["settle", "breath", "release", "release2", "drift", "fade", "tail"],
+    # 후렴 — 층이 바뀔 때마다 이 한 문장이 돌아온다 (정의 4.3.2).
+    # 층끼리 이어지는 말을 못 갖는 조립식 구조에서, 매번 같은 말이 돌아오는 것이
+    # 7개 조각을 하나로 묶는 유일한 끈이다.
+    "anchor": [{"id": "an", "text": "몸은 쉬어도 됩니다."}],
 
     "settle": [
         {"id": "s1", "text":
@@ -599,6 +607,10 @@ STATES = {
     "label": "그냥 잠이 안 와요",
     "night": True,
     "sequence": ["settle", "breath", "release", "release2", "drift", "fade", "tail"],
+    # 후렴 — 층이 바뀔 때마다 이 한 문장이 돌아온다 (정의 4.3.2).
+    # 층끼리 이어지는 말을 못 갖는 조립식 구조에서, 매번 같은 말이 돌아오는 것이
+    # 7개 조각을 하나로 묶는 유일한 끈이다.
+    "anchor": [{"id": "an", "text": "여기 있으면 됩니다."}],
 
     "settle": [
         {"id": "s1", "text":
@@ -902,6 +914,10 @@ STATES = {
     "label": "잠깐 마음 가라앉히기",
     "night": False,
     "sequence": ["settle", "breath", "fade"],
+    # 후렴 — 층이 바뀔 때마다 이 한 문장이 돌아온다 (정의 4.3.2).
+    # 층끼리 이어지는 말을 못 갖는 조립식 구조에서, 매번 같은 말이 돌아오는 것이
+    # 7개 조각을 하나로 묶는 유일한 끈이다.
+    "anchor": [{"id": "an", "text": "잠깐이면 됩니다."}],
 
     "settle": [
         {"id": "s1", "text":
@@ -988,6 +1004,10 @@ STATES = {
     "label": "낮잠",
     "night": False,
     "sequence": ["settle", "release"],
+    # 후렴 — 층이 바뀔 때마다 이 한 문장이 돌아온다 (정의 4.3.2).
+    # 층끼리 이어지는 말을 못 갖는 조립식 구조에서, 매번 같은 말이 돌아오는 것이
+    # 7개 조각을 하나로 묶는 유일한 끈이다.
+    "anchor": [{"id": "an", "text": "짧게 쉬면 됩니다."}],
 
     "settle": [
         {"id": "s1", "text":

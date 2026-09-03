@@ -575,7 +575,26 @@ export const LAYER_GAP = {
   // 2단계(2026-09-02): 이완이 하체(release)·상체(release2)로 갈라졌고,
   // 여운(tail)이 생겼다 — 짧은 문장 사이를 아주 길게 벌려, 말이 뜸해지다 사라진다.
   release2: 3.6, tail: 4.6,
+  anchor: 3.0,                             // 후렴은 한 문장이라 실제로는 안 쓰인다
   intro: 1.0, body: 1.2, outro: 1.45,      // 아직 3층인 상태들
+};
+
+/**
+ * 층마다 목소리가 조금씩 작아진다.
+ *
+ * "점점 느려진다"를 지금까지 침묵 하나로만 만들었는데(LAYER_GAP 1.2 → 4.6),
+ * 명상 녹음은 실제로 뒤로 갈수록 작아진다. 축을 하나 더 두면 같은 대본도
+ * 다르게 들린다 — 대본을 늘리지 않고 얻는 변화라 값이 싸다.
+ *
+ * 폭은 좁게 잡는다. 전체 -3.1dB 뿐이다. 크게 내리면 tail 이 안 들리는데,
+ * 여운은 안 들리는 게 아니라 **들리다 사라져야** 한다.
+ * mp3 는 손대지 않는다 — 재생 시점에 사용자 음량에 곱한다.
+ */
+export const LAYER_VOL = {
+  settle: 1, breath: 0.98, release: 0.94, release2: 0.9,
+  drift: 0.85, fade: 0.78, tail: 0.7,
+  intro: 1, body: 0.94, outro: 0.82,       // 아직 3층인 상태들
+  // anchor 는 여기 없다 — 앞 층의 음량을 물려받는다 (_speak 참조)
 };
 
 /** 기기에 있는 한국어 음성 목록. 기기마다 크게 다르다. */
@@ -600,6 +619,9 @@ export class NarrationPlayer {
     this.leadSeconds = Math.min(2, gapSeconds / 2);
     this.sentenceGap = sentenceGap;
     this.volume = volume;
+    // 층별 음량(LAYER_VOL)을 곱한 실제 값. 조각마다 _speak 이 다시 잡는다.
+    this._vol = volume;
+    this._lastVol = 1;
     this.voiceURI = voiceURI;
     this.rate = rate;
     this.pitch = pitch;
@@ -690,6 +712,9 @@ export class NarrationPlayer {
       parts = order.map((k) => parts[k]);
     }
     const layerGap = (LAYER_GAP[piece.layer] ?? 1) * this.gapScale;
+    // 후렴은 층 사이에 놓이므로 앞 층의 음량을 그대로 쓴다 — 그래야 계단이 안 생긴다.
+    this._lastVol = piece.layer === 'anchor' ? this._lastVol : (LAYER_VOL[piece.layer] ?? 1);
+    this._vol = this.volume * this._lastVol;
 
     for (let i = 0; i < parts.length; i++) {
       if (this.stopped) return;
@@ -718,8 +743,8 @@ export class NarrationPlayer {
    */
   async _srcFor(path) {
     // 기본값(1.0)이면 손댈 게 없다. 줄이기만 한다면 볼륨이 먹는 기기에서는 그쪽이 싸다.
-    if (this.volume === 1 || (VOLUME_SETTABLE && this.volume < 1)) return path;
-    const key = `${path}@${this.volume.toFixed(2)}`;
+    if (this._vol === 1 || (VOLUME_SETTABLE && this._vol < 1)) return path;
+    const key = `${path}@${this._vol.toFixed(2)}`;
     if (this._gain?.key === key) return this._gain.url;
     try {
       const res = await fetch(path);
@@ -729,7 +754,7 @@ export class NarrationPlayer {
       const left = buf.getChannelData(0);
       const right = buf.numberOfChannels > 1 ? buf.getChannelData(1) : left;
       const url = URL.createObjectURL(
-        new Blob([wavBytes({ left, right, rate: buf.sampleRate }, this.volume)], { type: 'audio/wav' }),
+        new Blob([wavBytes({ left, right, rate: buf.sampleRate }, this._vol)], { type: 'audio/wav' }),
       );
       if (this._gain) URL.revokeObjectURL(this._gain.url);
       this._gain = { key, url };
@@ -743,7 +768,7 @@ export class NarrationPlayer {
     return new Promise((resolve) => {
       const el = this.el;
       el.src = url;
-      el.volume = Math.min(1, this.volume);   // 구운 경우 여긴 1 이면 된다
+      el.volume = Math.min(1, this._vol);     // 구운 경우 여긴 1 이면 된다
       const done = () => {
         // 숫자 세기 박자 계산용 — 방금 토막이 실제로 몇 초였는지
         this._lastDur = Number.isFinite(el.duration) ? el.duration : 0;
@@ -764,7 +789,7 @@ export class NarrationPlayer {
       u.lang = 'ko-KR';
       u.rate = this.rate;     // 수면 나레이션은 느리게
       u.pitch = this.pitch;
-      u.volume = this.volume;
+      u.volume = this._vol;
       const voices = koreanVoices();
       const picked = voices.find((v) => v.voiceURI === this.voiceURI) || voices[0];
       if (picked) u.voice = picked;

@@ -1,6 +1,8 @@
 // 나레이션 조립 엔진
 // 이 앱의 핵심: 통짜 트랙이 아니라 층별 조각을 뽑아 이어 붙인다.
-// 밤 상태는 7층 × 조각 3개 = 조합 2,187개. 여기에 최근 이력 배제를 얹어 반복 체감을 없앤다.
+// 밤 상태는 7층. 조합은 2,187 ~ 8,748개이고 최근 이력 배제를 얹는다.
+// 다만 사람은 조합(튜플)이 아니라 층을 느낀다 — 층당 3개면 같은 조각이 3밤마다
+// 돌아온다. 그래서 층 사이에 후렴(anchor)을 끼워 반복을 설계로 바꿨다.
 
 const HISTORY_KEEP = 8;
 
@@ -56,6 +58,13 @@ export function buildSequence(state, history = {}, rand = Math.random) {
     const key = `${state.id}.${layer}`;
     const chosen = pickWithHistory(pool, history[key] || [], rand);
     if (!chosen) continue;
+    // 층이 바뀔 때마다 같은 한 문장을 끼운다 (후렴).
+    // 조각은 서로 교체 가능해야 해서 층끼리 이어지는 말을 못 갖는다 — 그래서
+    // 7층이 클립 일곱 개로 들렸다. 매번 돌아오는 한 줄이 그 사이를 묶어 준다.
+    // 반복이 우연이면 결함이지만 설계면 척추가 된다 (정의 4.4 "반복은 결함이 아니다").
+    if (state.anchor?.length && picks.length) {
+      picks.push({ ...state.anchor[0], layer: 'anchor' });
+    }
     picks.push({ ...chosen, layer });
     nextHistory[key] = pushHistory(history[key] || [], chosen.id);
   }
