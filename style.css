@@ -175,31 +175,37 @@ main {
   min-height: 40px;
 }
 
-.brand { font-size: 14px; font-weight: 600; letter-spacing: 0.06em; color: var(--text-2); }
+/* 워드마크도 나레이션의 명조 — 로고 없이 서체가 곧 정체성이다 */
+.brand {
+  font-family: var(--font-serif);
+  font-size: 17px; font-weight: 700; letter-spacing: 0.03em;
+  color: var(--text);
+}
 
-/* ── 홈 히어로 — 오늘의 하늘을 화면에 들인다 ──────────────── */
+/* ── 홈 — 에디토리얼 좌정렬 (2026-09-03) ──────────────────
+   전부 가운데 정렬된 대칭 구성은 어느 앱에나 있는 얼굴이다.
+   질문(명조 대형 2줄)이 주인공, 시계·날짜는 오버라인 한 줄, 달은 상단 구석의 장식. */
 
-.hero { text-align: center; margin: var(--sp-4) 0 var(--sp-7); }
-.hero .moon {
-  width: 76px; height: 76px;
-  margin-bottom: var(--sp-2);
-  filter: drop-shadow(0 0 26px rgba(234, 223, 198, 0.3));
+.home-top { justify-content: space-between; margin-bottom: var(--sp-8); }
+.home-top .moon {
+  width: 44px; height: 44px; margin: -8px 0;
+  filter: drop-shadow(0 0 16px rgba(234, 223, 198, 0.35));
   animation: moon-float 7s ease-in-out infinite alternate;
 }
 @keyframes moon-float {
   from { transform: translateY(0); }
-  to   { transform: translateY(-6px); }
+  to   { transform: translateY(-4px); }
 }
-.hero-clock {
-  font-size: 56px; font-weight: 200;
-  letter-spacing: -0.02em; line-height: 1.1;
-  color: var(--text);
-  text-shadow: 0 0 32px rgba(234, 223, 198, 0.16);   /* 달빛이 스민 숫자 */
-}
-.hero-date { margin: var(--sp-1) 0 0; font-size: 14px; letter-spacing: 0.02em; color: var(--text-2); }
 
-#s-home .lede, #s-home .sub { text-align: center; }
-#s-home .sub { margin-bottom: var(--sp-5); }
+.overline {
+  font-size: 13px; color: var(--text-3); letter-spacing: 0.03em;
+  margin: 0 0 var(--sp-3);
+}
+.overline .sep { margin: 0 var(--sp-2); opacity: 0.6; }
+
+.lede-xl { font-size: 38px; line-height: 1.32; margin-bottom: var(--sp-3); }
+
+#s-home .sub { margin-bottom: var(--sp-6); max-width: 32ch; }
 
 .iconbtn {
   width: var(--tap);
@@ -254,6 +260,16 @@ main {
     0 1px 2px rgba(0, 0, 0, 0.4),
     0 8px 24px -12px rgba(0, 0, 0, 0.7);
   transition: background-color 200ms var(--ease), scale 130ms var(--ease), box-shadow 200ms var(--ease);
+  position: relative;
+  overflow: hidden;
+}
+/* 상태의 색이 왼쪽 가장자리에서 옅게 번진다 — 다섯 개의 밤이 저마다 다른 문 */
+.state::before {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(85% 150% at 0% 50%, var(--dot-soft, var(--violet-soft)), transparent 55%);
+  pointer-events: none;
 }
 .state:hover { background: var(--surface-2); }
 .state:active { scale: 0.98; }
@@ -265,7 +281,6 @@ main {
   box-shadow: 0 0 0 5px var(--dot-soft, var(--violet-soft)),
               0 0 14px 1px var(--dot, var(--violet));
 }
-.state .arrow { margin-left: auto; color: var(--text-3); width: 16px; height: 16px; }
 
 /* ── 버튼 ──────────────────────────────────────────────── */
 
@@ -669,9 +684,8 @@ input[type='range']:disabled { cursor: not-allowed; }
 /* 작은 폰(SE·미니류, 세로 720px 미만)에서는 크기를 한 단계 줄인다 —
    크게 보이는 것보다 스크롤 없이 다 보이는 쪽이 "잘 보이는" 것이다. */
 @media (max-height: 720px) {
-  .hero { margin: 0 0 var(--sp-5); }
-  .hero .moon { width: 60px; height: 60px; }
-  .hero-clock { font-size: 44px; }
+  .home-top { margin-bottom: var(--sp-6); }
+  .lede-xl { font-size: 32px; }
   #s-breathe .breath { width: 224px; height: 224px; }
   #s-breathe .breath .count { font-size: 44px; }
 }

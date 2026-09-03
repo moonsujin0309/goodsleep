@@ -171,8 +171,7 @@ function renderStates() {
     b.className = 'state';
     b.style.setProperty('--dot', STATE_HUES[id] || 'var(--violet)');
     b.style.setProperty('--dot-soft', (STATE_HUES[id] || '#8A78C4') + '29');
-    b.innerHTML = `<span class="dot"></span><span>${st.label}</span>
-                   <svg class="icon arrow"><use href="#i-next"/></svg>`;
+    b.innerHTML = `<span class="dot"></span><span>${st.label}</span>`;
     b.addEventListener('click', () => openPrepare(id));
     list.appendChild(b);
   }

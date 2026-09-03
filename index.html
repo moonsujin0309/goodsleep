@@ -67,29 +67,28 @@ window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(argu
 
     <!-- ── 홈 ─────────────────────────────────────────── -->
     <section id="s-home" class="screen is-active" aria-labelledby="home-h">
-      <header class="top">
+      <!-- 락스크린처럼 시계가 주인공이던 구성을 버렸다 (2026-09-03).
+           머리맡 앱의 주인공은 "오늘 밤 어떤가"라는 질문이다 — 시계·날짜는 오버라인 한 줄로. -->
+      <header class="top home-top">
         <span class="brand" data-app-name>굿슬립</span>
+        <!-- 오늘 달 — 위상은 app.js 가 계산해서 그림자 위치로 그린다 -->
+        <svg class="moon" viewBox="0 0 64 64" aria-hidden="true">
+          <circle cx="32" cy="32" r="22" fill="rgba(234, 223, 198, 0.07)"/>
+          <defs>
+            <mask id="moon-mask">
+              <rect width="64" height="64" fill="black"/>
+              <circle cx="32" cy="32" r="15" fill="white"/>
+              <circle id="moon-shadow" cx="32" cy="32" r="15.5" fill="black"/>
+            </mask>
+          </defs>
+          <circle cx="32" cy="32" r="15" fill="rgba(234, 223, 198, 0.16)"/>
+          <circle cx="32" cy="32" r="15" fill="#EADFC6" mask="url(#moon-mask)"/>
+        </svg>
       </header>
 
       <div class="stagger">
-        <div class="hero">
-          <!-- 오늘 달 — 위상은 app.js 가 계산해서 그림자 위치로 그린다 -->
-          <svg class="moon" viewBox="0 0 64 64" aria-hidden="true">
-            <circle cx="32" cy="32" r="22" fill="rgba(234, 223, 198, 0.07)"/>
-            <defs>
-              <mask id="moon-mask">
-                <rect width="64" height="64" fill="black"/>
-                <circle cx="32" cy="32" r="15" fill="white"/>
-                <circle id="moon-shadow" cx="32" cy="32" r="15.5" fill="black"/>
-              </mask>
-            </defs>
-            <circle cx="32" cy="32" r="15" fill="rgba(234, 223, 198, 0.16)"/>
-            <circle cx="32" cy="32" r="15" fill="#EADFC6" mask="url(#moon-mask)"/>
-          </svg>
-          <div class="hero-clock num" id="home-clock"></div>
-          <p class="hero-date" id="home-date"></p>
-        </div>
-        <h1 class="lede" id="home-h">오늘 밤은 어떤가요?</h1>
+        <p class="overline"><span class="num" id="home-clock"></span><span class="sep">·</span><span id="home-date"></span></p>
+        <h1 class="lede lede-xl" id="home-h">오늘 밤은<br>어떤가요?</h1>
         <p class="sub" id="home-sub">고른 상태에 맞는 이야기가 나옵니다. 매번 다른 이야기입니다.</p>
         <div class="states" id="state-list"></div>
       </div>
