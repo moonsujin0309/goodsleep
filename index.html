@@ -36,7 +36,7 @@ window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(argu
 <link rel="manifest" href="manifest.json">
 <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="on-home">
 
 <svg class="sr" aria-hidden="true">
   <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></symbol>
@@ -67,44 +67,44 @@ window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(argu
 
     <!-- ── 홈 ─────────────────────────────────────────── -->
     <section id="s-home" class="screen is-active" aria-labelledby="home-h">
-      <!-- 락스크린처럼 시계가 주인공이던 구성을 버렸다 (2026-09-03).
-           머리맡 앱의 주인공은 "오늘 밤 어떤가"라는 질문이다 — 시계·날짜는 오버라인 한 줄로. -->
+      <!-- 씬(사진·영상)이 화면 위쪽을 지배하고, 선택지는 아래 시트에 모인다 (2026-09-04).
+           상단은 워드마크 + 달·시각뿐 — 밤하늘을 가리는 것을 최소로. -->
       <header class="top home-top">
         <span class="brand" data-app-name>굿슬립</span>
-        <!-- 오늘 달 — 위상은 app.js 가 계산해서 그림자 위치로 그린다 -->
-        <svg class="moon" viewBox="0 0 64 64" aria-hidden="true">
-          <circle cx="32" cy="32" r="22" fill="rgba(234, 223, 198, 0.07)"/>
-          <defs>
-            <mask id="moon-mask">
-              <rect width="64" height="64" fill="black"/>
-              <circle cx="32" cy="32" r="15" fill="white"/>
-              <circle id="moon-shadow" cx="32" cy="32" r="15.5" fill="black"/>
-            </mask>
-          </defs>
-          <circle cx="32" cy="32" r="15" fill="rgba(234, 223, 198, 0.16)"/>
-          <circle cx="32" cy="32" r="15" fill="#EADFC6" mask="url(#moon-mask)"/>
-        </svg>
+        <span class="now">
+          <!-- 오늘 달 — 위상은 app.js 가 계산해서 그림자 위치로 그린다 -->
+          <svg class="moon" viewBox="0 0 64 64" aria-hidden="true">
+            <defs>
+              <mask id="moon-mask">
+                <rect width="64" height="64" fill="black"/>
+                <circle cx="32" cy="32" r="15" fill="white"/>
+                <circle id="moon-shadow" cx="32" cy="32" r="15.5" fill="black"/>
+              </mask>
+            </defs>
+            <circle cx="32" cy="32" r="15" fill="rgba(234, 223, 198, 0.16)"/>
+            <circle cx="32" cy="32" r="15" fill="#EADFC6" mask="url(#moon-mask)"/>
+          </svg>
+          <span class="num" id="home-clock"></span><span class="sep">·</span><span id="home-date"></span>
+        </span>
       </header>
-
-      <div class="stagger">
-        <p class="overline"><span class="num" id="home-clock"></span><span class="sep">·</span><span id="home-date"></span></p>
-        <h1 class="lede lede-xl" id="home-h">오늘 밤은<br>어떤가요?</h1>
-        <p class="sub" id="home-sub">고른 상태에 맞는 이야기가 나옵니다. 매번 다른 이야기입니다.</p>
-        <div class="states" id="state-list"></div>
-      </div>
 
       <div class="spacer"></div>
 
-      <div class="foot">
-        <button class="btn btn-quiet" data-go="breathe">
-          <svg class="icon"><use href="#i-breath"/></svg> 호흡
-        </button>
-        <button class="btn btn-quiet" data-go="day">
-          <svg class="icon"><use href="#i-sun"/></svg> 낮에 잠깐
-        </button>
-        <button class="btn btn-quiet" data-go="report">
-          <svg class="icon"><use href="#i-chart"/></svg> 기록
-        </button>
+      <div class="sheet stagger">
+        <h1 class="lede sheet-title" id="home-h">오늘 밤은 어떤가요?</h1>
+        <p class="sub" id="home-sub">고른 상태에 맞는 이야기가 나옵니다. 매번 다른 이야기입니다.</p>
+        <div class="states" id="state-list"></div>
+        <div class="foot">
+          <button class="btn btn-quiet" data-go="breathe">
+            <svg class="icon"><use href="#i-breath"/></svg> 호흡
+          </button>
+          <button class="btn btn-quiet" data-go="day">
+            <svg class="icon"><use href="#i-sun"/></svg> 낮에 잠깐
+          </button>
+          <button class="btn btn-quiet" data-go="report">
+            <svg class="icon"><use href="#i-chart"/></svg> 기록
+          </button>
+        </div>
       </div>
     </section>
 

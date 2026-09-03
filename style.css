@@ -178,34 +178,81 @@ main {
 /* 워드마크도 나레이션의 명조 — 로고 없이 서체가 곧 정체성이다 */
 .brand {
   font-family: var(--font-serif);
-  font-size: 17px; font-weight: 700; letter-spacing: 0.03em;
+  font-size: 16px; font-weight: 700; letter-spacing: 0.03em;
   color: var(--text);
 }
 
-/* ── 홈 — 에디토리얼 좌정렬 (2026-09-03) ──────────────────
-   전부 가운데 정렬된 대칭 구성은 어느 앱에나 있는 얼굴이다.
-   질문(명조 대형 2줄)이 주인공, 시계·날짜는 오버라인 한 줄, 달은 상단 구석의 장식. */
+/* ── 홈 — 씬이 주인공, 선택지는 아래 시트 (2026-09-04) ─────
+   화면 위 절반은 밤하늘(사진·영상)이 그대로 보이고, 상단엔 워드마크와 달·시각뿐.
+   선택지는 바닥에 붙은 시트 한 장에 모인다 — 위는 열려 있고 아래는 손에 닿는다. */
 
-.home-top { justify-content: space-between; margin-bottom: var(--sp-8); }
+.home-top { justify-content: space-between; margin-bottom: 0; }
+.home-top .now {
+  display: flex; align-items: center; gap: var(--sp-2);
+  font-size: 12.5px; color: var(--text-2); letter-spacing: 0.02em;
+  text-shadow: 0 1px 10px rgba(10, 9, 18, 0.8);
+}
+.home-top .now .sep { opacity: 0.55; }
 .home-top .moon {
-  width: 44px; height: 44px; margin: -8px 0;
-  filter: drop-shadow(0 0 16px rgba(234, 223, 198, 0.35));
+  width: 26px; height: 26px;
+  filter: drop-shadow(0 0 10px rgba(234, 223, 198, 0.4));
   animation: moon-float 7s ease-in-out infinite alternate;
 }
 @keyframes moon-float {
   from { transform: translateY(0); }
-  to   { transform: translateY(-4px); }
+  to   { transform: translateY(-2px); }
 }
 
-.overline {
-  font-size: 13px; color: var(--text-3); letter-spacing: 0.03em;
-  margin: 0 0 var(--sp-3);
+/* 홈에서는 씬을 가리는 스크림을 걷는다 — 아래쪽만 시트로 이어지게 어두워진다 */
+body.on-home #scene {
+  background: linear-gradient(rgba(10, 9, 18, 0.2), rgba(10, 9, 18, 0.24) 40%, rgba(10, 9, 18, 0.6) 66%, rgba(10, 9, 18, 0.85));
 }
-.overline .sep { margin: 0 var(--sp-2); opacity: 0.6; }
 
-.lede-xl { font-size: 38px; line-height: 1.32; margin-bottom: var(--sp-3); }
+/* 바닥 시트 — 셸 패딩을 뚫고 화면 좌우·아래 끝까지 닿는다 */
+.sheet {
+  margin-top: auto;
+  margin-inline: calc(-1 * (env(safe-area-inset-left, 0px) + var(--sp-5)));
+  margin-bottom: calc(-1 * (env(safe-area-inset-bottom, 0px) + var(--sp-5)));
+  padding: var(--sp-5)
+           calc(env(safe-area-inset-left, 0px) + var(--sp-5))
+           calc(env(safe-area-inset-bottom, 0px) + var(--sp-4));
+  background: rgba(12, 10, 20, 0.88);
+  border-radius: 30px 30px 0 0;
+  box-shadow: inset 0 1px 0 rgba(233, 227, 220, 0.07), 0 -24px 60px -30px rgba(0, 0, 0, 0.9);
+}
+.sheet-title { font-size: 23px; margin-bottom: var(--sp-1); }
+.sheet .sub { margin-bottom: var(--sp-4); font-size: 13.5px; }
 
-#s-home .sub { margin-bottom: var(--sp-6); }
+/* 시트 안의 상태 행 — 카드가 아니라 행. 무게를 덜고 색점만 남긴다 */
+.sheet .states { gap: var(--sp-2); }
+.sheet .state {
+  min-height: 56px;
+  padding: var(--sp-3) var(--sp-4);
+  font-size: 16px;
+  background: rgba(233, 227, 220, 0.05);
+  border-radius: var(--r-md);
+  box-shadow: none;
+}
+.sheet .state::before { opacity: 0.6; }
+
+/* 시트 하단 네비 — 면 없는 텍스트 셋 (후보 3의 정돈감) */
+.sheet .foot {
+  justify-content: space-between;
+  margin-top: var(--sp-3);
+  padding: 0 var(--sp-2);
+}
+.sheet .foot .btn {
+  flex: none; width: auto;
+  box-shadow: none;
+  color: var(--text-3);
+  font-size: 14px; font-weight: 500;
+  min-height: 44px;
+  padding: 0 var(--sp-2);
+}
+.sheet .foot .btn:hover { color: var(--text); background: none; }
+.sheet .foot .icon { display: none; }
+
+.lede-xl { font-size: 32px; line-height: 1.35; margin-bottom: var(--sp-3); }
 
 .iconbtn {
   width: var(--tap);
@@ -226,12 +273,12 @@ main {
    명조는 같은 크기에서 가늘어 보여 2px 키운다. */
 .lede {
   font-family: var(--font-serif);
-  font-size: 28px; line-height: 1.42; font-weight: 400;
+  font-size: 24px; line-height: 1.45; font-weight: 400;
   letter-spacing: -0.005em;
   margin: 0 0 var(--sp-2);
 }
 /* 본문 줄은 화면 끝까지 닿지 않는다 — 34자 언저리에서 접어야 폰에서 갑갑하지 않다 */
-.sub  { font-size: 15px; line-height: 1.75; color: var(--text-2); max-width: 34ch; margin: 0 0 var(--sp-6); }
+.sub  { font-size: 14px; line-height: 1.75; color: var(--text-2); max-width: 36ch; margin: 0 0 var(--sp-6); }
 #s-alarm .sub { margin-inline: auto; }   /* 알람 화면만 중앙 정렬이라 가운데로 */
 .eyebrow {
   font-size: 12px; font-weight: 600; letter-spacing: 0.1em;
@@ -377,7 +424,7 @@ main {
 .rail {
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: 148px;
+  grid-auto-columns: 232px;   /* 풀블리드 카드 (2026-09-04). 좁은 카드 148px 시절의 스냅 주석 참조 */
   gap: var(--sp-3);
   overflow-x: auto;
   /* proximity 여야 한다. mandatory 는 살짝 미는 스와이프를 원위치로 튕겨서
@@ -414,9 +461,12 @@ main {
               0 8px 22px -14px rgba(0, 0, 0, 0.9);
 }
 
+/* 풀블리드 — 사진이 카드 전체를 채우고 글자는 그 위에 얹힌다 (2026-09-04) */
+.preset { position: relative; height: 276px; }
 .preset .art {
-  position: relative;
-  height: 92px;
+  position: absolute;
+  inset: 0;
+  height: auto;
   background: linear-gradient(160deg, var(--from), var(--to));
   overflow: hidden;
   /* 사진 톤이 제각각이라 가장자리에 옅은 흰 윤곽을 둘러 카드 면과 분리한다 */
@@ -432,11 +482,20 @@ main {
   opacity: 0.5;
 }
 
-.preset .body { padding: var(--sp-3) var(--sp-3) var(--sp-4); }
-.preset .name { display: block; font-size: 15px; font-weight: 600; color: var(--text); }
+.preset .body {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  padding: var(--sp-6) var(--sp-4) var(--sp-4);
+  /* 글자가 앉을 자리만 어두워진다 — 사진 위 오버레이 */
+  background: linear-gradient(180deg, transparent, rgba(10, 9, 18, 0.55) 35%, rgba(10, 9, 18, 0.85));
+}
+.preset .name {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: 18px; font-weight: 700; color: var(--text);
+}
 .preset .note {
   display: block; margin-top: 2px;
-  font-size: 12px; line-height: 1.5; color: var(--text-3);
+  font-size: 12px; line-height: 1.5; color: var(--text-2);
   background: none; padding: 0; box-shadow: none; border-radius: 0;
 }
 .preset[aria-pressed='true'] .name { color: var(--accent); }
@@ -457,7 +516,7 @@ main {
 .preset .art::after {
   content: '';
   position: absolute; inset: 0;
-  background: linear-gradient(180deg, rgba(10, 9, 18, 0.28), transparent 45%);
+  background: linear-gradient(180deg, rgba(10, 9, 18, 0.22), transparent 40%);
   pointer-events: none;
 }
 

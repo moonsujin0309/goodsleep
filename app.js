@@ -113,6 +113,8 @@ let breathTick = null;
 
 function go(name) {
   $$('.screen').forEach((s) => s.classList.toggle('is-active', s.id === `s-${name}`));
+  // 홈에서만 씬 스크림을 걷는다 — 다른 화면은 글 대비를 위해 어둡게 유지 (style.css)
+  document.body.classList.toggle('on-home', name === 'home');
   if (name === 'report') renderReport();
   // 홈은 적막하면 안 된다 — 멈추기·알람 뒤에 돌아와도 고른 배경음이 다시 흐른다.
   // 첫 진입은 openBed(첫 터치)가 연다. unlock 전이면 여기서는 할 게 없다.
