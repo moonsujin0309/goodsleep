@@ -242,12 +242,16 @@ const SCENES = {
     },
   },
 
-  // 아래 셋은 사진도 영상도 없이 캔버스만으로 그린다 — 파일 0바이트,
-  // 그래서 루프 되감기 자체가 없다. 대신 입자 수를 낮게 잡는다 (밤새 도는 그림이다).
+  // 아래 셋도 이제 영상이 있다 (2026-09-04, Pexels — assets/LICENSES.md).
+  // 캔버스는 받침이자 보조다: 눈은 영상 위에 입자를 더 얹어 깊이를 만들고,
+  // 오로라·달과 구름은 영상 속에 이미 오로라·달이 있어서 캔버스 그림이 겹치면
+  // 둘이 되므로 영상이 재생되는 동안은 캔버스를 쉬게 한다 (liveOff).
 
   snow: {
     label: '눈',
     sky: ['#070A12', '#101828', '#1A2740'],
+    photo: 'assets/scenes/snow.jpg',    // 가로등 아래 골목 눈. 캔버스 눈이 깊이를 더한다
+    video: 'assets/scenes/snow.mp4',
     init(w, h) {
       const mk = (count, far) => Array.from({ length: count }, () => ({
         x: Math.random() * w,
@@ -290,6 +294,9 @@ const SCENES = {
   aurora: {
     label: '오로라',
     sky: ['#04060D', '#07101A', '#0A1B24'],
+    photo: 'assets/scenes/aurora.jpg',  // 3배 슬로우 재인코딩 — 실속도 오로라 스톡은 없다
+    video: 'assets/scenes/aurora.mp4',
+    liveOff: true,                      // 사진·영상에 오로라가 있다 — 캔버스는 쉰다 (_loop 참조)
     init(w, h) {
       return {
         stars: Array.from({ length: 45 }, () => ({
@@ -340,6 +347,9 @@ const SCENES = {
   clouds: {
     label: '달과 구름',
     sky: ['#06080F', '#0D1220', '#161E31'],
+    photo: 'assets/scenes/clouds.jpg',  // 실속도 — 구름이 달을 스치는 진짜 속도
+    video: 'assets/scenes/clouds.mp4',
+    liveOff: true,                      // 사진·영상에 달이 있다 — 캔버스 달이 겹치면 달이 둘 (_loop 참조)
     init(w, h) {
       // 구름 한 장을 미리 그려 두고 옆으로 밀기만 한다. 두 번 겹쳐 그려서 끊김 없이 이어진다.
       const ch = Math.round(h * 0.3);
@@ -543,7 +553,10 @@ export class SceneRenderer {
     const step = (t) => {
       const { ctx, w, h } = this;
       ctx.clearRect(0, 0, w, h);
-      SCENES[this.id].draw(ctx, w, h, this.state, t);
+      // liveOff 씬(오로라·달과 구름)은 캔버스를 쉰다 — 사진(영상 프레임)과 영상 속에
+      // 이미 오로라·달이 있어서, 캔버스가 그리면 로딩 전 사진 위에서도 피사체가 둘이 된다.
+      // 사진·영상이 다 실패하는 드문 경우는 sky 그라데이션이 받친다.
+      if (!SCENES[this.id].liveOff) SCENES[this.id].draw(ctx, w, h, this.state, t);
       this.raf = requestAnimationFrame(step);
     };
     this.raf = requestAnimationFrame(step);

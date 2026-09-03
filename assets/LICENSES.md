@@ -29,14 +29,15 @@
 | rain.mp4 | https://www.pexels.com/video/5197762/ |
 | fire.mp4 | https://www.pexels.com/video/11210466/ |
 | waves.mp4 | https://www.pexels.com/video/32864351/ |
+| snow.mp4 | https://www.pexels.com/video/a-snow-falling-at-night-6527469/ |
+| aurora.mp4 | https://www.pexels.com/video/stunning-aurora-borealis-in-night-sky-timelapse-28889010/ (3배 슬로우 재인코딩) |
+| clouds.mp4 | https://www.pexels.com/video/full-moon-6960047/ |
 
-# assets/scenes/ — 재생 화면 배경 사진 (같은 Unsplash License)
+# assets/scenes/ — 배경 정지 사진
 
-| 파일 | 사진가 | 원본 |
-|---|---|---|
-| stars.jpg | Ferenc Horvath | https://unsplash.com/photos/1519810755548-39cd217da494 |
-| rain.jpg | ERIC ZHU | https://unsplash.com/photos/1567688993206-43c34131b21f |
-| waves.jpg | Davide Sibilio | https://unsplash.com/photos/1566342088293-38debd381c63 |
-| fire.jpg | Luke Porter | https://unsplash.com/photos/1464808646948-8f732deb6e4b |
+전부 **위 영상에서 추출한 프레임**이다 (2026-09-04부터). 영상 로딩 전의 대체물이라
+영상과 같은 장면이어야 한다 — 별도 사진을 쓰면 세션 시작 때 장면이 통째로 바뀐다.
+라이선스는 원본 영상의 Pexels License 를 그대로 따른다.
+(2026-09-04 이전에 쓰던 Unsplash 사진 4장은 git 이력에 있다.)
 
 새 사진을 추가하면 반드시 이 표에 한 줄 추가할 것. 라이선스를 모르는 이미지는 넣지 않는다.
