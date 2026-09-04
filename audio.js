@@ -159,6 +159,7 @@ export class SeamlessLoop {
     this._src = '';
     this._x = null;                   // 실시간 크로스페이드 인터벌
     this._xt = null;                  // 파형에 구운 페이드로 넘기는 중(볼륨 안 먹는 기기)
+    this._starting = false;           // 넘겨받을 쪽이 켜지길 기다리는 중
     for (const el of this.els) {
       el.preload = 'none';
       el.volume = 0;
@@ -239,6 +240,7 @@ export class SeamlessLoop {
   pause() {
     if (this._x) { clearInterval(this._x); this._x = null; }
     if (this._xt) { clearTimeout(this._xt); this._xt = null; }
+    this._starting = false;   // 켜지길 기다리던 넘겨주기는 무효다
     clearTimeout(this._bt);
     for (const el of this.els) { el.pause(); el.volume = 0; }
   }
@@ -252,7 +254,7 @@ export class SeamlessLoop {
    * 이제는 소스 양 끝에 페이드를 구워 두므로(`forHandoff`) 겹쳐 두기만 하면 합이 일정하다.
    */
   _tick() {
-    if (this._x || this._xt) return;
+    if (this._x || this._xt || this._starting) return;
     const cur = this.els[this.i];
     if (cur.paused || !Number.isFinite(cur.duration)) return;
     if (cur.duration - cur.currentTime > HANDOFF) return;
@@ -260,9 +262,27 @@ export class SeamlessLoop {
     const next = this.els[1 - this.i];
     next.currentTime = 0;
     next.volume = VOLUME_SETTABLE ? 0 : this._volume;
-    next.play().catch(() => {});
-    this.i = 1 - this.i;
 
+    // **넘겨받을 쪽이 실제로 켜진 것을 확인한 뒤에만** 앞엣것을 재운다 (2026-09-04).
+    //
+    // 전에는 next.play() 의 거부를 삼키고 1.2초 뒤 cur 을 무조건 껐다. 아이폰은 화면이
+    // 잠기면 play() 를 거부할 때가 있는데, 그러면 새것은 안 켜졌는데 앞엣것까지 꺼져
+    // **밤새 무음**이 됐다 (2026-09-03 실사용에서 나왔다 — 배경음만 죽고 목소리는 살아 있었다).
+    // 실패하면 앞엣것을 그대로 둔다. el.loop 안전망이 이어 주므로 최악이 "이음매가
+    // 한 번 들린다" 이고, 다음 바퀴 끝에서 다시 시도한다.
+    this._starting = true;
+    Promise.resolve(next.play()).then(() => {
+      this._starting = false;
+      if (cur.paused) return;                 // 그사이 pause() 가 불렸다
+      this.i = 1 - this.i;
+      this._retire(cur, next);
+    }).catch(() => {
+      this._starting = false;                 // 못 켰다 — cur 은 계속 돈다
+    });
+  }
+
+  /** 겹치는 동안 앞엣것을 재운다. next 가 확실히 켜진 뒤에만 부른다. */
+  _retire(cur, next) {
     // 페이드가 파형에 있는 기기 — 볼륨을 만질 게 없고, 겹치기가 끝나면 앞엣것만 재운다.
     if (!VOLUME_SETTABLE) {
       this._xt = setTimeout(() => {
