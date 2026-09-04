@@ -41,20 +41,39 @@ export function pushHistory(history = [], id) {
 }
 
 /**
+ * 조각의 시간 조건(when). 없으면 언제나 후보다.
+ *
+ * "앱이 오늘을 안다"는 감각을 만드는 장치 — 새벽에 눕는 밤, 일요일 밤 같은
+ * 조각을 그 시간에만 풀에 합류시킨다. 조건 조각은 기본 조각을 대체하지 않고
+ * **후보에 더해질 뿐**이므로, 조건이 하나도 안 맞아도 풀은 비지 않는다.
+ * hours(0~23)·dows(0=일요일)·months(1~12)는 "이 중 하나면 됨" 목록이고,
+ * 적어 둔 축만 검사한다. 축끼리는 전부 맞아야 한다.
+ */
+export function fitsWhen(piece, ctx) {
+  const w = piece.when;
+  if (!w || !ctx) return true;
+  if (w.hours && !w.hours.includes(ctx.hour)) return false;
+  if (w.dows && !w.dows.includes(ctx.dow)) return false;
+  if (w.months && !w.months.includes(ctx.month)) return false;
+  return true;
+}
+
+/**
  * 상태 하나에 대해 재생할 조각 시퀀스를 만든다.
  * 시퀀스 구성은 매니페스트의 sequence 가 정한다 — 코드에 상태별 분기를 두지 않는다.
  *   밤:   ["intro","body","outro"]
  *   깼을 때: ["intro","outro"]        (짧게)
  *   낮잠:  ["intro","body"]           (깊이 들어가면 안 되므로 마무리 없음)
+ * ctx({hour, dow, month})를 주면 when 조건이 맞는 조각만 풀에 남는다.
  */
-export function buildSequence(state, history = {}, rand = Math.random) {
+export function buildSequence(state, history = {}, rand = Math.random, ctx = null) {
   const layers = state.sequence || ['intro', 'body', 'outro'];
   const picks = [];
   const nextHistory = { ...history };
 
   for (const layer of layers) {
-    const pool = state[layer];
-    if (!pool || pool.length === 0) continue;
+    const pool = (state[layer] || []).filter((p) => fitsWhen(p, ctx));
+    if (pool.length === 0) continue;
     const key = `${state.id}.${layer}`;
     const chosen = pickWithHistory(pool, history[key] || [], rand);
     if (!chosen) continue;
@@ -79,5 +98,7 @@ export async function loadManifest(url = 'data/narration.json') {
   const raw = await res.json();
   const states = {};
   for (const [id, s] of Object.entries(raw.states)) states[id] = { ...s, id };
-  return { states, order: raw.order || Object.keys(states) };
+  // journeys — "어디로 갈까요" 그룹 (통짜 스토리·감사의 밤). 상태와 같은 구조,
+  // 홈에서 다른 묶음으로 보일 뿐이다.
+  return { states, order: raw.order || Object.keys(states), journeys: raw.journeys || [] };
 }

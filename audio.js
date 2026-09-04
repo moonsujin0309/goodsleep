@@ -595,6 +595,7 @@ export const LAYER_GAP = {
   // 2단계(2026-09-02): 이완이 하체(release)·상체(release2)로 갈라졌고,
   // 여운(tail)이 생겼다 — 짧은 문장 사이를 아주 길게 벌려, 말이 뜸해지다 사라진다.
   release2: 3.6, tail: 4.6,
+  drift2: 3.0,                             // 감사의 밤 — 두 번째 회상 층 (심상과 같은 호흡)
   anchor: 3.0,                             // 후렴은 한 문장이라 실제로는 안 쓰인다
   intro: 1.0, body: 1.2, outro: 1.45,      // 아직 3층인 상태들
 };
@@ -613,6 +614,7 @@ export const LAYER_GAP = {
 export const LAYER_VOL = {
   settle: 1, breath: 0.98, release: 0.94, release2: 0.9,
   drift: 0.85, fade: 0.78, tail: 0.7,
+  drift2: 0.85,                            // 감사의 밤 두 번째 회상 — drift 와 같은 단
   intro: 1, body: 0.94, outro: 0.82,       // 아직 3층인 상태들
   // anchor 는 여기 없다 — 앞 층의 음량을 물려받는다 (_speak 참조)
 };

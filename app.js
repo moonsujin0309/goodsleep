@@ -132,7 +132,12 @@ function startHomeBed() {
   if (!mixer.unlocked) return;
   mixer.unlock().catch(() => {});   // stopAll 로 멎은 keepAlive 되살리기
   mixer.master = store.settings.bedVolume ?? 1;
-  for (const [id, v] of Object.entries(store.mixer)) if (v > 0) mixer.setVolume(id, v);
+  // 켜기만 하지 말고 **끄기도 한다** — 이야기 세션(온천 등)이 데려온 소리가
+  // 사용자 믹스에 없으면 여기서 꺼져야 홈에서 두 소리가 겹치지 않는다.
+  for (const l of mixer.layers.values()) {
+    const v = store.mixer[l.def.id] || 0;
+    if (v > 0 || l.volume > 0) mixer.setVolume(l.def.id, v);
+  }
 }
 
 $$('[data-go]').forEach((b) => b.addEventListener('click', () => go(b.dataset.go)));
@@ -166,13 +171,15 @@ function setMoonPhase() {
 const STATE_HUES = {
   racing: '#8A78C4', anxious: '#6FA8B8', wired: '#C98B62',
   awoken: '#7C88C9', unknown: '#A79FB4',
+  onsen: '#7FB8A8', gratitude: '#D9A85E',   // 여정 — 온천의 물빛, 감사의 등불빛
 };
 
 function renderStates() {
   const list = $('#state-list');
   list.innerHTML = '';
-  for (const id of manifest.order) {
+  const addRow = (id) => {
     const st = manifest.states[id];
+    if (!st) return;
     const b = document.createElement('button');
     b.className = 'state';
     b.style.setProperty('--dot', STATE_HUES[id] || 'var(--violet)');
@@ -180,6 +187,15 @@ function renderStates() {
     b.innerHTML = `<span class="dot"></span><span>${st.label}</span>`;
     b.addEventListener('click', () => openPrepare(id));
     list.appendChild(b);
+  };
+  manifest.order.forEach(addRow);
+  // "어디로 갈까요" — 증상이 아니라 목적지를 고르는 밤 (통짜 스토리·감사)
+  if (manifest.journeys?.length) {
+    const label = document.createElement('p');
+    label.className = 'group-label';
+    label.textContent = '오늘은 어디로 갈까요';
+    list.appendChild(label);
+    manifest.journeys.forEach(addRow);
   }
 }
 
@@ -526,7 +542,16 @@ async function startSession(stateId, hours, isNap) {
   await mixer.unlock().catch(() => {});   // 클릭 안이라 사실상 성공한다. 실패해도 세션은 연다
   mixer.master = store.settings.bedVolume ?? 1;
   syncPlayMix();
-  for (const [id, v] of Object.entries(store.mixer)) if (v > 0) mixer.setVolume(id, v);
+  // 이야기(state.mix)는 저마다 어울리는 소리를 데려온다 — 온천이면 물소리.
+  // 사용자의 저장 믹스는 건드리지 않는다: 세션 동안만 그 소리가 나고,
+  // 홈으로 돌아오면 startHomeBed 가 원래 믹스를 되돌린다.
+  const sessionMix = state.mix || store.mixer;
+  for (const l of mixer.layers.values()) {
+    const v = sessionMix[l.def.id] || 0;
+    if (v > 0 || l.volume > 0) mixer.setVolume(l.def.id, v);
+  }
+  // 이야기 전용 씬도 같은 원칙 — 세션에서만, 저장은 안 한다 (endSession 이 되돌린다)
+  if (state.scene) scenes.set(state.scene);
 
   const now = Date.now();
   const resuming = stateId === 'awoken' && store.pending;
@@ -534,7 +559,8 @@ async function startSession(stateId, hours, isNap) {
                 : hours > 0 ? now + hours * HOUR
                 : null;
 
-  session = { stateId, isNap, bedAt: resuming ? store.pending.bedAt : now, alarmAt };
+  session = { stateId, isNap, bedAt: resuming ? store.pending.bedAt : now, alarmAt,
+              mix: sessionMix };   // 일시정지→재개가 이야기의 소리를 그대로 되살리게
 
   if (alarmAt) {
     store.pending = { bedAt: session.bedAt, alarmAt, isNap, stateId };
@@ -568,7 +594,10 @@ function startIntro(state) {
 
 function playNarration(state) {
   introState = null;
-  const { picks, nextHistory } = buildSequence(state, store.history);
+  // "앱이 오늘을 안다" — 새벽·일요일 밤 같은 when 조각이 지금 시각에 맞으면 풀에 합류한다
+  const d = new Date();
+  const ctx = { hour: d.getHours(), dow: d.getDay(), month: d.getMonth() + 1 };
+  const { picks, nextHistory } = buildSequence(state, store.history, Math.random, ctx);
   store.history = nextHistory;
   save('history', nextHistory);
 
@@ -721,7 +750,9 @@ function setPaused(on) {
     mixer.fadeAllOut(800);                  // keepAlive 는 안 건드린다 — 알람이 울어야 한다
     scenes.stop();
   } else {
-    for (const [id, v] of Object.entries(store.mixer)) if (v > 0) mixer.setVolume(id, v);
+    // 이야기 세션은 자기 소리(session.mix)로 돌아온다 — 사용자 믹스가 아니라
+    const mix = session?.mix || store.mixer;
+    for (const [id, v] of Object.entries(mix)) if (v > 0) mixer.setVolume(id, v);
     scenes.start();
     if (introState) introTimer = setTimeout(() => playNarration(introState), BED_LEAD_MS);
     else narration?.resume();
@@ -771,6 +802,7 @@ function endSession() {
   clearTimeout(introTimer);
   mixer.duck(false);
   scenes.stop();
+  scenes.set(store.scene);   // 이야기 전용 씬을 쓰고 있었다면 사용자의 씬으로 되돌린다
   $('#app').classList.remove('is-dim');
 }
 

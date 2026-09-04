@@ -77,6 +77,55 @@
             "audio/narration/racing/s3-10.mp3",
             "audio/narration/racing/s3-11.mp3"
           ]
+        },
+        {
+          "id": "s4",
+          "when": {
+            "hours": [
+              0,
+              1,
+              2,
+              3,
+              4
+            ]
+          },
+          "text": "새벽에 눕는 밤입니다. 늦어진 이유는 이제 중요하지 않습니다. 지금부터는 남은 밤을 잘 쓰는 것만 남았습니다. 몸을 눕히고 자리를 잡습니다. 등이 침대에 닿아 있습니다. 짧아진 밤도 밤입니다. 생각은 내일 아침의 몫으로 넘깁니다. 지금은 눕는 일만 합니다. 그거면 충분합니다.",
+          "files": [
+            "audio/narration/racing/s4-0.mp3",
+            "audio/narration/racing/s4-1.mp3",
+            "audio/narration/racing/s4-2.mp3",
+            "audio/narration/racing/s4-3.mp3",
+            "audio/narration/racing/s4-4.mp3",
+            "audio/narration/racing/s4-5.mp3",
+            "audio/narration/racing/s4-6.mp3",
+            "audio/narration/racing/s4-7.mp3",
+            "audio/narration/racing/s4-8.mp3"
+          ]
+        },
+        {
+          "id": "s5",
+          "when": {
+            "dows": [
+              0
+            ],
+            "hours": [
+              19,
+              20,
+              21,
+              22,
+              23
+            ]
+          },
+          "text": "일요일 밤입니다. 내일 일이 벌써 줄을 서 있을 겁니다. 그 줄은 내일 아침에 세워도 늦지 않습니다. 몸을 눕히고 자리를 잡습니다. 일요일의 마지막 일은 잘 눕는 것입니다. 계획은 밝을 때 세워야 더 잘 섭니다. 지금은 밤의 몫만 합니다.",
+          "files": [
+            "audio/narration/racing/s5-0.mp3",
+            "audio/narration/racing/s5-1.mp3",
+            "audio/narration/racing/s5-2.mp3",
+            "audio/narration/racing/s5-3.mp3",
+            "audio/narration/racing/s5-4.mp3",
+            "audio/narration/racing/s5-5.mp3",
+            "audio/narration/racing/s5-6.mp3"
+          ]
         }
       ],
       "breath": [
@@ -456,6 +505,15 @@
         "fade",
         "tail"
       ],
+      "anchor": [
+        {
+          "id": "an",
+          "text": "여기서는 괜찮습니다.",
+          "files": [
+            "audio/narration/anxious/an-0.mp3"
+          ]
+        }
+      ],
       "settle": [
         {
           "id": "s1",
@@ -509,6 +567,56 @@
             "audio/narration/anxious/s3-8.mp3",
             "audio/narration/anxious/s3-9.mp3",
             "audio/narration/anxious/s3-10.mp3"
+          ]
+        },
+        {
+          "id": "s4",
+          "when": {
+            "hours": [
+              0,
+              1,
+              2,
+              3,
+              4
+            ]
+          },
+          "text": "새벽입니다. 세상이 가장 조용한 시간입니다. 이 시간에 깨어 있어도 잘못된 것은 없습니다. 몸을 눕히고 이불을 끌어 덮습니다. 받치는 일은 침대가 합니다. 새벽의 걱정은 실제보다 크게 보입니다. 그래서 지금은 재지 않습니다. 아침의 눈으로 다시 보면 됩니다. 지금은 눕기만 합니다.",
+          "files": [
+            "audio/narration/anxious/s4-0.mp3",
+            "audio/narration/anxious/s4-1.mp3",
+            "audio/narration/anxious/s4-2.mp3",
+            "audio/narration/anxious/s4-3.mp3",
+            "audio/narration/anxious/s4-4.mp3",
+            "audio/narration/anxious/s4-5.mp3",
+            "audio/narration/anxious/s4-6.mp3",
+            "audio/narration/anxious/s4-7.mp3",
+            "audio/narration/anxious/s4-8.mp3"
+          ]
+        },
+        {
+          "id": "s5",
+          "when": {
+            "dows": [
+              0
+            ],
+            "hours": [
+              19,
+              20,
+              21,
+              22,
+              23
+            ]
+          },
+          "text": "일요일 밤입니다. 한 주의 문턱에서 마음이 바빠지기 쉽습니다. 하지만 월요일은 아직 오지 않았습니다. 지금 여기는 아직 일요일의 이불 속입니다. 몸을 눕히고 이불을 덮습니다. 이 밤은 한 주의 준비가 아니라 한 주의 쉼입니다. 잘 쉬는 것이 가장 좋은 준비입니다. 그것만 하면 됩니다.",
+          "files": [
+            "audio/narration/anxious/s5-0.mp3",
+            "audio/narration/anxious/s5-1.mp3",
+            "audio/narration/anxious/s5-2.mp3",
+            "audio/narration/anxious/s5-3.mp3",
+            "audio/narration/anxious/s5-4.mp3",
+            "audio/narration/anxious/s5-5.mp3",
+            "audio/narration/anxious/s5-6.mp3",
+            "audio/narration/anxious/s5-7.mp3"
           ]
         }
       ],
@@ -810,15 +918,6 @@
             "audio/narration/anxious/t3-6.mp3"
           ]
         }
-      ],
-      "anchor": [
-        {
-          "id": "an",
-          "text": "여기서는 괜찮습니다.",
-          "files": [
-            "audio/narration/anxious/an-0.mp3"
-          ]
-        }
       ]
     },
     "wired": {
@@ -832,6 +931,15 @@
         "drift",
         "fade",
         "tail"
+      ],
+      "anchor": [
+        {
+          "id": "an",
+          "text": "몸은 쉬어도 됩니다.",
+          "files": [
+            "audio/narration/wired/an-0.mp3"
+          ]
+        }
       ],
       "settle": [
         {
@@ -883,6 +991,55 @@
             "audio/narration/wired/s3-7.mp3",
             "audio/narration/wired/s3-8.mp3",
             "audio/narration/wired/s3-9.mp3"
+          ]
+        },
+        {
+          "id": "s4",
+          "when": {
+            "hours": [
+              0,
+              1,
+              2,
+              3,
+              4
+            ]
+          },
+          "text": "새벽까지 온 몸입니다. 오래 버틴 만큼 스위치도 천천히 꺼집니다. 서두르지 않아도 됩니다. 몸을 눕히고 자리를 잡습니다. 하루치 일은 이미 끝났습니다. 남은 새벽은 전부 쉬는 시간입니다. 짧아도 깊으면 됩니다. 이제 끄기 시작합니다.",
+          "files": [
+            "audio/narration/wired/s4-0.mp3",
+            "audio/narration/wired/s4-1.mp3",
+            "audio/narration/wired/s4-2.mp3",
+            "audio/narration/wired/s4-3.mp3",
+            "audio/narration/wired/s4-4.mp3",
+            "audio/narration/wired/s4-5.mp3",
+            "audio/narration/wired/s4-6.mp3",
+            "audio/narration/wired/s4-7.mp3"
+          ]
+        },
+        {
+          "id": "s5",
+          "when": {
+            "dows": [
+              0
+            ],
+            "hours": [
+              19,
+              20,
+              21,
+              22,
+              23
+            ]
+          },
+          "text": "일요일 밤입니다. 한 주를 버틸 몸을 오늘 밤에 만듭니다. 만드는 방법은 푹 쉬는 것 하나뿐입니다. 몸을 눕히고 자리를 잡습니다. 이번 주에 쓸 힘이 지금부터 채워집니다. 채우는 동안 할 일은 없습니다. 몸이 알아서 합니다. 지금은 눕기만 합니다.",
+          "files": [
+            "audio/narration/wired/s5-0.mp3",
+            "audio/narration/wired/s5-1.mp3",
+            "audio/narration/wired/s5-2.mp3",
+            "audio/narration/wired/s5-3.mp3",
+            "audio/narration/wired/s5-4.mp3",
+            "audio/narration/wired/s5-5.mp3",
+            "audio/narration/wired/s5-6.mp3",
+            "audio/narration/wired/s5-7.mp3"
           ]
         }
       ],
@@ -1275,15 +1432,6 @@
             "audio/narration/wired/t3-5.mp3"
           ]
         }
-      ],
-      "anchor": [
-        {
-          "id": "an",
-          "text": "몸은 쉬어도 됩니다.",
-          "files": [
-            "audio/narration/wired/an-0.mp3"
-          ]
-        }
       ]
     },
     "unknown": {
@@ -1297,6 +1445,15 @@
         "drift",
         "fade",
         "tail"
+      ],
+      "anchor": [
+        {
+          "id": "an",
+          "text": "여기 있으면 됩니다.",
+          "files": [
+            "audio/narration/unknown/an-0.mp3"
+          ]
+        }
       ],
       "settle": [
         {
@@ -1350,6 +1507,54 @@
             "audio/narration/unknown/s3-8.mp3",
             "audio/narration/unknown/s3-9.mp3",
             "audio/narration/unknown/s3-10.mp3"
+          ]
+        },
+        {
+          "id": "s4",
+          "when": {
+            "hours": [
+              0,
+              1,
+              2,
+              3,
+              4
+            ]
+          },
+          "text": "새벽에 눕습니다. 몇 시인지는 더 보지 않아도 됩니다. 시계는 아침에 보면 됩니다. 몸을 눕히고 편한 자세를 찾습니다. 남은 밤이 얼마든 몸은 알아서 씁니다. 조용한 시간의 좋은 점만 가집니다. 세상이 잠든 소리를 들으며 눕습니다.",
+          "files": [
+            "audio/narration/unknown/s4-0.mp3",
+            "audio/narration/unknown/s4-1.mp3",
+            "audio/narration/unknown/s4-2.mp3",
+            "audio/narration/unknown/s4-3.mp3",
+            "audio/narration/unknown/s4-4.mp3",
+            "audio/narration/unknown/s4-5.mp3",
+            "audio/narration/unknown/s4-6.mp3"
+          ]
+        },
+        {
+          "id": "s5",
+          "when": {
+            "dows": [
+              0
+            ],
+            "hours": [
+              19,
+              20,
+              21,
+              22,
+              23
+            ]
+          },
+          "text": "일요일 밤입니다. 일요일 밤엔 잠이 늦게 오는 사람이 많습니다. 이상한 일이 아닙니다. 몸을 눕히고 편한 자세를 찾습니다. 잠이 늦으면 늦은 대로 쉬면 됩니다. 누워 있는 것만으로도 몸은 쉽니다. 서두를 것 없습니다. 밤은 아직 깁니다.",
+          "files": [
+            "audio/narration/unknown/s5-0.mp3",
+            "audio/narration/unknown/s5-1.mp3",
+            "audio/narration/unknown/s5-2.mp3",
+            "audio/narration/unknown/s5-3.mp3",
+            "audio/narration/unknown/s5-4.mp3",
+            "audio/narration/unknown/s5-5.mp3",
+            "audio/narration/unknown/s5-6.mp3",
+            "audio/narration/unknown/s5-7.mp3"
           ]
         }
       ],
@@ -1641,15 +1846,6 @@
             "audio/narration/unknown/t3-6.mp3"
           ]
         }
-      ],
-      "anchor": [
-        {
-          "id": "an",
-          "text": "여기 있으면 됩니다.",
-          "files": [
-            "audio/narration/unknown/an-0.mp3"
-          ]
-        }
       ]
     },
     "awoken": {
@@ -1741,6 +1937,15 @@
         "settle",
         "breath",
         "fade"
+      ],
+      "anchor": [
+        {
+          "id": "an",
+          "text": "잠깐이면 됩니다.",
+          "files": [
+            "audio/narration/calm/an-0.mp3"
+          ]
+        }
       ],
       "settle": [
         {
@@ -1865,15 +2070,6 @@
             "audio/narration/calm/f3-4.mp3"
           ]
         }
-      ],
-      "anchor": [
-        {
-          "id": "an",
-          "text": "잠깐이면 됩니다.",
-          "files": [
-            "audio/narration/calm/an-0.mp3"
-          ]
-        }
       ]
     },
     "nap": {
@@ -1882,6 +2078,15 @@
       "sequence": [
         "settle",
         "release"
+      ],
+      "anchor": [
+        {
+          "id": "an",
+          "text": "짧게 쉬면 됩니다.",
+          "files": [
+            "audio/narration/nap/an-0.mp3"
+          ]
+        }
       ],
       "settle": [
         {
@@ -1975,16 +2180,434 @@
             "audio/narration/nap/r3-9.mp3"
           ]
         }
-      ],
+      ]
+    },
+    "onsen": {
+      "label": "온천의 밤",
+      "night": true,
       "anchor": [
         {
           "id": "an",
-          "text": "짧게 쉬면 됩니다.",
+          "text": "물은 계속 따뜻합니다.",
           "files": [
-            "audio/narration/nap/an-0.mp3"
+            "audio/narration/onsen/an-0.mp3"
+          ]
+        }
+      ],
+      "mix": {
+        "stream": 0.5,
+        "wind": 0.12
+      },
+      "scene": "clouds",
+      "sequence": [
+        "settle",
+        "breath",
+        "release",
+        "release2",
+        "drift",
+        "fade",
+        "tail"
+      ],
+      "settle": [
+        {
+          "id": "s1",
+          "text": "오늘은 밤의 온천으로 갑니다. 어둑한 산길을 천천히 오릅니다. 발밑에서 돌이 조용히 밟힙니다. 밤공기가 차고 맑습니다. 멀리서 물 흐르는 소리가 들립니다. 모퉁이를 돌자 김이 오르는 곳이 보입니다. 돌로 두른 작은 노천탕입니다. 불빛은 등롱 하나뿐입니다. 다른 사람은 없습니다. 오늘 밤 이 물은 전부 내 것입니다. 짐을 내려놓습니다. 서두를 것 없습니다.",
+          "files": [
+            "audio/narration/onsen/s1-0.mp3",
+            "audio/narration/onsen/s1-1.mp3",
+            "audio/narration/onsen/s1-2.mp3",
+            "audio/narration/onsen/s1-3.mp3",
+            "audio/narration/onsen/s1-4.mp3",
+            "audio/narration/onsen/s1-5.mp3",
+            "audio/narration/onsen/s1-6.mp3",
+            "audio/narration/onsen/s1-7.mp3",
+            "audio/narration/onsen/s1-8.mp3",
+            "audio/narration/onsen/s1-9.mp3",
+            "audio/narration/onsen/s1-10.mp3",
+            "audio/narration/onsen/s1-11.mp3"
+          ]
+        }
+      ],
+      "breath": [
+        {
+          "id": "b1",
+          "text": "탕 앞에 잠시 섭니다. 김이 얼굴에 닿습니다. 따뜻하고 촉촉합니다. 밤공기를 천천히 들이쉽니다. 물 냄새와 젖은 나무 냄새가 섞여 있습니다. 길게 내쉽니다. 하루의 숨이 김과 함께 올라갑니다. 몇 번이고 천천히 쉬어도 됩니다.",
+          "files": [
+            "audio/narration/onsen/b1-0.mp3",
+            "audio/narration/onsen/b1-1.mp3",
+            "audio/narration/onsen/b1-2.mp3",
+            "audio/narration/onsen/b1-3.mp3",
+            "audio/narration/onsen/b1-4.mp3",
+            "audio/narration/onsen/b1-5.mp3",
+            "audio/narration/onsen/b1-6.mp3",
+            "audio/narration/onsen/b1-7.mp3"
+          ]
+        }
+      ],
+      "release": [
+        {
+          "id": "r1",
+          "text": "발끝을 먼저 물에 담급니다. 따뜻함이 발가락 사이로 스며듭니다. 천천히 발목까지 넣습니다. 물속 계단을 한 칸 내려섭니다. 종아리가 잠깁니다. 온기가 무릎을 감쌉니다. 한 칸 더 내려서면 허벅지까지 잠깁니다. 다리에서 힘이 풀려 나갑니다. 물속 돌에 걸터앉습니다. 허리까지 물이 차오릅니다. 골반이 놓입니다. 하체가 무거워집니다. 다리는 물이 대신 들어 줍니다.",
+          "files": [
+            "audio/narration/onsen/r1-0.mp3",
+            "audio/narration/onsen/r1-1.mp3",
+            "audio/narration/onsen/r1-2.mp3",
+            "audio/narration/onsen/r1-3.mp3",
+            "audio/narration/onsen/r1-4.mp3",
+            "audio/narration/onsen/r1-5.mp3",
+            "audio/narration/onsen/r1-6.mp3",
+            "audio/narration/onsen/r1-7.mp3",
+            "audio/narration/onsen/r1-8.mp3",
+            "audio/narration/onsen/r1-9.mp3",
+            "audio/narration/onsen/r1-10.mp3",
+            "audio/narration/onsen/r1-11.mp3",
+            "audio/narration/onsen/r1-12.mp3"
+          ]
+        }
+      ],
+      "release2": [
+        {
+          "id": "r2",
+          "text": "돌에 등을 기대고 몸을 낮춥니다. 배와 가슴까지 물이 차오릅니다. 어깨가 잠깁니다. 온기가 어깨를 천천히 녹입니다. 팔이 물속에서 흔들리다 놓입니다. 손가락이 저절로 펴집니다. 목덜미가 부드러워집니다. 턱이 느슨해집니다. 물에 잠긴 몸이 무거워집니다. 머리만 밤공기에 시원합니다. 그 온도 차가 참 편안합니다.",
+          "files": [
+            "audio/narration/onsen/r2-0.mp3",
+            "audio/narration/onsen/r2-1.mp3",
+            "audio/narration/onsen/r2-2.mp3",
+            "audio/narration/onsen/r2-3.mp3",
+            "audio/narration/onsen/r2-4.mp3",
+            "audio/narration/onsen/r2-5.mp3",
+            "audio/narration/onsen/r2-6.mp3",
+            "audio/narration/onsen/r2-7.mp3",
+            "audio/narration/onsen/r2-8.mp3",
+            "audio/narration/onsen/r2-9.mp3",
+            "audio/narration/onsen/r2-10.mp3"
+          ]
+        }
+      ],
+      "drift": [
+        {
+          "id": "d1",
+          "text": "고개를 들면 김 너머로 달이 보입니다. 김이 오르다가 밤하늘에 풀립니다. 물 위에 달빛이 흔들립니다. 물 떨어지는 소리가 낮게 이어집니다. 나무 사이로 바람이 한 번 지나갑니다. 물결이 잔잔히 퍼졌다가 가라앉습니다. 산의 밤은 아무것도 서두르지 않습니다. 그저 바라보기만 하면 됩니다.",
+          "files": [
+            "audio/narration/onsen/d1-0.mp3",
+            "audio/narration/onsen/d1-1.mp3",
+            "audio/narration/onsen/d1-2.mp3",
+            "audio/narration/onsen/d1-3.mp3",
+            "audio/narration/onsen/d1-4.mp3",
+            "audio/narration/onsen/d1-5.mp3",
+            "audio/narration/onsen/d1-6.mp3",
+            "audio/narration/onsen/d1-7.mp3"
+          ]
+        }
+      ],
+      "fade": [
+        {
+          "id": "f1",
+          "text": "이제 천천히 몸을 일으킵니다. 데워진 몸에서 김이 오릅니다. 수건으로 몸을 감쌉니다. 바로 옆방에 이부자리가 펴져 있습니다. 데워진 몸이 이불 속으로 들어갑니다. 이불이 온기를 붙잡아 줍니다. 물소리가 조금씩 멀어집니다. 등롱 불빛도 멀어집니다. 몸은 아직 물에 잠긴 듯 따뜻합니다. 눈꺼풀이 내려옵니다.",
+          "files": [
+            "audio/narration/onsen/f1-0.mp3",
+            "audio/narration/onsen/f1-1.mp3",
+            "audio/narration/onsen/f1-2.mp3",
+            "audio/narration/onsen/f1-3.mp3",
+            "audio/narration/onsen/f1-4.mp3",
+            "audio/narration/onsen/f1-5.mp3",
+            "audio/narration/onsen/f1-6.mp3",
+            "audio/narration/onsen/f1-7.mp3",
+            "audio/narration/onsen/f1-8.mp3",
+            "audio/narration/onsen/f1-9.mp3"
+          ]
+        }
+      ],
+      "tail": [
+        {
+          "id": "t1",
+          "text": "산의 밤이 계속 흐릅니다. 물은 밤새 따뜻합니다. 이미 도착해 있습니다. 더 갈 곳이 없습니다. 밤이 남은 일을 합니다. 이대로 두면 됩니다.",
+          "files": [
+            "audio/narration/onsen/t1-0.mp3",
+            "audio/narration/onsen/t1-1.mp3",
+            "audio/narration/onsen/t1-2.mp3",
+            "audio/narration/onsen/t1-3.mp3",
+            "audio/narration/onsen/t1-4.mp3",
+            "audio/narration/onsen/t1-5.mp3"
+          ]
+        }
+      ]
+    },
+    "gratitude": {
+      "label": "감사의 밤",
+      "night": true,
+      "anchor": [
+        {
+          "id": "an",
+          "text": "좋은 것 하나면 충분합니다.",
+          "files": [
+            "audio/narration/gratitude/an-0.mp3"
+          ]
+        }
+      ],
+      "mix": {
+        "crickets": 0.35,
+        "wind": 0.15
+      },
+      "scene": "stars",
+      "sequence": [
+        "settle",
+        "drift",
+        "drift2",
+        "release2",
+        "fade",
+        "tail"
+      ],
+      "settle": [
+        {
+          "id": "s1",
+          "text": "오늘 밤은 하루를 좋은 쪽에서 돌아보며 잠들겠습니다. 잘한 일을 찾는 시간이 아닙니다. 받은 것을 떠올리는 시간입니다. 몸을 편하게 눕힙니다. 등이 침대에 닿아 있습니다. 오늘 하루가 어땠든 괜찮습니다. 힘든 날일수록 작은 고마움이 잘 보입니다. 천천히 하나씩 떠올려 보겠습니다. 애쓸 필요는 없습니다. 떠오르는 것을 받기만 하면 됩니다.",
+          "files": [
+            "audio/narration/gratitude/s1-0.mp3",
+            "audio/narration/gratitude/s1-1.mp3",
+            "audio/narration/gratitude/s1-2.mp3",
+            "audio/narration/gratitude/s1-3.mp3",
+            "audio/narration/gratitude/s1-4.mp3",
+            "audio/narration/gratitude/s1-5.mp3",
+            "audio/narration/gratitude/s1-6.mp3",
+            "audio/narration/gratitude/s1-7.mp3",
+            "audio/narration/gratitude/s1-8.mp3",
+            "audio/narration/gratitude/s1-9.mp3"
+          ]
+        },
+        {
+          "id": "s2",
+          "text": "잠들기 전 마음은 마지막으로 생각한 것을 오래 붙듭니다. 걱정을 붙들면 걱정과 눕고 고마움을 붙들면 고마움과 눕습니다. 오늘은 고마움 쪽을 골라 보겠습니다. 몸을 편하게 눕힙니다. 이불의 무게가 느껴집니다. 이 이불도 오늘 받은 것 중 하나입니다. 이렇게 작은 것부터 세면 됩니다. 어렵지 않습니다.",
+          "files": [
+            "audio/narration/gratitude/s2-0.mp3",
+            "audio/narration/gratitude/s2-1.mp3",
+            "audio/narration/gratitude/s2-2.mp3",
+            "audio/narration/gratitude/s2-3.mp3",
+            "audio/narration/gratitude/s2-4.mp3",
+            "audio/narration/gratitude/s2-5.mp3",
+            "audio/narration/gratitude/s2-6.mp3",
+            "audio/narration/gratitude/s2-7.mp3"
+          ]
+        },
+        {
+          "id": "s3",
+          "text": "하루의 끝에서 좋은 것을 세는 밤입니다. 많이 셀 필요 없습니다. 한두 개면 충분합니다. 몸을 눕히고 자리를 잡습니다. 오늘 이 자리까지 온 것만으로도 하나입니다. 지금부터 떠올리는 것은 전부 이미 일어난 일입니다. 아무것도 새로 하지 않아도 됩니다. 기억만 따라가면 됩니다.",
+          "files": [
+            "audio/narration/gratitude/s3-0.mp3",
+            "audio/narration/gratitude/s3-1.mp3",
+            "audio/narration/gratitude/s3-2.mp3",
+            "audio/narration/gratitude/s3-3.mp3",
+            "audio/narration/gratitude/s3-4.mp3",
+            "audio/narration/gratitude/s3-5.mp3",
+            "audio/narration/gratitude/s3-6.mp3",
+            "audio/narration/gratitude/s3-7.mp3"
+          ]
+        }
+      ],
+      "drift": [
+        {
+          "id": "d1",
+          "text": "오늘 마주친 사람들을 천천히 넘겨 봅니다. 그중 한 사람에게서 멈춥니다. 나를 도와준 사람이어도 좋고 그냥 스쳐 간 친절이어도 좋습니다. 그 순간을 다시 떠올립니다. 그때의 표정이나 말투에 잠시 머뭅니다. 그 사람도 지금 어딘가에서 자기 밤을 보내고 있습니다. 마음속으로 짧게 고맙다고 말해 봅니다. 소리 낼 필요는 없습니다.",
+          "files": [
+            "audio/narration/gratitude/d1-0.mp3",
+            "audio/narration/gratitude/d1-1.mp3",
+            "audio/narration/gratitude/d1-2.mp3",
+            "audio/narration/gratitude/d1-3.mp3",
+            "audio/narration/gratitude/d1-4.mp3",
+            "audio/narration/gratitude/d1-5.mp3",
+            "audio/narration/gratitude/d1-6.mp3",
+            "audio/narration/gratitude/d1-7.mp3"
+          ]
+        },
+        {
+          "id": "d2",
+          "text": "오래 알고 지낸 사람 하나를 떠올립니다. 늘 있어서 잘 안 보이던 사람이면 더 좋습니다. 그 사람이 있어서 편했던 순간을 하나 골라 봅니다. 대단한 장면이 아니어도 됩니다. 같이 밥을 먹었거나 말없이 옆에 있었거나. 그 장면에 잠시 머뭅니다. 고마움은 말로 다 못 해도 괜찮습니다. 떠올린 것만으로 전해진 셈 칩니다.",
+          "files": [
+            "audio/narration/gratitude/d2-0.mp3",
+            "audio/narration/gratitude/d2-1.mp3",
+            "audio/narration/gratitude/d2-2.mp3",
+            "audio/narration/gratitude/d2-3.mp3",
+            "audio/narration/gratitude/d2-4.mp3",
+            "audio/narration/gratitude/d2-5.mp3",
+            "audio/narration/gratitude/d2-6.mp3",
+            "audio/narration/gratitude/d2-7.mp3"
+          ]
+        },
+        {
+          "id": "d3",
+          "text": "오늘 나를 지나쳐 간 얼굴들을 떠올립니다. 문을 잡아 준 사람이 있었을 수도 있습니다. 인사를 건넨 사람이 있었을 수도 있습니다. 기억나지 않으면 지어내도 괜찮습니다. 마음은 그 차이를 따지지 않습니다. 따뜻한 장면 하나에 머뭅니다. 그 온기를 이불 속까지 가져옵니다.",
+          "files": [
+            "audio/narration/gratitude/d3-0.mp3",
+            "audio/narration/gratitude/d3-1.mp3",
+            "audio/narration/gratitude/d3-2.mp3",
+            "audio/narration/gratitude/d3-3.mp3",
+            "audio/narration/gratitude/d3-4.mp3",
+            "audio/narration/gratitude/d3-5.mp3",
+            "audio/narration/gratitude/d3-6.mp3"
+          ]
+        }
+      ],
+      "drift2": [
+        {
+          "id": "g1",
+          "text": "이번에는 아주 작은 것을 하나 봅니다. 오늘 마신 따뜻한 것. 잠깐 들었던 좋은 노래. 창밖으로 본 하늘 한 조각. 그중 하나를 골라 다시 맛봅니다. 작을수록 오래갑니다. 그 순간이 있었다는 것만 확인하면 됩니다.",
+          "files": [
+            "audio/narration/gratitude/g1-0.mp3",
+            "audio/narration/gratitude/g1-1.mp3",
+            "audio/narration/gratitude/g1-2.mp3",
+            "audio/narration/gratitude/g1-3.mp3",
+            "audio/narration/gratitude/g1-4.mp3",
+            "audio/narration/gratitude/g1-5.mp3",
+            "audio/narration/gratitude/g1-6.mp3"
+          ]
+        },
+        {
+          "id": "g2",
+          "text": "몸에게 하나 고맙다고 합니다. 쉬지 않고 뛴 심장. 오늘도 걸어 준 두 다리. 세상을 봐 준 두 눈. 그중 하나에 손을 얹듯 마음을 얹습니다. 몸은 오늘도 제 몫을 다했습니다. 이제 쉬게 해 줄 차례입니다.",
+          "files": [
+            "audio/narration/gratitude/g2-0.mp3",
+            "audio/narration/gratitude/g2-1.mp3",
+            "audio/narration/gratitude/g2-2.mp3",
+            "audio/narration/gratitude/g2-3.mp3",
+            "audio/narration/gratitude/g2-4.mp3",
+            "audio/narration/gratitude/g2-5.mp3",
+            "audio/narration/gratitude/g2-6.mp3"
+          ]
+        },
+        {
+          "id": "g3",
+          "text": "오늘 무사히 지나간 것들을 봅니다. 아무 일 없던 것도 받은 것입니다. 별일 없이 닫힌 하루. 제자리에 있는 물건들. 돌아올 수 있었던 집. 당연해 보이는 것들이 사실은 오늘의 선물입니다. 그중 하나를 골라 잠시 머뭅니다.",
+          "files": [
+            "audio/narration/gratitude/g3-0.mp3",
+            "audio/narration/gratitude/g3-1.mp3",
+            "audio/narration/gratitude/g3-2.mp3",
+            "audio/narration/gratitude/g3-3.mp3",
+            "audio/narration/gratitude/g3-4.mp3",
+            "audio/narration/gratitude/g3-5.mp3",
+            "audio/narration/gratitude/g3-6.mp3"
+          ]
+        }
+      ],
+      "release2": [
+        {
+          "id": "r1",
+          "text": "떠올린 온기를 몸에 퍼뜨립니다. 가슴이 부드러워집니다. 어깨가 내려갑니다. 팔에서 힘이 빠집니다. 손바닥이 펴집니다. 얼굴의 표정이 풀립니다. 몸 전체가 무거워집니다. 침대가 다 받아 줍니다.",
+          "files": [
+            "audio/narration/gratitude/r1-0.mp3",
+            "audio/narration/gratitude/r1-1.mp3",
+            "audio/narration/gratitude/r1-2.mp3",
+            "audio/narration/gratitude/r1-3.mp3",
+            "audio/narration/gratitude/r1-4.mp3",
+            "audio/narration/gratitude/r1-5.mp3",
+            "audio/narration/gratitude/r1-6.mp3",
+            "audio/narration/gratitude/r1-7.mp3"
+          ]
+        },
+        {
+          "id": "r2",
+          "text": "고마움을 떠올린 몸은 부드럽습니다. 이마가 펴집니다. 턱이 느슨해집니다. 어깨의 긴장을 놓습니다. 가슴이 편하게 오르내립니다. 배가 부드러워집니다. 다리가 무거워집니다. 전부 침대에 맡깁니다.",
+          "files": [
+            "audio/narration/gratitude/r2-0.mp3",
+            "audio/narration/gratitude/r2-1.mp3",
+            "audio/narration/gratitude/r2-2.mp3",
+            "audio/narration/gratitude/r2-3.mp3",
+            "audio/narration/gratitude/r2-4.mp3",
+            "audio/narration/gratitude/r2-5.mp3",
+            "audio/narration/gratitude/r2-6.mp3",
+            "audio/narration/gratitude/r2-7.mp3"
+          ]
+        },
+        {
+          "id": "r3",
+          "text": "이제 몸을 재울 차례입니다. 눈가가 부드러워집니다. 목덜미가 놓입니다. 어깨가 낮아집니다. 팔과 손이 제자리에 놓입니다. 등이 넓게 닿습니다. 몸이 무거워집니다. 남은 것은 침대가 합니다.",
+          "files": [
+            "audio/narration/gratitude/r3-0.mp3",
+            "audio/narration/gratitude/r3-1.mp3",
+            "audio/narration/gratitude/r3-2.mp3",
+            "audio/narration/gratitude/r3-3.mp3",
+            "audio/narration/gratitude/r3-4.mp3",
+            "audio/narration/gratitude/r3-5.mp3",
+            "audio/narration/gratitude/r3-6.mp3",
+            "audio/narration/gratitude/r3-7.mp3"
+          ]
+        }
+      ],
+      "fade": [
+        {
+          "id": "f1",
+          "text": "떠올렸던 장면들이 하나씩 어두워집니다. 좋은 것들은 사라지지 않습니다. 내일도 거기 있습니다. 생각의 소리가 멀어집니다. 방이 더 조용해집니다. 눈꺼풀이 내려옵니다.",
+          "files": [
+            "audio/narration/gratitude/f1-0.mp3",
+            "audio/narration/gratitude/f1-1.mp3",
+            "audio/narration/gratitude/f1-2.mp3",
+            "audio/narration/gratitude/f1-3.mp3",
+            "audio/narration/gratitude/f1-4.mp3",
+            "audio/narration/gratitude/f1-5.mp3"
+          ]
+        },
+        {
+          "id": "f2",
+          "text": "오늘 받은 것들을 머리맡에 두고 잠듭니다. 세던 것을 멈춰도 됩니다. 손에 쥔 것을 놓듯 하루를 놓습니다. 불빛이 멀어집니다. 하루가 멀어집니다. 조용합니다.",
+          "files": [
+            "audio/narration/gratitude/f2-0.mp3",
+            "audio/narration/gratitude/f2-1.mp3",
+            "audio/narration/gratitude/f2-2.mp3",
+            "audio/narration/gratitude/f2-3.mp3",
+            "audio/narration/gratitude/f2-4.mp3",
+            "audio/narration/gratitude/f2-5.mp3"
+          ]
+        },
+        {
+          "id": "f3",
+          "text": "고마움은 다 세지 않아도 됩니다. 남은 것은 내일 세면 됩니다. 방의 소리가 멀어집니다. 몸의 경계가 흐려집니다. 이대로 두면 됩니다. 어둡고 편안합니다.",
+          "files": [
+            "audio/narration/gratitude/f3-0.mp3",
+            "audio/narration/gratitude/f3-1.mp3",
+            "audio/narration/gratitude/f3-2.mp3",
+            "audio/narration/gratitude/f3-3.mp3",
+            "audio/narration/gratitude/f3-4.mp3",
+            "audio/narration/gratitude/f3-5.mp3"
+          ]
+        }
+      ],
+      "tail": [
+        {
+          "id": "t1",
+          "text": "좋은 것을 본 하루는 좋은 하루입니다. 이제 쉬면 됩니다. 밤이 남은 일을 합니다. 그대로 둡니다.",
+          "files": [
+            "audio/narration/gratitude/t1-0.mp3",
+            "audio/narration/gratitude/t1-1.mp3",
+            "audio/narration/gratitude/t1-2.mp3",
+            "audio/narration/gratitude/t1-3.mp3"
+          ]
+        },
+        {
+          "id": "t2",
+          "text": "받은 것을 안고 잠듭니다. 더 할 일은 없습니다. 내일은 내일이 옵니다. 지금은 밤입니다. 편안합니다.",
+          "files": [
+            "audio/narration/gratitude/t2-0.mp3",
+            "audio/narration/gratitude/t2-1.mp3",
+            "audio/narration/gratitude/t2-2.mp3",
+            "audio/narration/gratitude/t2-3.mp3",
+            "audio/narration/gratitude/t2-4.mp3"
+          ]
+        },
+        {
+          "id": "t3",
+          "text": "하루가 잘 닫혔습니다. 문단속이 끝난 밤입니다. 아무것도 지킬 필요 없습니다. 이대로 충분합니다. 그대로 둡니다.",
+          "files": [
+            "audio/narration/gratitude/t3-0.mp3",
+            "audio/narration/gratitude/t3-1.mp3",
+            "audio/narration/gratitude/t3-2.mp3",
+            "audio/narration/gratitude/t3-3.mp3",
+            "audio/narration/gratitude/t3-4.mp3"
           ]
         }
       ]
     }
-  }
+  },
+  "journeys": [
+    "onsen",
+    "gratitude"
+  ]
 }

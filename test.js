@@ -3,7 +3,7 @@
 
 import assert from 'node:assert/strict';
 import { sleepDebt, nightHours, dailySeries, nightDateKey, upsertNight, HOUR, DAY } from './sleep.js';
-import { pickWithHistory, pushHistory, buildSequence } from './narration.js';
+import { pickWithHistory, pushHistory, buildSequence, fitsWhen } from './narration.js';
 import { fadeEdges } from './synth.js';
 
 const NOW = new Date('2026-08-12T09:00:00').getTime();
@@ -241,6 +241,42 @@ test('연속 재생해도 같은 조합이 바로 반복되지 않는다', () =>
     prev = key;
   }
   assert.ok(combos.size > 20, `조합 다양성이 부족하다 (${combos.size}종)`);
+});
+
+// ── when 조각 (앱이 오늘을 안다) ──────────────────────────
+
+test('when 조각은 맞는 시각에만 풀에 합류한다', () => {
+  const s = { id: 't', sequence: ['intro'], intro: [
+    { id: 'a', text: '기본 조각입니다.' },
+    { id: 'b', text: '새벽 조각입니다.', when: { hours: [0, 1, 2, 3, 4] } },
+  ] };
+  let sawB = false;
+  for (let i = 0; i < 60; i++) {
+    const r = buildSequence(s, {}, Math.random, { hour: 2, dow: 3, month: 9 });
+    if (r.picks[0].id === 'b') sawB = true;
+  }
+  assert.ok(sawB, '새벽에는 새벽 조각이 뽑힐 수 있어야 한다');
+  for (let i = 0; i < 60; i++) {
+    const r = buildSequence(s, {}, Math.random, { hour: 22, dow: 3, month: 9 });
+    assert.notEqual(r.picks[0].id, 'b', '밤 10시에 새벽 조각이 나오면 안 된다');
+  }
+});
+
+test('when 의 축은 전부 맞아야 하고, ctx 가 없으면 항상 후보다', () => {
+  const p = { when: { dows: [0], hours: [22, 23] } };
+  assert.ok(fitsWhen(p, { hour: 22, dow: 0, month: 5 }));
+  assert.ok(!fitsWhen(p, { hour: 22, dow: 1, month: 5 }), '요일이 다르면 탈락');
+  assert.ok(!fitsWhen(p, { hour: 10, dow: 0, month: 5 }), '시각이 다르면 탈락');
+  assert.ok(fitsWhen(p, null), 'ctx 없으면(테스트·과거 호출) 조건 무시');
+  assert.ok(fitsWhen({ text: 'x' }, { hour: 1, dow: 1, month: 1 }), 'when 없으면 항상');
+});
+
+test('조건 조각만 남고 전부 탈락한 층은 건너뛴다', () => {
+  const s = { id: 't', sequence: ['intro', 'outro'],
+    intro: [{ id: 'x', text: '낮 전용.', when: { hours: [12] } }],
+    outro: [{ id: 'y', text: '항상.' }] };
+  const r = buildSequence(s, {}, Math.random, { hour: 3, dow: 2, month: 9 });
+  assert.deepEqual(r.picks.map((p) => p.id), ['y']);
 });
 
 // ── 루프 겹치기 페이드 ────────────────────────────────────

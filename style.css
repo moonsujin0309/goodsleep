@@ -224,6 +224,14 @@ body.on-home #scene {
 .sheet-title { font-size: 23px; margin-bottom: var(--sp-1); }
 .sheet .sub { margin-bottom: var(--sp-4); font-size: 13.5px; }
 
+/* 두 번째 묶음("오늘은 어디로 갈까요") 사이 제목 */
+.states .group-label {
+  margin: var(--sp-3) 0 0;
+  padding: 0 var(--sp-1);
+  font-size: 12px; font-weight: 600; letter-spacing: 0.05em;
+  color: var(--text-3);
+}
+
 /* 시트 안의 상태 행 — 카드가 아니라 행. 무게를 덜고 색점만 남긴다 */
 .sheet .states { gap: var(--sp-2); }
 .sheet .state {
