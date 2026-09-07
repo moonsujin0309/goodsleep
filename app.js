@@ -23,7 +23,14 @@ const load = (k, fallback) => {
   try { return JSON.parse(localStorage.getItem(`${KEY}.${k}`)) ?? fallback; }
   catch { return fallback; }
 };
-const save = (k, v) => localStorage.setItem(`${KEY}.${k}`, JSON.stringify(v));
+const save = (k, v) => {
+  try { localStorage.setItem(`${KEY}.${k}`, JSON.stringify(v)); return true; }
+  catch {
+    const note = document.querySelector('#storage-note');
+    if (note) note.hidden = false;
+    return false;
+  }
+};
 
 // 이전(migration)에서 "저장된 값이 있었는가"를 봐야 할 때가 있다 — 새로 설치한 사람과
 // 예전 값을 그대로 들고 있는 사람은 다르게 다뤄야 한다. 그래서 따로 들고 있는다.
@@ -50,6 +57,7 @@ const store = {
   preset: load('preset', null),
   scene: load('scene', 'stars'),
   pending: load('pending', null),   // 진행 중인 밤 (취침 기록 + 알람 시각)
+  routine: load('routine', null),
 };
 
 // 2026-08-24 목소리를 VoxCPM 으로 바꾸면서 문장 사이 여백 기본값을 3.6 → 4.2 로 올렸다.
@@ -95,12 +103,15 @@ if (!store.settings.bedScale2) {
 
 const mixer = new Mixer();
 const scenes = new SceneRenderer($('#scene'), $('#scene-video'), $('#scene-back'));
-const alarm = createAlarm();
+const alarm = createAlarm({ onError: () => {
+  $('#alarm-sub').textContent = '알람 소리를 재생하지 못했습니다. 기기의 기본 알람도 확인해 주세요.';
+  $('#alarm-test-note').hidden = false;
+} });
 const watcher = createAlarmWatcher(fireAlarm);
 let narration = null;
 let manifest = null;
 let session = null;         // { stateId, hours, isNap, bedAt, alarmAt }
-let draft = { stateId: null, mode: null, wakeAt: 0, napMinutes: 30, custom: false, customMin: 30 };
+let draft = { stateId: null, mode: null, wakeAt: 0, napMinutes: 30, custom: false, customMin: 30, voiceOn: true, alarmOn: true, mix: null, scene: null };
 let napFormMinutes = 30;
 let dimTimer = null;
 let introTimer = null;      // 배경음 → 나레이션 순서를 여는 타이머
@@ -115,6 +126,8 @@ function go(name) {
   $$('.screen').forEach((s) => s.classList.toggle('is-active', s.id === `s-${name}`));
   // 홈에서만 씬 스크림을 걷는다 — 다른 화면은 글 대비를 위해 어둡게 유지 (style.css)
   document.body.classList.toggle('on-home', name === 'home');
+  document.body.classList.toggle('on-prepare', name === 'prepare');
+  if (name === 'home' && manifest) renderStates();
   if (name === 'report') renderReport();
   // 홈은 적막하면 안 된다 — 멈추기·알람 뒤에 돌아와도 고른 배경음이 다시 흐른다.
   // 첫 진입은 openBed(첫 터치)가 연다. unlock 전이면 여기서는 할 게 없다.
@@ -177,6 +190,11 @@ const STATE_HUES = {
 function renderStates() {
   const list = $('#state-list');
   list.innerHTML = '';
+  const notes = {
+    racing: '생각에서 감각으로', anxious: '마음을 천천히 내려놓기',
+    wired: '몸의 긴장을 풀어가기', unknown: '차분한 안내 따라가기',
+    awoken: '짧은 안내로 다시 쉬기',
+  };
   const addRow = (id) => {
     const st = manifest.states[id];
     if (!st) return;
@@ -184,18 +202,38 @@ function renderStates() {
     b.className = 'state';
     b.style.setProperty('--dot', STATE_HUES[id] || 'var(--violet)');
     b.style.setProperty('--dot-soft', (STATE_HUES[id] || '#8A78C4') + '29');
-    b.innerHTML = `<span class="dot"></span><span>${st.label}</span>`;
+    b.innerHTML = `<span class="dot" aria-hidden="true"></span><span class="state-copy"><span>${st.label}</span><small>${notes[id] || '잠들기 전 듣는 안내'}</small></span>`;
     b.addEventListener('click', () => openPrepare(id));
     list.appendChild(b);
   };
   manifest.order.forEach(addRow);
-  // "어디로 갈까요" — 증상이 아니라 목적지를 고르는 밤 (통짜 스토리·감사)
-  if (manifest.journeys?.length) {
-    const label = document.createElement('p');
-    label.className = 'group-label';
-    label.textContent = '오늘은 어디로 갈까요';
-    list.appendChild(label);
-    manifest.journeys.forEach(addRow);
+  const routine = validRoutine();
+  const featured = routine?.stateId || 'unknown';
+  const mix = routine?.mix || store.mixer;
+  const preset = manifest.presets.find(p => sameMix(p.mix, mix));
+  const title = routine ? (routine.voiceOn ? manifest.states[featured].label : '소리만 듣는 밤') : '나의 밤 만들기';
+  const hero = document.createElement('button');
+  hero.className = 'tonight-card';
+  hero.style.backgroundImage = `linear-gradient(180deg, transparent 15%, rgba(12,13,12,.9) 100%), url('${preset?.img || 'assets/presets/night-sea.jpg'}')`;
+  hero.innerHTML = `<span class="feature-kicker">${routine ? '나의 밤' : '처음 시작하는 밤'}</span><strong>${title}</strong><span class="feature-note">${mixLabel(mix)}${routine ? ` · ${routine.wakeHHMM ? '기상 ' + routine.wakeHHMM : '알람 없음'}` : ' · 안내와 소리를 골라보세요'}</span><span class="feature-action">${routine ? '이 설정으로 시작' : '밤 설정하기'}<svg class="icon" aria-hidden="true"><use href="#i-play"/></svg></span>`;
+  hero.addEventListener('click', () => routine ? startRoutine(routine) : openPrepare(featured));
+  $('#tonight-feature').replaceChildren(hero);
+  if (routine) {
+    const edit = document.createElement('button');
+    edit.className = 'routine-edit'; edit.textContent = '설정 바꾸기';
+    edit.addEventListener('click', () => openPrepare(routine.stateId, routine));
+    $('#tonight-feature').appendChild(edit);
+  }
+  const journeys = (manifest.journeys || []).filter(id => manifest.states[id]);
+  $('#journey-section').hidden = !journeys.length;
+  $('#journey-list').replaceChildren();
+  for (const id of journeys) {
+    const b = document.createElement('button');
+    b.className = 'journey-card';
+    const isOnsen = id === 'onsen';
+    b.innerHTML = `<img src="assets/presets/${isOnsen ? 'valley' : 'hearth'}.jpg" alt="" loading="lazy" width="320" height="200"><span class="journey-copy"><small>${isOnsen ? '잠자리 이야기' : '하루 돌아보기'}</small><strong>${manifest.states[id].label}</strong><span>${isOnsen ? '따뜻한 물가를 걷는 이야기' : '오늘 고마웠던 순간들'}</span></span><svg class="icon" aria-hidden="true"><use href="#i-play"/></svg>`;
+    b.addEventListener('click', () => openPrepare(id));
+    $('#journey-list').appendChild(b);
   }
 }
 
@@ -230,9 +268,41 @@ function wakeInputValue() {
   return `${String(at.getHours()).padStart(2, '0')}:${String(at.getMinutes()).padStart(2, '0')}`;
 }
 
-function openPrepare(stateId) {
+const sameMix = (a, b) => [...new Set([...Object.keys(a), ...Object.keys(b)])].every(k => (a[k] || 0) === (b[k] || 0));
+const mixLabel = mix => manifest.presets.find(p => sameMix(p.mix, mix))?.label || manifest.sounds.filter(s => mix[s.id] > 0).map(s => s.label).join(' · ') || '배경음 꺼짐';
+function validRoutine() {
+  const r = store.routine;
+  return r && manifest.states[r.stateId]?.night && r.mix && typeof r.mix === 'object' && sceneList.some(s => s.id === r.scene) && (r.wakeHHMM === null || /^([01]\d|2[0-3]):[0-5]\d$/.test(r.wakeHHMM)) ? r : null;
+}
+function nextWake(hhmm) {
+  const [h, m] = hhmm.split(':').map(Number);
+  const at = new Date(); at.setHours(h, m, 0, 0);
+  if (at.getTime() <= Date.now()) at.setDate(at.getDate() + 1);
+  return at.getTime();
+}
+function startRoutine(r) {
+  const at = r.wakeHHMM ? nextWake(r.wakeHHMM) : null;
+  startSession(r.stateId, at ? (at - Date.now()) / HOUR : 0, false, { ...r, alarmAt: at });
+}
+$('#sound-only-btn').addEventListener('click', () => openPrepare('unknown', { voiceOn: false }));
+$$('[data-voice]').forEach(b => b.addEventListener('click', () => {
+  draft.voiceOn = b.dataset.voice === 'on'; syncListeningMode();
+}));
+$('#alarm-enabled').addEventListener('change', () => { draft.alarmOn = $('#alarm-enabled').checked; syncListeningMode(); });
+function syncListeningMode() {
+  $$('[data-voice]').forEach(b => b.setAttribute('aria-pressed', String((b.dataset.voice === 'on') === draft.voiceOn)));
+  $('#alarm-enabled').checked = draft.alarmOn;
+  $('#alarm-toggle-row').hidden = durMode() === 'nap' || !!(draft.stateId === 'awoken' && store.pending);
+  $('#duration-block').hidden = !draft.alarmOn || !!(draft.stateId === 'awoken' && store.pending);
+  updateWakeLabel();
+}
+function openPrepare(stateId, options = {}) {
   draft.stateId = stateId;
   const state = manifest.states[stateId];
+  draft.voiceOn = options.voiceOn !== false;
+  draft.alarmOn = options.wakeHHMM !== null;
+  draft.mix = { ...(options.mix || state.mix || store.mixer) };
+  draft.scene = options.scene || state.scene || store.scene;
   $('#prep-state').textContent = state.label;
 
   // 밤에서 "직접 06:30"(=365분)을 고른 뒤 낮잠으로 넘어오면 그 값이 딸려온다.
@@ -245,11 +315,12 @@ function openPrepare(stateId) {
   }
   // 밤에 들어올 때마다 지금 시각 기준으로 다시 잡는다 — 어제 열어둔 값이 남아 있으면 안 된다.
   if (mode === 'night') draft.wakeAt = roundedWakeAt(store.settings.needHours * 60);
+  if (options.wakeHHMM) draft.wakeAt = nextWake(options.wakeHHMM);
 
   // 자다 깬 경우는 알람을 다시 잡지 않는다. 새벽 3시에 깬 사람의 알람을 날려먹으면 안 된다.
   const resuming = stateId === 'awoken' && store.pending;
   const cfg = DURATION[durMode()];
-  $('#prep-h').textContent = resuming ? '다시 잠들기' : cfg.head;
+  $('#prep-h').textContent = resuming ? '다시 잠들기' : mode === 'night' ? '밤 설정' : cfg.head;
   $('#duration-block').hidden = resuming;
   if (resuming) $('#prep-wake').textContent = `알람은 ${fmtClock(store.pending.alarmAt)} 그대로입니다.`;
 
@@ -257,7 +328,9 @@ function openPrepare(stateId) {
   renderPresets();
   renderSceneChips();
   renderMixer();
+  syncMixerUI();
   updateWakeLabel();
+  syncListeningMode();
   go('prepare');
 }
 
@@ -424,6 +497,8 @@ function renderPresets() {
 }
 
 function applyPreset(p) {
+  draft.mix = { ...p.mix };
+  draft.scene = p.scene || draft.scene;
   store.mixer = { ...p.mix };
   save('mixer', store.mixer);
   store.preset = p.id;
@@ -439,7 +514,8 @@ function applyPreset(p) {
 
 function markPreset() {
   $$('#preset-rail .preset').forEach((el) => {
-    el.setAttribute('aria-pressed', String(el.dataset.preset === store.preset));
+    const p = manifest.presets.find(p => p.id === el.dataset.preset);
+    el.setAttribute('aria-pressed', String(!!p && sameMix(p.mix, draft.mix || store.mixer)));
   });
 }
 
@@ -447,7 +523,7 @@ function markPreset() {
 function syncMixerUI() {
   $$('#mixer .mix-row').forEach((row) => {
     const id = row.dataset.layer;
-    const v = Math.round((store.mixer[id] || 0) * 100);
+    const v = Math.round(((draft.mix || store.mixer)[id] || 0) * 100);
     row.querySelector('input').value = v;
     row.querySelector('.val').textContent = v || '';
     row.classList.toggle('is-on', v > 0);
@@ -461,9 +537,10 @@ function renderSceneChips() {
     const b = document.createElement('button');
     b.className = 'chip';
     b.textContent = s.label;
-    b.setAttribute('aria-pressed', String(s.id === store.scene));
+    b.setAttribute('aria-pressed', String(s.id === (draft.scene || store.scene)));
     b.addEventListener('click', () => {
       store.scene = s.id;
+      draft.scene = s.id;
       save('scene', s.id);
       scenes.set(s.id);
       renderSceneChips();
@@ -500,6 +577,7 @@ function renderMixer() {
     input.addEventListener('input', () => {
       const v = input.value / 100;
       store.mixer[def.id] = v;
+      if (draft.mix) draft.mix[def.id] = v;
       val.textContent = input.value > 0 ? input.value : '';
       row.classList.toggle('is-on', v > 0);
       save('mixer', store.mixer);
@@ -516,15 +594,17 @@ function renderMixer() {
 }
 
 function updateWakeLabel() {
+  $('#start-btn').textContent = draft.voiceOn ? '안내 시작' : '소리 재생';
+  if (!draft.alarmOn) { $('#prep-wake').textContent = '알람 없이 재생합니다.'; return; }
   if (draft.stateId === 'awoken' && store.pending) return;
   const min = draftMinutes();
   const at = Date.now() + min * 60000;
   $('#prep-wake').textContent = `${fmtHours(min / 60)} 뒤, ${fmtClock(at)}에 깨워 드립니다.`;
-  $('#start-btn').textContent = durMode() === 'nap' ? '낮잠 시작' : '시작';
+  $('#start-btn').textContent = durMode() === 'nap' ? '낮잠 시작' : draft.voiceOn ? '안내 시작' : '소리 재생';
 }
 
 $('#start-btn').addEventListener('click', () =>
-  startSession(draft.stateId, draftMinutes() / 60, draft.stateId === 'nap'));
+  startSession(draft.stateId, draft.alarmOn ? draftMinutes() / 60 : 0, draft.stateId === 'nap', { voiceOn: draft.voiceOn, mix: draft.mix, scene: draft.scene, alarmAt: draft.alarmOn && durMode() === 'night' ? draft.wakeAt : undefined }));
 
 // ── 낮 ────────────────────────────────────────────────────
 // 낮잠도 밤과 같은 준비 화면을 쓴다 — 프리셋·배경·직접 입력을 그대로 물려받는다.
@@ -535,9 +615,11 @@ $$('[data-day]').forEach((b) => b.addEventListener('click', () => {
 
 // ── 세션 ──────────────────────────────────────────────────
 
-async function startSession(stateId, hours, isNap) {
+async function startSession(stateId, hours, isNap, options = {}) {
   const state = manifest.states[stateId];
   if (!state) return;
+  $('#play-error').hidden = true;
+  $('#retry-narration').onclick = null;
 
   await mixer.unlock().catch(() => {});   // 클릭 안이라 사실상 성공한다. 실패해도 세션은 연다
   mixer.master = store.settings.bedVolume ?? 1;
@@ -545,34 +627,50 @@ async function startSession(stateId, hours, isNap) {
   // 이야기(state.mix)는 저마다 어울리는 소리를 데려온다 — 온천이면 물소리.
   // 사용자의 저장 믹스는 건드리지 않는다: 세션 동안만 그 소리가 나고,
   // 홈으로 돌아오면 startHomeBed 가 원래 믹스를 되돌린다.
-  const sessionMix = state.mix || store.mixer;
+  const sessionMix = { ...(options.mix || state.mix || store.mixer) };
+  const voiceOn = options.voiceOn !== false;
+  // 소리만 모드가 무음으로 출발하지 않도록 현재 믹스가 비었으면 기본 프리셋을 사용한다.
+  if (!voiceOn && !Object.values(sessionMix).some(v => v > 0)) Object.assign(sessionMix, manifest.presets[0].mix);
   for (const l of mixer.layers.values()) {
     const v = sessionMix[l.def.id] || 0;
     if (v > 0 || l.volume > 0) mixer.setVolume(l.def.id, v);
   }
   // 이야기 전용 씬도 같은 원칙 — 세션에서만, 저장은 안 한다 (endSession 이 되돌린다)
-  if (state.scene) scenes.set(state.scene);
+  const sessionScene = options.scene || state.scene || store.scene;
+  scenes.set(sessionScene);
 
   const now = Date.now();
   const resuming = stateId === 'awoken' && store.pending;
   const alarmAt = resuming ? store.pending.alarmAt
-                : hours > 0 ? now + hours * HOUR
+                : hours > 0 ? options.alarmAt || now + hours * HOUR
                 : null;
 
   session = { stateId, isNap, bedAt: resuming ? store.pending.bedAt : now, alarmAt,
-              mix: sessionMix };   // 일시정지→재개가 이야기의 소리를 그대로 되살리게
+              mix: sessionMix, voiceOn };   // 일시정지→재개가 이야기의 소리를 그대로 되살리게
 
   if (alarmAt) {
     store.pending = { bedAt: session.bedAt, alarmAt, isNap, stateId };
     save('pending', store.pending);
     watcher.set(alarmAt);
+  } else {
+    watcher.cancel(); store.pending = null; save('pending', null);
   }
+  if (state.night && !isNap && !resuming) {
+    const wake = alarmAt ? new Date(alarmAt) : null;
+    store.routine = { stateId, voiceOn, wakeHHMM: wake ? `${String(wake.getHours()).padStart(2, '0')}:${String(wake.getMinutes()).padStart(2, '0')}` : null, mix: { ...sessionMix }, scene: sessionScene };
+    save('routine', store.routine);
+  }
+  $('#play-title').textContent = voiceOn ? state.label : mixLabel(sessionMix);
+  $('#play-kind').textContent = voiceOn ? '수면 안내' : '소리만 듣는 중';
+  $('#play-voice-row').hidden = !voiceOn;
+  $('#play-mix-fold').open = false;
+  $('#play-caption').textContent = '';
 
   $('#play-meta').textContent = alarmAt ? `알람 ${fmtClock(alarmAt)}` : '';
   $('#app').classList.remove('is-dim');
   scenes.start();
   setMediaSession({
-    title: state.label,
+    title: voiceOn ? state.label : mixLabel(sessionMix),
     artist: APP_NAME,
     // 잠금화면 버튼도 같은 일시정지로 간다 — 예전엔 나레이션을 아예 끊어서 되돌릴 수 없었다
     onPause: () => setPaused(true),
@@ -580,7 +678,11 @@ async function startSession(stateId, hours, isNap) {
   });
 
   go('play');
-  startIntro(state);
+  if (voiceOn) startIntro(state);
+  else {
+    introState = null; narration?.stop(); narration = null;
+    dimTimer = setTimeout(() => $('#app').classList.add('is-dim'), 12000);
+  }
 }
 
 // 시작하자마자 말이 나오면 소리에 귀가 붙기도 전에 문장이 지나간다.
@@ -617,7 +719,7 @@ function playNarration(state) {
     }, 300);
   };
   narration.onChunk = setCaption;
-  narration.play(picks, {
+  const callbacks = {
     onPiece: () => setCaption(''),   // 조각 사이 침묵에는 판도 비운다 (:empty 가 판을 지운다)
     onEnd: () => {
       mixer.duck(false);
@@ -625,7 +727,26 @@ function playNarration(state) {
       // 나레이션이 끝나면 화면을 거의 끈다. 밤새 밝은 화면은 그 자체로 방해다.
       dimTimer = setTimeout(() => $('#app').classList.add('is-dim'), 4000);
     },
-  });
+    onError: () => {
+      if (!session) return;
+      mixer.duck(false);
+      clearTimeout(dimTimer);
+      $('#app').classList.remove('is-dim');
+      $('#play-error').hidden = false;
+      setCaption('');
+    },
+  };
+  $('#retry-narration').onclick = () => {
+    if (!session) return;
+    setPaused(false);
+    narration?.stop();
+    narration = new NarrationPlayer({ ...voiceOpts(), gapScale: state.gapScale ?? 1 });
+    narration.onChunk = setCaption;
+    $('#play-error').hidden = true;
+    mixer.duck(true);
+    narration.play(picks, callbacks); // 같은 안내를 처음부터. 새 조합을 뽑거나 이력을 중복 저장하지 않는다.
+  };
+  narration.play(picks, callbacks);
 }
 
 // ── 호흡 모드 ─────────────────────────────────────────────
@@ -1034,7 +1155,11 @@ $('#alarm-test').addEventListener('click', async () => {
     return;
   }
   await mixer.unlock().catch(() => {});
-  alarm.start(12000);
+  $('#alarm-test-note').hidden = true;
+  if (!await alarm.start(12000)) {
+    btn.textContent = '알람 들어보기';
+    return;
+  }
   btn.textContent = '멈추기';
   alarmTest = setTimeout(() => {
     alarmTest = null;

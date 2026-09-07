@@ -174,54 +174,48 @@
       ],
       "release": [
         {
-          "id": "rl1",
-          "text": "발가락 끝을 느껴 보세요. 발가락에서 힘이 빠집니다. 발바닥이 넓게 펴집니다. 발등이 느슨해집니다. 발목이 풀립니다. 종아리가 부드러워집니다. 무릎 뒤가 느슨해집니다. 허벅지가 무거워집니다. 그 무게가 침대로 내려갑니다. 골반이 넓게 놓입니다. 다리 전체에 힘이 남지 않습니다.",
+          "id": "rl4",
+          "text": "발에 닿은 이불의 감촉을 느껴 봅니다. 천이 닿은 곳과 드러난 곳을 그대로 둡니다. 발끝을 움직이지 않고 잠시 머뭅니다. 다리 아래에는 누운 자리의 감촉이 있습니다. 가장 넓게 닿은 곳에 주의를 둡니다. 자세를 바꾸고 싶으면 편하게 고쳐 눕습니다. 바뀐 자리에서 다리의 무게를 맡깁니다. 이불이 덮인 곳에 온기가 남아 있습니다. 느껴지는 만큼만 그 자리에 머뭅니다.",
           "files": [
-            "audio/narration/racing/rl1-0.mp3",
-            "audio/narration/racing/rl1-1.mp3",
-            "audio/narration/racing/rl1-2.mp3",
-            "audio/narration/racing/rl1-3.mp3",
-            "audio/narration/racing/rl1-4.mp3",
-            "audio/narration/racing/rl1-5.mp3",
-            "audio/narration/racing/rl1-6.mp3",
-            "audio/narration/racing/rl1-7.mp3",
-            "audio/narration/racing/rl1-8.mp3",
-            "audio/narration/racing/rl1-9.mp3",
-            "audio/narration/racing/rl1-10.mp3"
+            "audio/narration/racing/rl4-0.mp3",
+            "audio/narration/racing/rl4-1.mp3",
+            "audio/narration/racing/rl4-2.mp3",
+            "audio/narration/racing/rl4-3.mp3",
+            "audio/narration/racing/rl4-4.mp3",
+            "audio/narration/racing/rl4-5.mp3",
+            "audio/narration/racing/rl4-6.mp3",
+            "audio/narration/racing/rl4-7.mp3",
+            "audio/narration/racing/rl4-8.mp3"
           ]
         },
         {
-          "id": "rl2",
-          "text": "두 발이 이불 아래 놓여 있습니다. 발가락 사이가 벌어집니다. 발바닥의 긴장이 풀립니다. 발뒤꿈치가 자리를 잡습니다. 발목이 헐거워집니다. 종아리에서 힘이 나갑니다. 무릎이 살짝 벌어집니다. 허벅지가 침대에 잠깁니다. 골반이 느슨해집니다. 다리가 점점 무거워집니다. 이제 들 수 없을 만큼 무겁습니다.",
+          "id": "rl5",
+          "text": "다리와 침대가 맞닿은 자리를 느껴 봅니다. 닿아 있는 면을 따라 천천히 머뭅니다. 좁게 닿는 곳도 넓게 닿는 곳도 있습니다. 침대는 그 모양대로 다리를 받칩니다. 발은 편하게 놓인 방향에 그대로 둡니다. 이불 아래 공간을 발로 넓혀도 좋습니다. 천이 스치는 감촉을 잠시 느껴 봅니다. 다리가 자리를 잡을 시간을 줍니다. 받쳐진 무게를 그대로 맡겨 둡니다.",
           "files": [
-            "audio/narration/racing/rl2-0.mp3",
-            "audio/narration/racing/rl2-1.mp3",
-            "audio/narration/racing/rl2-2.mp3",
-            "audio/narration/racing/rl2-3.mp3",
-            "audio/narration/racing/rl2-4.mp3",
-            "audio/narration/racing/rl2-5.mp3",
-            "audio/narration/racing/rl2-6.mp3",
-            "audio/narration/racing/rl2-7.mp3",
-            "audio/narration/racing/rl2-8.mp3",
-            "audio/narration/racing/rl2-9.mp3",
-            "audio/narration/racing/rl2-10.mp3"
+            "audio/narration/racing/rl5-0.mp3",
+            "audio/narration/racing/rl5-1.mp3",
+            "audio/narration/racing/rl5-2.mp3",
+            "audio/narration/racing/rl5-3.mp3",
+            "audio/narration/racing/rl5-4.mp3",
+            "audio/narration/racing/rl5-5.mp3",
+            "audio/narration/racing/rl5-6.mp3",
+            "audio/narration/racing/rl5-7.mp3",
+            "audio/narration/racing/rl5-8.mp3"
           ]
         },
         {
-          "id": "rl3",
-          "text": "발끝에 힘이 있는지 봅니다. 있다면 그냥 놓습니다. 발바닥을 살펴봅니다. 남은 힘을 놓습니다. 종아리를 살펴봅니다. 힘이 있으면 놓습니다. 무릎은 그대로 둡니다. 허벅지를 살펴봅니다. 마지막 힘이 빠져나갑니다. 골반까지 내려놓습니다. 아래쪽이 전부 고요합니다.",
+          "id": "rl6",
+          "text": "이불이 다리에 얹힌 무게를 느껴 봅니다. 조금 더 무겁게 닿는 자리에 머뭅니다. 그곳의 천이 피부 가까이에 있습니다. 다리는 이불 아래 편한 모양으로 둡니다. 무릎이 굽혀져 있어도 그대로 좋습니다. 누운 자리와 다리 사이의 감촉을 느낍니다. 스치는 곳과 눌리는 곳이 함께 있습니다. 가장 편한 곳에 잠시 주의를 둡니다. 그 자리의 온기를 느끼며 쉬어 갑니다.",
           "files": [
-            "audio/narration/racing/rl3-0.mp3",
-            "audio/narration/racing/rl3-1.mp3",
-            "audio/narration/racing/rl3-2.mp3",
-            "audio/narration/racing/rl3-3.mp3",
-            "audio/narration/racing/rl3-4.mp3",
-            "audio/narration/racing/rl3-5.mp3",
-            "audio/narration/racing/rl3-6.mp3",
-            "audio/narration/racing/rl3-7.mp3",
-            "audio/narration/racing/rl3-8.mp3",
-            "audio/narration/racing/rl3-9.mp3",
-            "audio/narration/racing/rl3-10.mp3"
+            "audio/narration/racing/rl6-0.mp3",
+            "audio/narration/racing/rl6-1.mp3",
+            "audio/narration/racing/rl6-2.mp3",
+            "audio/narration/racing/rl6-3.mp3",
+            "audio/narration/racing/rl6-4.mp3",
+            "audio/narration/racing/rl6-5.mp3",
+            "audio/narration/racing/rl6-6.mp3",
+            "audio/narration/racing/rl6-7.mp3",
+            "audio/narration/racing/rl6-8.mp3"
           ]
         }
       ],
@@ -389,58 +383,48 @@
       ],
       "release2": [
         {
-          "id": "ru1",
-          "text": "배가 부드러워집니다. 배가 오르내리는 대로 둡니다. 가슴이 열립니다. 등이 침대에 넓게 닿습니다. 손가락 끝에서 힘이 빠집니다. 손바닥이 펴집니다. 팔이 무거워집니다. 어깨가 아래로 내려갑니다. 목이 길어집니다. 턱이 느슨해집니다. 눈 주위가 부드러워집니다. 이마가 펴집니다. 얼굴에 아무 표정도 남지 않습니다.",
+          "id": "ru4",
+          "text": "손이 닿아 있는 곳의 감촉을 느껴 봅니다. 이불이나 잠옷의 천이 손 가까이에 있습니다. 손가락을 편한 모양으로 두면 됩니다. 손바닥 안쪽의 작은 공간에 머뭅니다. 어깨 아래에는 누운 자리가 있습니다. 닿은 면에 어깨의 무게를 맡깁니다. 베개와 머리가 맞닿은 곳을 느껴 봅니다. 베개가 눌린 모양대로 머리를 받칩니다. 얼굴도 편한 표정으로 쉬게 둡니다.",
           "files": [
-            "audio/narration/racing/ru1-0.mp3",
-            "audio/narration/racing/ru1-1.mp3",
-            "audio/narration/racing/ru1-2.mp3",
-            "audio/narration/racing/ru1-3.mp3",
-            "audio/narration/racing/ru1-4.mp3",
-            "audio/narration/racing/ru1-5.mp3",
-            "audio/narration/racing/ru1-6.mp3",
-            "audio/narration/racing/ru1-7.mp3",
-            "audio/narration/racing/ru1-8.mp3",
-            "audio/narration/racing/ru1-9.mp3",
-            "audio/narration/racing/ru1-10.mp3",
-            "audio/narration/racing/ru1-11.mp3",
-            "audio/narration/racing/ru1-12.mp3"
+            "audio/narration/racing/ru4-0.mp3",
+            "audio/narration/racing/ru4-1.mp3",
+            "audio/narration/racing/ru4-2.mp3",
+            "audio/narration/racing/ru4-3.mp3",
+            "audio/narration/racing/ru4-4.mp3",
+            "audio/narration/racing/ru4-5.mp3",
+            "audio/narration/racing/ru4-6.mp3",
+            "audio/narration/racing/ru4-7.mp3",
+            "audio/narration/racing/ru4-8.mp3"
           ]
         },
         {
-          "id": "ru2",
-          "text": "배의 긴장이 풀립니다. 옆구리가 느슨해집니다. 가슴이 편안하게 내려갑니다. 등 전체를 침대에 맡깁니다. 두 손이 제자리에 놓입니다. 손가락이 하나씩 펴집니다. 팔꿈치가 헐거워집니다. 팔의 무게를 침대에 줍니다. 어깨가 아래로 떨어집니다. 목덜미가 부드러워집니다. 혀가 입천장에서 떨어집니다. 눈꺼풀이 무거워집니다.",
+          "id": "ru5",
+          "text": "베개에 닿은 얼굴이나 머리의 감촉을 느낍니다. 천이 피부에 닿은 자리에 잠시 머뭅니다. 베개 높이가 불편하면 고쳐도 좋습니다. 새로 닿은 면에 머리의 무게를 맡깁니다. 어깨가 놓인 자리도 함께 느껴 봅니다. 침대가 어깨 아래에서 받쳐 주고 있습니다. 손은 편하게 닿는 곳에 놓아둡니다. 손끝 가까이에서 천의 감촉이 느껴집니다. 그 감촉을 둔 채 가만히 쉬어 갑니다.",
           "files": [
-            "audio/narration/racing/ru2-0.mp3",
-            "audio/narration/racing/ru2-1.mp3",
-            "audio/narration/racing/ru2-2.mp3",
-            "audio/narration/racing/ru2-3.mp3",
-            "audio/narration/racing/ru2-4.mp3",
-            "audio/narration/racing/ru2-5.mp3",
-            "audio/narration/racing/ru2-6.mp3",
-            "audio/narration/racing/ru2-7.mp3",
-            "audio/narration/racing/ru2-8.mp3",
-            "audio/narration/racing/ru2-9.mp3",
-            "audio/narration/racing/ru2-10.mp3",
-            "audio/narration/racing/ru2-11.mp3"
+            "audio/narration/racing/ru5-0.mp3",
+            "audio/narration/racing/ru5-1.mp3",
+            "audio/narration/racing/ru5-2.mp3",
+            "audio/narration/racing/ru5-3.mp3",
+            "audio/narration/racing/ru5-4.mp3",
+            "audio/narration/racing/ru5-5.mp3",
+            "audio/narration/racing/ru5-6.mp3",
+            "audio/narration/racing/ru5-7.mp3",
+            "audio/narration/racing/ru5-8.mp3"
           ]
         },
         {
-          "id": "ru3",
-          "text": "배에 힘이 있으면 놓습니다. 가슴은 그대로 둡니다. 손을 한 번 가볍게 쥡니다. 그리고 놓습니다. 쥐었다 놓으면 더 깊이 풀립니다. 어깨를 살짝 올립니다. 그리고 툭 떨어뜨립니다. 이마의 힘을 놓습니다. 눈썹 사이가 벌어집니다. 턱이 저절로 벌어집니다. 위쪽까지 전부 고요합니다. 몸 어디에도 힘이 없습니다.",
+          "id": "ru6",
+          "text": "잠옷이 팔에 닿은 감촉을 느껴 봅니다. 주름진 곳과 매끈한 곳을 그대로 둡니다. 팔 아래 받쳐진 자리에 무게를 맡깁니다. 손가락은 서로 닿아 있어도 좋습니다. 손이 놓인 모양에 잠시 머뭅니다. 어깨에서 베개 쪽으로 주의를 옮깁니다. 머리가 베개에 닿아 있는 면을 느낍니다. 넓게 받쳐진 그 자리에 쉬어 갑니다. 입가에도 편한 표정을 남겨 둡니다.",
           "files": [
-            "audio/narration/racing/ru3-0.mp3",
-            "audio/narration/racing/ru3-1.mp3",
-            "audio/narration/racing/ru3-2.mp3",
-            "audio/narration/racing/ru3-3.mp3",
-            "audio/narration/racing/ru3-4.mp3",
-            "audio/narration/racing/ru3-5.mp3",
-            "audio/narration/racing/ru3-6.mp3",
-            "audio/narration/racing/ru3-7.mp3",
-            "audio/narration/racing/ru3-8.mp3",
-            "audio/narration/racing/ru3-9.mp3",
-            "audio/narration/racing/ru3-10.mp3",
-            "audio/narration/racing/ru3-11.mp3"
+            "audio/narration/racing/ru6-0.mp3",
+            "audio/narration/racing/ru6-1.mp3",
+            "audio/narration/racing/ru6-2.mp3",
+            "audio/narration/racing/ru6-3.mp3",
+            "audio/narration/racing/ru6-4.mp3",
+            "audio/narration/racing/ru6-5.mp3",
+            "audio/narration/racing/ru6-6.mp3",
+            "audio/narration/racing/ru6-7.mp3",
+            "audio/narration/racing/ru6-8.mp3"
           ]
         }
       ],

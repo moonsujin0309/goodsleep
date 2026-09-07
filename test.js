@@ -2,6 +2,8 @@
 // 프레임워크 없음. 계산이 틀리면 여기서 죽는다.
 
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import vm from 'node:vm';
 import { sleepDebt, nightHours, dailySeries, nightDateKey, upsertNight, HOUR, DAY } from './sleep.js';
 import { pickWithHistory, pushHistory, buildSequence, fitsWhen } from './narration.js';
 import { fadeEdges } from './synth.js';
@@ -310,6 +312,128 @@ test('페이드 구간이 소스보다 길면 잘려서 들어간다', () => {
   const w = fadeEdges(flat, 1.2);
   assert.ok(w.left[Math.floor(n / 2)] === 1, '가운데는 온전해야 한다');
   assert.ok(w.left[0] < 1 && w.left[n - 1] < 1, '양 끝은 깎여 있어야 한다');
+});
+
+test('무한값과 미래의 수면 기록은 계산에서 제외한다', () => {
+  assert.equal(nightHours({ bedAt: NOW - HOUR, wakeAt: Infinity }), null);
+  approx(debt([night(-1, 2)]), 0, '미래 밤');
+  approx(debt([night(0, 6)], [nap(-1, 120)]), 2, '미래 낮잠');
+  approx(debt([night(0, 6)], [nap(0, Infinity)]), 2, '무한 낮잠');
+});
+
+test('잘못된 기록은 차트의 기록일로 세지 않는다', () => {
+  const today = nightDateKey(NOW);
+  const cell = dailySeries([{ date: today, bedAt: NOW, wakeAt: NOW - 1 }],
+    [{ date: today, at: NOW, minutes: -30 }], NOW).at(-1);
+  assert.equal(cell.hasData, false);
+  assert.equal(cell.nightH, 0);
+  assert.equal(cell.napH, 0);
+});
+
+// 브라우저 오디오의 거부/오류 이벤트만 대체하고 실제 시퀀스 제어를 검증한다.
+globalThis.window = {};
+globalThis.Audio = class extends EventTarget {
+  constructor() { super(); this.volume = 1; }
+  play() { return Promise.reject(new Error('재생 거부')); }
+  pause() {}
+};
+const { NarrationPlayer, createAlarm } = await import('./audio.js');
+const asyncTest = async (name, fn) => {
+  try { await fn(); passed++; }
+  catch (e) { console.error(`\n  FAIL  ${name}\n        ${e.message}\n`); process.exitCode = 1; }
+};
+await asyncTest('재생 거부는 정상 완료가 아니라 오류로 알려준다', async () => {
+  const player = new NarrationPlayer({ volume: 1 });
+  player._wait = async () => {};
+  let ended = false;
+  let error;
+  let pieces = 0;
+  await player.play([{ file: 'a.mp3', text: '첫 문장.' }, { file: 'b.mp3', text: '다음 문장.' }], {
+    onPiece: () => pieces++, onEnd: () => { ended = true; }, onError: (e) => { error = e; },
+  });
+  assert.ok(error instanceof Error);
+  assert.equal(ended, false);
+  assert.equal(pieces, 1);
+});
+
+await asyncTest('알람 재생 거부를 호출자에게 알린다', async () => {
+  let error;
+  const alarm = createAlarm({ onError: (e) => { error = e; } });
+  try {
+    await alarm.start(0);
+    assert.ok(error instanceof Error);
+  } finally { alarm.stop(); }
+});
+
+await asyncTest('내장 TTS 미지원은 정상 완료로 처리하지 않는다', async () => {
+  const player = new NarrationPlayer();
+  player._wait = async () => {};
+  let ended = false, error;
+  await player.play([{ text: '안내 문장.' }], {
+    onEnd: () => { ended = true; }, onError: (e) => { error = e; },
+  });
+  assert.ok(error instanceof Error);
+  assert.equal(ended, false);
+});
+
+await asyncTest('내장 TTS 오류는 전달하고 사용자 중단은 오류로 알리지 않는다', async () => {
+  globalThis.SpeechSynthesisUtterance = class {};
+  let utterance;
+  const synthesis = {
+    getVoices: () => [],
+    cancel: () => { utterance?.onerror?.({ error: 'canceled' }); utterance = null; },
+    speak: (u) => { utterance = u; queueMicrotask(() => u.onerror?.({ error: 'synthesis-failed' })); },
+  };
+  window.speechSynthesis = globalThis.speechSynthesis = synthesis;
+  try {
+    let error, ended = false;
+    const failed = new NarrationPlayer();
+    failed._wait = async () => {};
+    await failed.play([{ text: '안내 문장.' }], {
+      onError: (e) => { error = e; }, onEnd: () => { ended = true; },
+    });
+    assert.ok(error instanceof Error);
+    assert.equal(ended, false);
+    error = null;
+    const stopped = new NarrationPlayer();
+    stopped._wait = async () => {};
+    synthesis.speak = (u) => { utterance = u; queueMicrotask(() => stopped.stop()); };
+    await stopped.play([{ text: '안내 문장.' }], {
+      onError: (e) => { error = e; }, onEnd: () => { ended = true; },
+    });
+    assert.equal(error, null);
+    assert.equal(ended, false);
+  } finally {
+    delete window.speechSynthesis;
+    delete globalThis.speechSynthesis;
+    delete globalThis.SpeechSynthesisUtterance;
+  }
+});
+
+await asyncTest('오프라인 셸은 오디오 엔진의 synth.js도 저장한다', async () => {
+  const handlers = {};
+  let shell;
+  const context = { self: { addEventListener: (type, fn) => { handlers[type] = fn; }, skipWaiting() {} },
+    caches: { open: async () => ({ addAll: async (files) => { shell = files; } }) } };
+  vm.runInNewContext(readFileSync(new URL('./sw.js', import.meta.url), 'utf8'), context);
+  let pending;
+  handlers.install({ waitUntil: (p) => { pending = p; } });
+  await pending;
+  assert.ok(shell.includes('synth.js'));
+});
+
+await asyncTest('서버 503이면 저장된 앱 파일을 반환한다', async () => {
+  const handlers = {};
+  const cached = new Response('cached app');
+  const context = { self: { addEventListener: (type, fn) => { handlers[type] = fn; } },
+    location: { origin: 'https://example.com' }, URL, Request, Response,
+    fetch: async () => new Response('unavailable', { status: 503 }),
+    caches: { match: async () => cached } };
+  vm.runInNewContext(readFileSync(new URL('./sw.js', import.meta.url), 'utf8'), context);
+  let pending;
+  handlers.fetch({ request: new Request('https://example.com/app.js'), respondWith: (p) => { pending = p; } });
+  const response = await pending;
+  assert.equal(await response.text(), 'cached app');
 });
 
 console.log(`\n  ${passed}개 통과${process.exitCode ? ' — 실패 있음' : ''}\n`);

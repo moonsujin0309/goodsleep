@@ -5,13 +5,11 @@
 //     배포가 즉시 반영되고, 끊겼을 때만 캐시가 받친다. 버전 올리기를 잊어도 안전.
 //   나레이션 mp3 — 캐시 우선.
 //     한 번 들은 조각은 다시 받지 않는다. 내용이 바뀌는 배포에서만 VER 을 올린다.
-const VER = 'goodsleep-v13';  // 2026-09-04 층 자기소개 제거(mp3 이름이 한 칸 당겨졌다)
-                              // + 후렴 6개 추가 + 층별 음량. **반드시 올려야 한다** —
-                              // v12 캐시에는 옛 번호의 mp3 가 들어 있어 자막과 음성이 한 문장씩 어긋난다.
+const VER = 'goodsleep-v15';  // 2026-09-07 첫 설치 오프라인에 필요한 프리셋 포함
 const SHELL = [
   './', 'index.html', 'style.css', 'manifest.json',
-  'app.js', 'audio.js', 'narration.js', 'sleep.js', 'scenes.js',
-  'data/narration.json', 'data/sounds.json',
+  'app.js', 'audio.js', 'narration.js', 'sleep.js', 'scenes.js', 'synth.js',
+  'data/narration.json', 'data/sounds.json', 'data/presets.json',
 ];
 
 self.addEventListener('install', (e) => {
@@ -21,7 +19,7 @@ self.addEventListener('install', (e) => {
 self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== VER).map((k) => caches.delete(k))))
+      .then((keys) => Promise.all(keys.filter((k) => k.startsWith('goodsleep-') && k !== VER).map((k) => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });
@@ -45,9 +43,10 @@ self.addEventListener('fetch', (e) => {
   // cache: 'reload' — 이게 없으면 브라우저 HTTP 캐시가 낡은 앱 파일을 그대로 돌려줘서
   // "네트워크 우선"이 이름뿐이 된다 (배포해도 화면이 안 바뀌는 정체). 실측으로 걸렸다.
   e.respondWith(
-    fetch(new Request(e.request, { cache: 'reload' })).then((res) => {
-      if (res.status === 200) caches.open(VER).then((c) => c.put(e.request, res.clone()));
+    fetch(new Request(e.request, { cache: 'reload' })).then(async (res) => {
+      if (!res.ok) return (await caches.match(e.request, { ignoreSearch: true })) || res;
+      if (res.status === 200) e.waitUntil(caches.open(VER).then((c) => c.put(e.request, res.clone())));
       return res;
-    }).catch(() => caches.match(e.request, { ignoreSearch: true }))
+    }).catch(async () => (await caches.match(e.request, { ignoreSearch: true })) || Response.error())
   );
 });

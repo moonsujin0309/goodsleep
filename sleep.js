@@ -11,9 +11,9 @@ export const DEFAULTS = {
   capHours: 20,        // 부채 상한. 무한히 쌓이면 사용자가 앱을 지운다
 };
 
-/** 하룻밤 실제 수면 시간(h). 기록이 잘못됐으면 null. */
+/** 취침·기상 입력과 입면 설정으로 추정한 수면 시간(h). 잘못된 기록은 null. */
 export function nightHours(night, sleepOnsetMin = DEFAULTS.sleepOnsetMin) {
-  if (!night || typeof night.bedAt !== 'number' || typeof night.wakeAt !== 'number') return null;
+  if (!night || !Number.isFinite(night.bedAt) || !Number.isFinite(night.wakeAt)) return null;
   if (!(night.wakeAt > night.bedAt)) return null;
   const h = (night.wakeAt - night.bedAt) / HOUR - sleepOnsetMin / 60;
   return h > 0 ? h : 0;
@@ -22,12 +22,13 @@ export function nightHours(night, sleepOnsetMin = DEFAULTS.sleepOnsetMin) {
 /** 창(window) 안에 드는 밤만 추린다. 기준은 기상 시각. */
 export function nightsInWindow(nights = [], now = Date.now(), windowDays = DEFAULTS.windowDays) {
   const since = now - windowDays * DAY;
-  return nights.filter((n) => nightHours(n) !== null && n.wakeAt >= since);
+  return nights.filter((n) => nightHours(n) !== null && n.wakeAt >= since && n.wakeAt <= now);
 }
 
 export function napsInWindow(naps = [], now = Date.now(), windowDays = DEFAULTS.windowDays) {
   const since = now - windowDays * DAY;
-  return naps.filter((n) => typeof n.at === 'number' && n.at >= since && n.minutes > 0);
+  return naps.filter((n) => n && Number.isFinite(n.at) && n.at >= since && n.at <= now
+    && Number.isFinite(n.minutes) && n.minutes > 0);
 }
 
 /**
@@ -60,10 +61,11 @@ export function sleepDebt({
 export function dailySeries(nights = [], naps = [], now = Date.now(), windowDays = DEFAULTS.windowDays, sleepOnsetMin = DEFAULTS.sleepOnsetMin) {
   const out = [];
   for (let i = windowDays - 1; i >= 0; i--) {
-    const d = new Date(now - i * DAY);
+    const d = new Date(now);
+    d.setDate(d.getDate() - i); // 일광절약시간 전환일도 달력 하루씩 이동한다.
     const key = dateKey(d);
-    const night = nights.find((n) => n.date === key);
-    const napMin = naps.filter((n) => n.date === key).reduce((s, n) => s + n.minutes, 0);
+    const night = nights.find((n) => n?.date === key && nightHours(n, sleepOnsetMin) !== null && n.wakeAt <= now);
+    const napMin = napsInWindow(naps, now, windowDays + 1).filter((n) => n.date === key).reduce((s, n) => s + n.minutes, 0);
     out.push({
       date: key,
       label: `${d.getMonth() + 1}/${d.getDate()}`,

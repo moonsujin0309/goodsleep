@@ -654,20 +654,28 @@ export class NarrationPlayer {
     this._timer = null;
   }
 
-  async play(picks, { onPiece, onEnd } = {}) {
+  async play(picks, { onPiece, onEnd, onError } = {}) {
     this.stopped = false;
-    for (let i = 0; i < picks.length; i++) {
-      if (this.stopped) return;
-      onPiece?.(picks[i], i, picks.length);
-      await this._wait(this.leadSeconds * 1000);   // 글자를 먼저 읽을 틈
-      if (this.stopped) return;
-      await this._speak(picks[i]);
-      if (this.stopped) return;
-      if (i < picks.length - 1) {
-        await this._wait(Math.max(0.5, this.gapSeconds - this.leadSeconds) * 1000);
+    this.paused = false;
+    this.onError = onError;
+    try {
+      for (let i = 0; i < picks.length; i++) {
+        if (this.stopped) return;
+        onPiece?.(picks[i], i, picks.length);
+        await this._wait(this.leadSeconds * 1000);   // 글자를 먼저 읽을 틈
+        if (this.stopped) return;
+        await this._speak(picks[i]);
+        if (this.stopped) return;
+        if (i < picks.length - 1) {
+          await this._wait(Math.max(0.5, this.gapSeconds - this.leadSeconds) * 1000);
+        }
       }
+      if (!this.stopped) onEnd?.();
+    } catch (error) {
+      if (this.stopped) return;
+      this.stop();
+      this.onError?.(error);
     }
-    if (!this.stopped) onEnd?.();
   }
 
   /** 침묵. 일시정지에 대비해 남은 시간을 들고 있는다 —
@@ -699,7 +707,7 @@ export class NarrationPlayer {
       const r = this._resume;
       this._timer = setTimeout(() => { this._resume = null; r(); }, this._remain || 0);
     } else if (this.el.src) {
-      this.el.play().catch(() => {});   // 파일 재생 중이었다 — ended 리스너가 그대로 받는다
+      this.el.play().catch((error) => this._fileFail?.(error));
     }
     if ('speechSynthesis' in window) speechSynthesis.resume();
   }
@@ -787,26 +795,40 @@ export class NarrationPlayer {
   async _file(src) {
     const url = await this._srcFor(src);
     if (this.stopped) return;
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const el = this.el;
       el.src = url;
       el.volume = Math.min(1, this._vol);     // 구운 경우 여긴 1 이면 된다
       const done = () => {
         // 숫자 세기 박자 계산용 — 방금 토막이 실제로 몇 초였는지
         this._lastDur = Number.isFinite(el.duration) ? el.duration : 0;
-        el.removeEventListener('ended', done);
-        el.removeEventListener('error', done);
+        cleanup();
         resolve();
       };
+      const fail = (error) => {
+        cleanup();
+        reject(error instanceof Error ? error : new Error('나레이션 음성을 불러오지 못했습니다.'));
+      };
+      const cleanup = () => {
+        el.removeEventListener('ended', done);
+        el.removeEventListener('error', fail);
+        this._fileDone = null;
+        this._fileFail = null;
+      };
+      this._fileDone = done;
+      this._fileFail = fail;
       el.addEventListener('ended', done);
-      el.addEventListener('error', done);
-      el.play().catch(done);
+      el.addEventListener('error', fail);
+      el.play().catch(fail);
     });
   }
 
   _tts(text) {
-    return new Promise((resolve) => {
-      if (!text || !('speechSynthesis' in window)) return resolve();
+    return new Promise((resolve, reject) => {
+      if (!text) return resolve();
+      if (!('speechSynthesis' in window)) {
+        return reject(new Error('이 기기에서 내장 음성을 사용할 수 없습니다.'));
+      }
       const u = new SpeechSynthesisUtterance(text);
       u.lang = 'ko-KR';
       u.rate = this.rate;     // 수면 나레이션은 느리게
@@ -815,8 +837,19 @@ export class NarrationPlayer {
       const voices = koreanVoices();
       const picked = voices.find((v) => v.voiceURI === this.voiceURI) || voices[0];
       if (picked) u.voice = picked;
-      u.onend = () => resolve();
-      u.onerror = () => resolve();
+      const cleanup = () => {
+        u.onend = null;
+        u.onerror = null;
+        this._ttsDone = null;
+      };
+      const done = () => { cleanup(); resolve(); };
+      u.onend = done;
+      u.onerror = () => {
+        cleanup();
+        if (this.stopped) resolve();
+        else reject(new Error('내장 음성을 재생하지 못했습니다.'));
+      };
+      this._ttsDone = done;
       speechSynthesis.cancel();
       speechSynthesis.speak(u);
     });
@@ -825,7 +858,10 @@ export class NarrationPlayer {
   stop() {
     this.stopped = true;
     this.paused = false;
+    this._resume?.();
     this._resume = null;
+    this._fileDone?.();
+    this._ttsDone?.();
     if (this._gain) { URL.revokeObjectURL(this._gain.url); this._gain = null; }
     clearTimeout(this._timer);
     if (this.el._fade) clearInterval(this.el._fade);
@@ -838,7 +874,7 @@ export class NarrationPlayer {
 
 /** 무음에서 60초에 걸쳐 올라온다. 놀라서 깨는 것과 자연히 깨는 것은 다르다.
  *  소리는 노이즈가 아니라 차임 — 9초 루프에 3음 아르페지오 + 침묵. */
-export function createAlarm() {
+export function createAlarm({ onError } = {}) {
   // 배경음과 같은 SeamlessLoop 을 쓴다. 볼륨이 안 먹는 기기(아이폰)에서는
   // 이쪽도 램프가 통째로 죽어 처음부터 최대로 울고 있었다 — 굽기 경로를 그대로 물려받는다.
   const el = new SeamlessLoop();
@@ -849,8 +885,13 @@ export function createAlarm() {
       // 0.02 로 시작하면 첫 1분이 사실상 무음이라 "알람이 안 울렸다"가 된다.
       // 속삭임 정도(0.15)에서 시작해 램프한다 — 자연히 깨되, 들리기는 바로 들리게.
       el.volume = 0.15;
-      el.play().catch(() => {});
-      fade(el, 1, rampMs);
+      return el.play().then(() => {
+        fade(el, 1, rampMs);
+        return true;
+      }).catch((error) => {
+        onError?.(error);
+        return false;
+      });
     },
     stop() {
       if (el._fade) clearInterval(el._fade);

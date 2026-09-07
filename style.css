@@ -871,6 +871,158 @@ input[type='range']:disabled { cursor: not-allowed; }
   box-shadow: inset 0 0 0 1px var(--accent-line);
 }
 
+/* 밤의 시작: 바로 고르는 안내 → 마음 상태 → 이야기. 배경은 읽기를 받친다. */
+body.on-home #scene {
+  background: linear-gradient(rgba(10, 9, 18, .76), rgba(10, 9, 18, .91) 45%, #0A0912 85%);
+}
+body.on-home .veil { background: linear-gradient(rgba(10,9,18,.55), rgba(10,9,18,.88) 45%, #0A0912 90%); }
+.home-top { min-height: 36px; margin-bottom: 26px; gap: 12px; }
+.home-top .now { gap: 5px; font-size: 12px; }
+.home-top .moon { width: 20px; height: 20px; animation: none; filter: none; }
+.home-top .now .sep, #home-date { display: none; }
+.home-intro { margin-bottom: 22px; }
+.home-intro .eyebrow { color: #B7A893; font-size: 12px; margin: 0 0 10px; letter-spacing: .07em; }
+.home-intro .lede { font-family: var(--font-serif); font-size: 28px; line-height: 1.45; font-weight: 400; margin-bottom: 7px; }
+.home-intro .sub { color: #B9B1B5; font-size: 13px; margin: 0; }
+.tonight-card {
+  display: flex; flex-direction: column; align-items: flex-start; position: relative;
+  width: 100%; padding: 23px; overflow: hidden; text-align: left; border-radius: 22px;
+  background: linear-gradient(95deg, rgba(19, 20, 28, .96), rgba(22, 25, 38, .61)), url('assets/presets/night-sea.jpg') center 62% / cover;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.10), 0 8px 32px rgba(0,0,0,.15);
+  transition: scale 180ms var(--ease), box-shadow 180ms var(--ease);
+}
+.feature-kicker { font-size: 12px; color: #CAB793; margin-bottom: 10px; }
+.tonight-card strong { font-family: var(--font-serif); font-size: 25px; font-weight: 400; line-height: 1.45; }
+.feature-note { font-size: 12px; color: #BBB7BB; margin-top: 5px; }
+.feature-action { display: flex; align-items: center; gap: 12px; margin-top: 22px; font-size: 13px; color: #E5C28A; font-weight: 600; }
+.feature-action .icon { width: 16px; height: 16px; }
+.sheet {
+  margin: 26px 0 0; padding: 0; background: none; border-radius: 0; box-shadow: none;
+}
+.section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
+.section-heading h2 { font-size: 15px; font-weight: 600; }
+.section-heading > span { font-size: 12px; color: var(--text-3); }
+.sheet .states { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.sheet .state { min-height: 79px; padding: 12px; gap: 9px; align-items: flex-start; font-size: 13px; line-height: 1.5; background: rgba(28, 25, 35, .96); border-radius: 14px; box-shadow: inset 0 0 0 1px rgba(255,255,255,.04); }
+.sheet .state::before { display: none; }
+.sheet .state .dot { width: 6px; height: 6px; margin-top: 7px; box-shadow: none; }
+.state-copy { display: flex; flex-direction: column; gap: 5px; text-align: left; word-break: keep-all; }
+.state-copy small { color: #A9A0AE; font-size: 12px; font-weight: 400; }
+.sheet .state:last-child:nth-child(odd) { grid-column: 1 / -1; min-height: 58px; align-items: center; }
+.sheet .state:last-child:nth-child(odd) .dot { margin-top: 0; }
+.sheet .state:last-child:nth-child(odd) .state-copy { flex: 1; flex-direction: row; align-items: center; justify-content: space-between; }
+#journey-section { margin-top: 26px; }
+.journey-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.journey-card { padding: 0; overflow: hidden; position: relative; border-radius: 16px; text-align: left; background: #1B1821; box-shadow: inset 0 0 0 1px rgba(255,255,255,.06); transition: scale 180ms var(--ease); }
+.journey-card img { display: block; width: 100%; height: 100px; object-fit: cover; filter: brightness(.68) saturate(.65); }
+.journey-copy { display: flex; flex-direction: column; padding: 12px; word-break: keep-all; }
+.journey-copy small { font-size: 12px; color: #B9A789; }
+.journey-copy strong { margin: 3px 0 4px; font-size: 15px; font-weight: 500; }
+.journey-copy > span { color: #A9A0AE; font-size: 12px; line-height: 1.5; }
+.journey-card > .icon { position: absolute; top: 64px; right: 10px; width: 26px; height: 26px; padding: 5px; border-radius: 50%; background: rgba(12,10,20,.76); color: #E9E3DC; }
+.sheet .foot { margin-top: 24px; padding: 12px 0 0; gap: 4px; box-shadow: 0 -1px 0 var(--line); }
+.sheet .foot .btn { flex: 1; padding: 8px 2px; font-size: 12px; color: #BDB4C3; flex-direction: column; gap: 5px; min-height: 62px; }
+.sheet .foot .icon { display: block; width: 19px; height: 19px; }
+.prepare-action { position: sticky; bottom: 0; z-index: 4; margin: 12px -8px calc(-1 * var(--sp-5)); padding: 16px 8px calc(env(safe-area-inset-bottom) + 20px); background: linear-gradient(transparent, rgba(10,9,18,.98) 18%); }
+#s-prepare > .spacer { min-height: 0; }
+#s-prepare .lede { font-size: 27px; }
+#s-prepare .section { margin-top: 24px; }
+#s-prepare .wake-row { padding: 15px 12px; border-radius: 16px; background: rgba(22,19,31,.92); }
+#s-prepare .rail { scroll-snap-type: x proximity; }
+#s-prepare .rail > * { scroll-snap-align: start; }
+.play-console { background: rgba(8,7,14,.88); }
+.play-meta { color: #B7AEBF; }
+.play-controls { width: 100%; }
+.play-controls .btn { width: auto; flex: 1 1 0; min-width: 0; padding-inline: 8px; white-space: nowrap; }
+.play-controls #pause-btn { flex: 1; background: var(--accent-soft); color: #E3BF86; }
+.play-controls #stop-btn { color: #A9A0AE; font-size: 13px; }
+.play-error { text-align: center; font-size: 13px; color: #E8C08A; }
+.play-error p { margin: 0 0 8px; }
+.play-error[hidden], .storage-note[hidden] { display: none; }
+.storage-note { position: relative; z-index: 5; max-width: 460px; margin: 0 auto; padding: 12px 20px; font-size: 12px; color: #E8C08A; background: #282015; }
+.tonight-card:active, .journey-card:active, .state:active, .step:active { scale: .96; }
+@media (max-width: 359px) {
+  main { padding-left: 16px; padding-right: 16px; }
+  .home-intro .lede { font-size: 25px; }
+  .tonight-card { padding: 20px; }
+  .tonight-card strong { font-size: 23px; }
+  .sheet .state { font-size: 12px; padding: 10px; }
+  .state-copy small { font-size: 12px; }
+}
+
+/* 내 밤: 홈은 정적인 캔버스, 실제 재생에만 자연 장면을 펼친다. */
+:root { --bg: #101211; --surface: #1A1D1A; --surface-2: #252923; --text: #E8E7DF; --text-2: #B1B5AA; --text-3: #959C8E; --accent: #CED7BB; --accent-soft: rgba(206,215,187,.12); --accent-line: rgba(206,215,187,.32); }
+body.on-home #scene-back, body.on-home #scene-video, body.on-home #scene,
+body.on-prepare #scene-back, body.on-prepare #scene-video, body.on-prepare #scene { visibility: hidden; }
+body.on-home .veil, body.on-prepare .veil { background: #101211; }
+.brand, .lede, .lede-xl, .preset .name, .tonight-card strong, .home-intro .lede, #s-breathe .breath .count { font-family: inherit; }
+.home-top { margin-bottom: 34px; }
+.home-top .brand { font-size: 14px; font-weight: 600; letter-spacing: .04em; }
+.home-top .moon { display: none; }
+.home-top .now { color: var(--text-3); }
+.home-intro { margin-bottom: 24px; }
+.home-intro .lede { font-size: 36px; font-weight: 500; letter-spacing: -.045em; line-height: 1.15; }
+.home-intro .sub { margin-top: 12px; color: #A8AFA2; }
+.tonight-card { min-height: 304px; justify-content: flex-end; padding: 25px; border-radius: 8px; background-position: center; background-size: cover; box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); }
+.feature-kicker { margin-bottom: 8px; color: #DADED1; font-size: 12px; }
+.tonight-card strong { max-width: 100%; font-size: 27px; line-height: 1.25; font-weight: 500; letter-spacing: -.04em; word-break: keep-all; }
+.feature-note { margin-top: 12px; color: #D0D3C9; font-size: 12px; line-height: 1.6; }
+.feature-action { width: 100%; margin-top: 23px; justify-content: space-between; color: #E6EBCF; font-size: 14px; }
+.routine-edit { display: block; min-height: 44px; margin-left: auto; padding: 12px 0 4px 18px; font-size: 12px; color: var(--text-2); text-decoration: underline; text-underline-offset: 4px; }
+.sound-entry { display: flex; align-items: center; justify-content: space-between; gap: 16px; width: 100%; min-height: 84px; margin-top: 18px; padding: 16px 0; text-align: left; border-bottom: 1px solid var(--line); }
+.sound-entry > span { display: grid; gap: 5px; }
+.sound-entry strong { font-size: 16px; font-weight: 500; }
+.sound-entry small { font-size: 12px; color: var(--text-3); }
+.sound-entry > .icon { color: var(--text-2); }
+.sheet { margin-top: 30px; }
+.section-heading { margin-bottom: 17px; }
+.section-heading h2 { font-size: 17px; font-weight: 500; letter-spacing: -.025em; }
+.sheet .states { display: flex; flex-direction: column; gap: 0; }
+.sheet .state, .sheet .state:last-child:nth-child(odd) { min-height: 64px; align-items: center; padding: 13px 0; font-size: 14px; background: transparent; border-radius: 0; box-shadow: 0 1px 0 var(--line-soft); }
+.sheet .state .dot { display: none; }
+.sheet .state-copy, .sheet .state:last-child:nth-child(odd) .state-copy { flex: 1; flex-direction: row; align-items: baseline; justify-content: space-between; gap: 12px; }
+.state-copy small { flex: 0 1 42%; text-align: right; font-size: 12px; color: #929B8A; }
+#journey-section { margin-top: 36px; }
+.journey-card { border-radius: 8px; background: transparent; box-shadow: none; }
+.journey-card img { height: 128px; border-radius: 8px; filter: brightness(.8) saturate(.7); }
+.journey-copy { padding: 13px 0; }
+.journey-copy small { color: #A4AF98; }
+.journey-copy strong { font-size: 17px; margin-top: 5px; }
+.journey-copy > span { display: none; }
+.journey-card > .icon { top: 90px; }
+.sheet .foot { margin-top: 30px; }
+.sheet .foot .btn { color: #B5BCAF; }
+.listening-mode { display: flex; padding: 4px; border-radius: 10px; background: #1D211D; margin: 22px 0 10px; }
+.listening-mode button { min-height: 44px; flex: 1; padding: 8px; font-size: 14px; border-radius: 7px; color: #A8B09F; }
+.listening-mode button[aria-pressed="true"] { background: #353D30; color: #E0E6D7; }
+.alarm-toggle { display: flex; align-items: center; justify-content: space-between; min-height: 58px; font-size: 14px; }
+.alarm-toggle input { width: 22px; height: 22px; accent-color: var(--accent); }
+[hidden], .mix-row[hidden] { display: none !important; }
+#s-prepare .lede { font-size: 30px; font-weight: 500; letter-spacing: -.04em; }
+#s-prepare .wake-row { background: #1A1E19; border-radius: 10px; }
+.prepare-action { background: linear-gradient(transparent, #101211 18%); }
+.btn-primary { background: #CBD5BB; color: #192013; box-shadow: none; border-radius: 10px; }
+.player-heading { padding: 16px 12px; text-align: center; border-radius: 12px; background: linear-gradient(rgba(8,12,8,.92), rgba(8,12,8,.76)); }
+.player-heading > span { color: #B1B9A7; font-size: 12px; }
+.player-heading h2 { font-size: 18px; font-weight: 500; margin-top: 8px; }
+.play-console { background: rgba(13,16,13,.88); border-radius: 16px; padding: 18px 16px; gap: 14px; }
+.play-mix { max-width: none; width: 100%; }
+.play-mix > summary { min-height: 44px; cursor: pointer; font-size: 13px; color: #B6BEAD; text-align: center; padding: 10px; }
+.play-mix[open] > summary { margin-bottom: 10px; }
+.play-controls .btn { min-height: 60px; border-radius: 10px; }
+.play-controls #pause-btn { flex: 1.6; color: #DCE5CD; background: #30382A; font-size: 15px; }
+.play-controls #stop-btn { color: #ABB3A2; font-size: 14px; }
+#app.is-dim .player-heading { opacity: .3; }
+@media (max-width: 359px) {
+  .home-intro .lede { font-size: 34px; }
+  .tonight-card { min-height: 290px; padding: 20px; }
+  .tonight-card strong { font-size: 25px; }
+  .sheet .state { font-size: 13px; }
+  .sheet .state-copy { gap: 8px; }
+  .state-copy small { font-size: 12px; }
+  .play-console { padding: 14px 12px; }
+}
+
 /* ── 접근성 ────────────────────────────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {

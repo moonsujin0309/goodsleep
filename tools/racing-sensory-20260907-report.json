@@ -1,0 +1,134 @@
+[
+  {
+    "layer": "release",
+    "id": "rl4",
+    "replaces": "rl1",
+    "chunks": 9,
+    "seconds": 25.33,
+    "spread": 1.258,
+    "blocks": 1,
+    "gain": 1.354,
+    "passed": true,
+    "files": [
+      "audio/narration/racing/rl4-0.mp3",
+      "audio/narration/racing/rl4-1.mp3",
+      "audio/narration/racing/rl4-2.mp3",
+      "audio/narration/racing/rl4-3.mp3",
+      "audio/narration/racing/rl4-4.mp3",
+      "audio/narration/racing/rl4-5.mp3",
+      "audio/narration/racing/rl4-6.mp3",
+      "audio/narration/racing/rl4-7.mp3",
+      "audio/narration/racing/rl4-8.mp3"
+    ]
+  },
+  {
+    "layer": "release",
+    "id": "rl5",
+    "replaces": "rl2",
+    "chunks": 9,
+    "seconds": 23.9,
+    "spread": 1.132,
+    "blocks": 1,
+    "gain": 1.227,
+    "passed": true,
+    "files": [
+      "audio/narration/racing/rl5-0.mp3",
+      "audio/narration/racing/rl5-1.mp3",
+      "audio/narration/racing/rl5-2.mp3",
+      "audio/narration/racing/rl5-3.mp3",
+      "audio/narration/racing/rl5-4.mp3",
+      "audio/narration/racing/rl5-5.mp3",
+      "audio/narration/racing/rl5-6.mp3",
+      "audio/narration/racing/rl5-7.mp3",
+      "audio/narration/racing/rl5-8.mp3"
+    ]
+  },
+  {
+    "layer": "release",
+    "id": "rl6",
+    "replaces": "rl3",
+    "chunks": 9,
+    "seconds": 22.74,
+    "spread": 1.188,
+    "blocks": 1,
+    "gain": 1.038,
+    "passed": true,
+    "files": [
+      "audio/narration/racing/rl6-0.mp3",
+      "audio/narration/racing/rl6-1.mp3",
+      "audio/narration/racing/rl6-2.mp3",
+      "audio/narration/racing/rl6-3.mp3",
+      "audio/narration/racing/rl6-4.mp3",
+      "audio/narration/racing/rl6-5.mp3",
+      "audio/narration/racing/rl6-6.mp3",
+      "audio/narration/racing/rl6-7.mp3",
+      "audio/narration/racing/rl6-8.mp3"
+    ]
+  },
+  {
+    "layer": "release2",
+    "id": "ru4",
+    "replaces": "ru1",
+    "chunks": 9,
+    "seconds": 25.47,
+    "spread": 1.259,
+    "blocks": 1,
+    "gain": 1.068,
+    "passed": true,
+    "files": [
+      "audio/narration/racing/ru4-0.mp3",
+      "audio/narration/racing/ru4-1.mp3",
+      "audio/narration/racing/ru4-2.mp3",
+      "audio/narration/racing/ru4-3.mp3",
+      "audio/narration/racing/ru4-4.mp3",
+      "audio/narration/racing/ru4-5.mp3",
+      "audio/narration/racing/ru4-6.mp3",
+      "audio/narration/racing/ru4-7.mp3",
+      "audio/narration/racing/ru4-8.mp3"
+    ]
+  },
+  {
+    "layer": "release2",
+    "id": "ru5",
+    "replaces": "ru2",
+    "chunks": 9,
+    "seconds": 25.12,
+    "spread": 1.199,
+    "blocks": 1,
+    "gain": 1.152,
+    "passed": true,
+    "files": [
+      "audio/narration/racing/ru5-0.mp3",
+      "audio/narration/racing/ru5-1.mp3",
+      "audio/narration/racing/ru5-2.mp3",
+      "audio/narration/racing/ru5-3.mp3",
+      "audio/narration/racing/ru5-4.mp3",
+      "audio/narration/racing/ru5-5.mp3",
+      "audio/narration/racing/ru5-6.mp3",
+      "audio/narration/racing/ru5-7.mp3",
+      "audio/narration/racing/ru5-8.mp3"
+    ]
+  },
+  {
+    "layer": "release2",
+    "id": "ru6",
+    "replaces": "ru3",
+    "chunks": 9,
+    "seconds": 24.3,
+    "spread": 1.184,
+    "blocks": 1,
+    "gain": 1.285,
+    "passed": true,
+    "files": [
+      "audio/narration/racing/ru6-0.mp3",
+      "audio/narration/racing/ru6-1.mp3",
+      "audio/narration/racing/ru6-2.mp3",
+      "audio/narration/racing/ru6-3.mp3",
+      "audio/narration/racing/ru6-4.mp3",
+      "audio/narration/racing/ru6-5.mp3",
+      "audio/narration/racing/ru6-6.mp3",
+      "audio/narration/racing/ru6-7.mp3",
+      "audio/narration/racing/ru6-8.mp3"
+    ]
+  }
+]
