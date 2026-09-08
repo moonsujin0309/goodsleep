@@ -1,4 +1,10 @@
-@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
+@font-face {
+  font-family: 'Pretendard Variable';
+  font-style: normal;
+  font-weight: 45 920;
+  font-display: swap;
+  src: url('assets/fonts/PretendardVariable.woff2') format('woff2');
+}
 
 /* ─────────────────────────────────────────────────────────
    토큰
@@ -44,6 +50,8 @@ html, body {
   padding: 0;
   background: var(--bg);
   min-height: 100%;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
@@ -956,23 +964,23 @@ body.on-home #scene-back, body.on-home #scene-video, body.on-home #scene,
 body.on-prepare #scene-back, body.on-prepare #scene-video, body.on-prepare #scene { visibility: hidden; }
 body.on-home .veil, body.on-prepare .veil { background: #101211; }
 .brand, .lede, .lede-xl, .preset .name, .tonight-card strong, .home-intro .lede, #s-breathe .breath .count { font-family: inherit; }
-.home-top { margin-bottom: 34px; }
+.home-top { margin-bottom: 26px; }
 .home-top .brand { font-size: 14px; font-weight: 600; letter-spacing: .04em; }
 .home-top .moon { display: none; }
 .home-top .now { color: var(--text-3); }
 .home-intro { margin-bottom: 24px; }
-.home-intro .lede { font-size: 36px; font-weight: 500; letter-spacing: -.045em; line-height: 1.15; }
+.home-intro .lede { font-size: 32px; font-weight: 550; letter-spacing: -.025em; line-height: 1.3; }
 .home-intro .sub { margin-top: 12px; color: #A8AFA2; }
-.tonight-card { min-height: 304px; justify-content: flex-end; padding: 25px; border-radius: 8px; background-position: center; background-size: cover; box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); }
+.tonight-card { min-height: clamp(240px, 34svh, 290px); justify-content: flex-end; padding: 24px; border-radius: 8px; background-position: center; background-size: cover; box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); }
 .feature-kicker { margin-bottom: 8px; color: #DADED1; font-size: 12px; }
-.tonight-card strong { max-width: 100%; font-size: 27px; line-height: 1.25; font-weight: 500; letter-spacing: -.04em; word-break: keep-all; }
-.feature-note { margin-top: 12px; color: #D0D3C9; font-size: 12px; line-height: 1.6; }
+.tonight-card strong { max-width: 100%; font-size: 26px; line-height: 1.35; font-weight: 550; letter-spacing: -.02em; word-break: keep-all; }
+.feature-note { margin-top: 12px; color: #D0D3C9; font-size: 13px; line-height: 1.6; }
 .feature-action { width: 100%; margin-top: 23px; justify-content: space-between; color: #E6EBCF; font-size: 14px; }
 .routine-edit { display: block; min-height: 44px; margin-left: auto; padding: 12px 0 4px 18px; font-size: 12px; color: var(--text-2); text-decoration: underline; text-underline-offset: 4px; }
 .sound-entry { display: flex; align-items: center; justify-content: space-between; gap: 16px; width: 100%; min-height: 84px; margin-top: 18px; padding: 16px 0; text-align: left; border-bottom: 1px solid var(--line); }
 .sound-entry > span { display: grid; gap: 5px; }
 .sound-entry strong { font-size: 16px; font-weight: 500; }
-.sound-entry small { font-size: 12px; color: var(--text-3); }
+.sound-entry small { font-size: 13px; color: var(--text-3); }
 .sound-entry > .icon { color: var(--text-2); }
 .sheet { margin-top: 30px; }
 .section-heading { margin-bottom: 17px; }
@@ -998,7 +1006,7 @@ body.on-home .veil, body.on-prepare .veil { background: #101211; }
 .alarm-toggle { display: flex; align-items: center; justify-content: space-between; min-height: 58px; font-size: 14px; }
 .alarm-toggle input { width: 22px; height: 22px; accent-color: var(--accent); }
 [hidden], .mix-row[hidden] { display: none !important; }
-#s-prepare .lede { font-size: 30px; font-weight: 500; letter-spacing: -.04em; }
+#s-prepare .lede { font-size: 28px; font-weight: 550; letter-spacing: -.025em; line-height: 1.35; }
 #s-prepare .wake-row { background: #1A1E19; border-radius: 10px; }
 .prepare-action { background: linear-gradient(transparent, #101211 18%); }
 .btn-primary { background: #CBD5BB; color: #192013; box-shadow: none; border-radius: 10px; }
@@ -1013,9 +1021,33 @@ body.on-home .veil, body.on-prepare .veil { background: #101211; }
 .play-controls #pause-btn { flex: 1.6; color: #DCE5CD; background: #30382A; font-size: 15px; }
 .play-controls #stop-btn { color: #ABB3A2; font-size: 14px; }
 #app.is-dim .player-heading { opacity: .3; }
+
+/* 재생은 장면의 분위기는 남기되, 작은 화면에서도 문장과 조작이 먼저 읽혀야 한다. */
+body.on-play #scene-video.is-on { opacity: .52; }
+body.on-play #scene { background: linear-gradient(rgba(8, 12, 8, .48), rgba(8, 12, 8, .78) 58%, rgba(8, 12, 8, .94)); }
+
+/* iPhone SE처럼 높이가 낮은 화면에서는 중요한 조작을 한 화면 안에 남긴다.
+   홈은 자연스럽게 스크롤되고, 재생 화면은 제목·문장·정지 버튼을 동시에 보여 준다. */
+@media (max-height: 700px) {
+  main { padding-top: max(env(safe-area-inset-top), 16px); padding-bottom: max(env(safe-area-inset-bottom), 16px); }
+  .home-top { margin-bottom: 20px; }
+  .home-intro { margin-bottom: 16px; }
+  .tonight-card { min-height: 240px; }
+  .sound-entry { min-height: 72px; margin-top: 12px; }
+  .sheet { margin-top: 24px; }
+  #journey-section { margin-top: 28px; }
+  .journey-card img { height: 104px; }
+  .prepare-action { padding-top: 12px; }
+  .player-heading { padding: 10px 12px; }
+  .player-heading h2 { margin-top: 4px; }
+  .play-body { padding-block: 8px; }
+  .caption { font-size: 17px; line-height: 1.75; }
+  .play-console { padding: 12px; gap: 10px; }
+}
+
 @media (max-width: 359px) {
-  .home-intro .lede { font-size: 34px; }
-  .tonight-card { min-height: 290px; padding: 20px; }
+  .home-intro .lede { font-size: 30px; }
+  .tonight-card { min-height: min(290px, 42vh); padding: 20px; }
   .tonight-card strong { font-size: 25px; }
   .sheet .state { font-size: 13px; }
   .sheet .state-copy { gap: 8px; }

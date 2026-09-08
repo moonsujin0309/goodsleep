@@ -127,6 +127,7 @@ function go(name) {
   // 홈에서만 씬 스크림을 걷는다 — 다른 화면은 글 대비를 위해 어둡게 유지 (style.css)
   document.body.classList.toggle('on-home', name === 'home');
   document.body.classList.toggle('on-prepare', name === 'prepare');
+  document.body.classList.toggle('on-play', name === 'play');
   if (name === 'home' && manifest) renderStates();
   if (name === 'report') renderReport();
   // 홈은 적막하면 안 된다 — 멈추기·알람 뒤에 돌아와도 고른 배경음이 다시 흐른다.
@@ -284,7 +285,20 @@ function startRoutine(r) {
   const at = r.wakeHHMM ? nextWake(r.wakeHHMM) : null;
   startSession(r.stateId, at ? (at - Date.now()) / HOUR : 0, false, { ...r, alarmAt: at });
 }
-$('#sound-only-btn').addEventListener('click', () => openPrepare('unknown', { voiceOn: false }));
+function startSoundOnly() {
+  const r = validRoutine();
+  // 이미 고른 밤이 있으면 소리만 듣기도 바로 시작한다. 같은 믹스와 배경을
+  // 사용하되, 이 선택이 원래 "나의 밤" 설정을 덮어쓰지는 않는다.
+  if (r) {
+    const at = r.wakeHHMM ? nextWake(r.wakeHHMM) : null;
+    startSession(r.stateId, at ? (at - Date.now()) / HOUR : 0, false, {
+      ...r, voiceOn: false, alarmAt: at, rememberRoutine: false,
+    });
+    return;
+  }
+  openPrepare('unknown', { voiceOn: false });
+}
+$('#sound-only-btn').addEventListener('click', startSoundOnly);
 $$('[data-voice]').forEach(b => b.addEventListener('click', () => {
   draft.voiceOn = b.dataset.voice === 'on'; syncListeningMode();
 }));
@@ -655,7 +669,7 @@ async function startSession(stateId, hours, isNap, options = {}) {
   } else {
     watcher.cancel(); store.pending = null; save('pending', null);
   }
-  if (state.night && !isNap && !resuming) {
+  if (state.night && !isNap && !resuming && options.rememberRoutine !== false) {
     const wake = alarmAt ? new Date(alarmAt) : null;
     store.routine = { stateId, voiceOn, wakeHHMM: wake ? `${String(wake.getHours()).padStart(2, '0')}:${String(wake.getMinutes()).padStart(2, '0')}` : null, mix: { ...sessionMix }, scene: sessionScene };
     save('routine', store.routine);

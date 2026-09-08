@@ -1,4 +1,10 @@
-# assets/presets/ — 사진 출처
+# 자산 출처
+
+## 글꼴
+
+- `fonts/PretendardVariable.woff2`: Pretendard v1.3.9, [공식 저장소](https://github.com/orioncactus/pretendard/tree/v1.3.9), SIL Open Font License 1.1. 원본 라이선스는 `fonts/OFL.txt`. 수정하지 않은 가변 글꼴을 앱에 포함해 CDN 접속 없이 사용한다.
+
+## assets/presets/ — 사진 출처
 
 전부 [Unsplash](https://unsplash.com) 사진이다. Unsplash License —
 상업적 이용·수정 무료, 저작자 표기 의무 없음(권장이라 여기 기록).
