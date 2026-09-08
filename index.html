@@ -23,16 +23,9 @@ var s=document.createElement('script');s.async=1;s.src='https://www.googletagman
 window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments)};gtag('js',new Date());gtag('config',id);})();
 </script>
 
-<link rel="preload" href="assets/fonts/PretendardVariable.woff2" as="font" type="font/woff2" crossorigin>
-<!-- 나레이션 문장에만 쓰는 한글 명조. 본문 Pretendard 는 앱에 포함해 먼저 불러온다.
-     Gowun Batang 을 고른 이유: 명조 중에서도 획 대비가 낮아 어두운 배경에서 가늘어지지 않는다.
-     ponytail: 구글 서브셋(95조각) 중 나레이션이 건드리는 27조각 = 총 461KB 를 나눠서 받는다.
-     재생 화면에서만, 필요한 조각만, 한 번 받으면 캐시된다. 이게 무겁다고 판단되면
-     고유 글자 419자만 담은 woff2 하나(~50KB)를 self-host 하는 것이 업그레이드 경로다.
-     (다만 빌드 없음 원칙이 깨지고 폰트 바이너리가 저장소에 들어간다) -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang&display=swap">
+<!-- 제목·자막은 고운바탕, 조작·설명은 SUIT. 두 OFL 글꼴 모두 앱에 포함한다. -->
+<link rel="preload" href="assets/fonts/SUIT-Variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/GowunBatang-Regular.woff2" as="font" type="font/woff2" crossorigin>
 
 <link rel="manifest" href="manifest.json">
 <link rel="stylesheet" href="style.css">
@@ -104,7 +97,7 @@ window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(argu
           <div class="section-heading"><h2>이야기를 따라 쉬기</h2></div>
           <div class="journey-grid" id="journey-list"></div>
         </div>
-        <div class="foot">
+        <nav class="foot" aria-label="바로가기">
           <button class="btn btn-quiet" data-go="breathe">
             <svg class="icon"><use href="#i-breath"/></svg> 호흡
           </button>
@@ -114,7 +107,7 @@ window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(argu
           <button class="btn btn-quiet" data-go="report">
             <svg class="icon"><use href="#i-chart"/></svg> 기록
           </button>
-        </div>
+        </nav>
       </div>
     </section>
 

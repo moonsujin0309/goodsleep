@@ -2,7 +2,8 @@
 
 ## 글꼴
 
-- `fonts/PretendardVariable.woff2`: Pretendard v1.3.9, [공식 저장소](https://github.com/orioncactus/pretendard/tree/v1.3.9), SIL Open Font License 1.1. 원본 라이선스는 `fonts/OFL.txt`. 수정하지 않은 가변 글꼴을 앱에 포함해 CDN 접속 없이 사용한다.
+- `fonts/SUIT-Variable.woff2`: SUIT v2, [공식 저장소](https://github.com/sun-typeface/SUIT), SIL Open Font License 1.1. 원문 `fonts/SUIT-OFL.txt`. 공식 jsDelivr 배포본을 앱에 포함한다.
+- `fonts/GowunBatang-Regular.woff2`: 고운바탕 Regular, [공식 원본·라이선스](https://github.com/google/fonts/tree/main/ofl/gowunbatang), SIL Open Font License 1.1. 원문 `fonts/GowunBatang-OFL.txt`. [Fontsource 압축 Korean 웹폰트](https://cdn.jsdelivr.net/fontsource/fonts/gowun-batang@latest/korean-400-normal.woff2)를 앱에 포함한다. 외부 Google Fonts CSS 요청은 제거했다.
 
 ## assets/presets/ — 사진 출처
 

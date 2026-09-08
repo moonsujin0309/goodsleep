@@ -5,12 +5,12 @@
 //     배포가 즉시 반영되고, 끊겼을 때만 캐시가 받친다. 버전 올리기를 잊어도 안전.
 //   나레이션 mp3 — 캐시 우선.
 //     한 번 들은 조각은 다시 받지 않는다. 내용이 바뀌는 배포에서만 VER 을 올린다.
-const VER = 'goodsleep-v16';  // 2026-09-09 본문 글꼴을 포함해 오프라인에서도 동일하게 표시
+const VER = 'goodsleep-v17';  // 2026-09-09 SUIT·고운바탕과 모바일 홈 재구성
 const SHELL = [
   './', 'index.html', 'style.css', 'manifest.json',
   'app.js', 'audio.js', 'narration.js', 'sleep.js', 'scenes.js', 'synth.js',
   'data/narration.json', 'data/sounds.json', 'data/presets.json',
-  'assets/fonts/PretendardVariable.woff2',
+  'assets/fonts/SUIT-Variable.woff2', 'assets/fonts/GowunBatang-Regular.woff2',
 ];
 
 self.addEventListener('install', (e) => {
